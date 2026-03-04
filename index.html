@@ -132,7 +132,7 @@
         .dark .text-xs.font-bold.text-slate-500 { color: var(--text-muted) !important; }
 
         /* Views - List, Calendar, Analytics, Time, Admin */
-        .dark #view-list, .dark #view-calendar, .dark #view-analytics, .dark #view-time, .dark #view-admin {
+        .dark #view-list, .dark #view-calendar, .dark #view-analytics, .dark #view-time, .dark #view-admin, .dark #view-users {
             background-color: var(--bg-body) !important;
         }
         .dark #view-list { background-color: var(--bg-body) !important; }
@@ -250,6 +250,133 @@
     <!-- Background Decoration -->
     <div class="absolute top-0 left-1/4 w-[800px] h-[300px] bg-indigo-400/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- AUTH OVERLAY — cobre tudo enquanto não autenticado            -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div id="authOverlay" class="fixed inset-0 z-[500] flex items-center justify-center bg-slate-950 transition-all duration-500">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[100px]"></div>
+        </div>
+
+        <!-- ── TELA: LOGIN ─────────────────────────────────────────── -->
+        <div id="screenLogin" class="relative w-full max-w-md mx-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="bg-gradient-to-br from-indigo-500 to-violet-500 text-white p-2 rounded-xl shadow-lg shadow-indigo-500/30">
+                        <i class="ph ph-kanban text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-display font-extrabold text-white tracking-tight">Workspace<span class="text-indigo-400">.</span></h1>
+                        <p class="text-xs text-slate-500">Planner da Equipa</p>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-display font-bold text-white mb-1">Bem-vindo de volta</h2>
+                <p class="text-slate-400 text-sm mb-6">Entre com sua conta para continuar</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
+                        <div class="relative">
+                            <i class="ph ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input id="loginEmail" type="email" placeholder="seu@email.com" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Senha</label>
+                        <div class="relative">
+                            <i class="ph ph-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input id="loginPassword" type="password" placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm" onkeypress="if(event.key==='Enter') doLogin()">
+                        </div>
+                    </div>
+                    <div id="loginError" class="hidden text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 flex items-center gap-2"><i class="ph ph-warning-circle text-base"></i><span></span></div>
+                    <button onclick="doLogin()" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 text-sm">
+                        <i class="ph ph-sign-in text-lg"></i> Entrar
+                    </button>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-slate-800 text-center">
+                    <p class="text-slate-500 text-sm">Não tem conta? <button onclick="showScreen('register')" class="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">Solicitar acesso</button></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── TELA: CADASTRO ──────────────────────────────────────── -->
+        <div id="screenRegister" class="relative w-full max-w-md mx-4 hidden">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8">
+                <div class="flex items-center gap-3 mb-8">
+                    <div class="bg-gradient-to-br from-indigo-500 to-violet-500 text-white p-2 rounded-xl shadow-lg shadow-indigo-500/30">
+                        <i class="ph ph-kanban text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-display font-extrabold text-white tracking-tight">Workspace<span class="text-indigo-400">.</span></h1>
+                        <p class="text-xs text-slate-500">Planner da Equipa</p>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-display font-bold text-white mb-1">Solicitar acesso</h2>
+                <p class="text-slate-400 text-sm mb-6">Crie sua conta — o admin aprovará em breve</p>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nome completo</label>
+                        <div class="relative">
+                            <i class="ph ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input id="regName" type="text" placeholder="Seu nome" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
+                        <div class="relative">
+                            <i class="ph ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input id="regEmail" type="email" placeholder="seu@email.com" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Senha</label>
+                        <div class="relative">
+                            <i class="ph ph-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                            <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm" onkeypress="if(event.key==='Enter') doRegister()">
+                        </div>
+                    </div>
+                    <div id="regError" class="hidden text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 flex items-center gap-2"><i class="ph ph-warning-circle text-base"></i><span></span></div>
+                    <button onclick="doRegister()" id="registerBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 text-sm">
+                        <i class="ph ph-user-plus text-lg"></i> Solicitar Acesso
+                    </button>
+                </div>
+
+                <div class="mt-6 pt-6 border-t border-slate-800 text-center">
+                    <p class="text-slate-500 text-sm">Já tem conta? <button onclick="showScreen('login')" class="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">Entrar</button></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── TELA: AGUARDANDO APROVAÇÃO ──────────────────────────── -->
+        <div id="screenPending" class="relative w-full max-w-md mx-4 hidden">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-10 text-center">
+                <div class="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="ph ph-hourglass-medium text-4xl text-amber-400 animate-pulse"></i>
+                </div>
+                <h2 class="text-2xl font-display font-bold text-white mb-2">Aguardando aprovação</h2>
+                <p class="text-slate-400 text-sm mb-2">Sua conta foi criada com sucesso!</p>
+                <p class="text-slate-500 text-xs mb-8">O administrador irá revisar e aprovar seu acesso em breve. Tente entrar novamente mais tarde.</p>
+                <div class="bg-slate-800 rounded-2xl p-4 mb-6 text-left">
+                    <p class="text-xs text-slate-500 uppercase tracking-widest font-bold mb-1">Conta cadastrada</p>
+                    <p class="text-sm font-bold text-white" id="pendingUserName"></p>
+                    <p class="text-xs text-slate-400" id="pendingUserEmail"></p>
+                </div>
+                <button onclick="doLogout()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 rounded-xl transition-all text-sm border border-slate-700">
+                    <i class="ph ph-sign-out mr-2"></i>Sair e usar outra conta
+                </button>
+            </div>
+        </div>
+
+        <!-- ── TELA: LOADING ───────────────────────────────────────── -->
+        <div id="screenLoading" class="relative text-center">
+            <div class="w-16 h-16 border-4 border-slate-700 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-slate-400 text-sm font-medium">Carregando...</p>
+        </div>
+    </div>
+
     <!-- SIDEBAR -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 transition-all duration-300 z-30 shadow-xl relative" id="sidebar">
         <div class="h-16 flex items-center px-6 border-b border-slate-800/60 bg-slate-950/50">
@@ -257,6 +384,18 @@
                 <i class="ph ph-kanban text-xl"></i>
             </div>
             <h1 class="text-xl font-display font-extrabold text-white tracking-tight">Workspace<span class="text-indigo-400">.</span></h1>
+        </div>
+
+        <!-- User info bar -->
+        <div class="px-4 py-3 border-b border-slate-800/60 flex items-center gap-3">
+            <div id="sidebarAvatar" class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">?</div>
+            <div class="flex-1 min-w-0">
+                <p id="sidebarUserName" class="text-xs font-bold text-white truncate">—</p>
+                <p id="sidebarUserRole" class="text-[10px] text-slate-500 truncate">—</p>
+            </div>
+            <button onclick="doLogout()" title="Sair" class="text-slate-600 hover:text-rose-400 transition-colors shrink-0">
+                <i class="ph ph-sign-out text-lg"></i>
+            </button>
         </div>
 
         <div class="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar flex flex-col gap-1">
@@ -287,6 +426,11 @@
             <!-- BOTAO ADMIN -->
             <button onclick="switchView('admin')" class="nav-item flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white font-medium text-sm group mt-4 border border-slate-800" data-view="admin">
                 <i class="ph ph-gear text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Configurações
+            </button>
+            <!-- BOTAO USUARIOS (só admin) -->
+            <button onclick="switchView('users')" id="nav-users-btn" class="nav-item hidden flex items-center justify-between gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white font-medium text-sm group border border-slate-800" data-view="users">
+                <div class="flex items-center gap-3"><i class="ph ph-users-three text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Usuários</div>
+                <span id="pending-badge-nav" class="hidden text-[9px] font-bold bg-rose-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">!</span>
             </button>
 
             <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Filtros Rápidos</div>
@@ -629,6 +773,53 @@
                 </div>
             </div>
 
+            <!-- VIEW: USUÁRIOS (admin only) -->
+            <div id="view-users" class="view-panel hidden h-full overflow-y-auto bg-slate-50 custom-scrollbar">
+                <div class="p-8 max-w-5xl mx-auto">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-display font-bold text-slate-800 mb-1">Gestão de Usuários</h3>
+                        <p class="text-sm text-slate-500">Aprove ou revogue o acesso dos colaboradores ao planner.</p>
+                    </div>
+
+                    <!-- Pendentes -->
+                    <div class="bg-white rounded-2xl border border-amber-200 shadow-sm mb-6 overflow-hidden">
+                        <div class="px-6 py-4 bg-amber-50 border-b border-amber-100 flex items-center justify-between">
+                            <h4 class="text-sm font-bold text-amber-800 flex items-center gap-2"><i class="ph ph-hourglass-medium text-lg text-amber-500"></i> Aguardando Aprovação</h4>
+                            <span id="pending-count-badge" class="text-xs font-bold bg-amber-500 text-white px-2.5 py-0.5 rounded-full">0</span>
+                        </div>
+                        <div id="users-pending-list" class="divide-y divide-slate-100">
+                            <div class="p-8 text-center text-sm text-slate-400 font-medium">Nenhum pedido pendente.</div>
+                        </div>
+                    </div>
+
+                    <!-- Aprovados -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-users-three text-lg text-emerald-500"></i> Colaboradores Ativos</h4>
+                            <span id="active-count-badge" class="text-xs font-bold bg-emerald-500 text-white px-2.5 py-0.5 rounded-full">0</span>
+                        </div>
+                        <div id="users-active-list" class="divide-y divide-slate-100">
+                            <div class="p-8 text-center text-sm text-slate-400 font-medium">Nenhum colaborador ativo.</div>
+                        </div>
+                    </div>
+
+                    <!-- Relatório consolidado de horas -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm mt-6 overflow-hidden">
+                        <div class="px-6 py-4 bg-slate-50 border-b border-slate-100">
+                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-chart-bar text-lg text-indigo-500"></i> Relatório de Horas — Todos os Colaboradores</h4>
+                        </div>
+                        <div id="admin-hours-report" class="p-6 space-y-4">
+                            <p class="text-sm text-slate-400 text-center py-4">Carregando dados...</p>
+                        </div>
+                        <div class="px-6 pb-5">
+                            <button onclick="exportAllHoursCSV()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors text-sm border border-indigo-200">
+                                <i class="ph ph-file-csv text-lg"></i> Exportar Relatório Completo CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
@@ -904,9 +1095,9 @@
     <!-- FIREBASE SDK -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-        import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+        import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDoc, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-        // ── FIREBASE CONFIG ───────────────────────────────────────────────────
         const firebaseConfig = {
             apiKey: "AIzaSyD0pCg9VCmog4Xi5nJGm65pLTBlTWwd2v4",
             authDomain: "planner-ultimate.firebaseapp.com",
@@ -917,22 +1108,336 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db  = getFirestore(app);
+        const auth = getAuth(app);
 
-        // Expõe funções do Firestore para o script global
-        window._db = db;
-        window._fsCollection = collection;
-        window._fsDoc = doc;
-        window._fsOnSnapshot = onSnapshot;
-        window._fsSetDoc = setDoc;
-        window._fsDeleteDoc = deleteDoc;
-        window._fsGetDoc = getDoc;
+        window._db = db; window._auth = auth;
+        window._fsCollection = collection; window._fsDoc = doc;
+        window._fsOnSnapshot = onSnapshot; window._fsSetDoc = setDoc;
+        window._fsDeleteDoc = deleteDoc;   window._fsGetDoc = getDoc;
+        window._fsQuery = query;           window._fsWhere = where;
+        window._fsGetDocs = getDocs;
+        window._authCreate = createUserWithEmailAndPassword;
+        window._authSignIn = signInWithEmailAndPassword;
+        window._authSignOut = signOut;
+        window._authOnState = onAuthStateChanged;
+        window._authUpdateProfile = updateProfile;
         window._firebaseReady = true;
         window.dispatchEvent(new Event('firebaseReady'));
     </script>
 
     <!-- SCRIPT GESTOR DA INTERFACE E ARMAZENAMENTO FIREBASE -->
     <script>
+        // ── AUTH STATE ────────────────────────────────────────────────────────
+        let currentUser   = null;  // Firebase Auth user
+        let currentProfile = null; // Firestore user document
+        let allUsersCache = [];    // cache for admin reports
+        let _unsubUsers   = null;
+
+        // ── AUTH SCREENS ──────────────────────────────────────────────────────
+        function showScreen(name) {
+            ['login','register','pending','loading'].forEach(s => {
+                const el = document.getElementById('screenLoading'.replace('loading', s === 'loading' ? 'Loading' : '') ||
+                    'screen' + s.charAt(0).toUpperCase() + s.slice(1));
+                if (el) el.classList.add('hidden');
+            });
+            // hide all
+            document.getElementById('screenLogin').classList.add('hidden');
+            document.getElementById('screenRegister').classList.add('hidden');
+            document.getElementById('screenPending').classList.add('hidden');
+            document.getElementById('screenLoading').classList.add('hidden');
+            const target = document.getElementById('screen' + name.charAt(0).toUpperCase() + name.slice(1));
+            if (target) target.classList.remove('hidden');
+        }
+
+        function hideAuthOverlay() {
+            const ov = document.getElementById('authOverlay');
+            if (ov) { ov.style.opacity = '0'; ov.style.pointerEvents = 'none'; setTimeout(() => ov.classList.add('hidden'), 400); }
+        }
+
+        function showAuthOverlay() {
+            const ov = document.getElementById('authOverlay');
+            if (ov) { ov.classList.remove('hidden'); ov.style.opacity = '1'; ov.style.pointerEvents = 'auto'; }
+        }
+
+        // ── FIREBASE AUTH FUNCTIONS ───────────────────────────────────────────
+        async function doLogin() {
+            if (!window._firebaseReady) return;
+            const email = document.getElementById('loginEmail').value.trim();
+            const pass  = document.getElementById('loginPassword').value;
+            const btn   = document.getElementById('loginBtn');
+            const errEl = document.getElementById('loginError');
+            errEl.classList.add('hidden');
+            if (!email || !pass) { showAuthError('loginError', 'Preencha email e senha.'); return; }
+            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-lg"></i> Entrando...'; btn.disabled = true;
+            try {
+                await window._authSignIn(window._auth, email, pass);
+                // onAuthStateChanged cuida do resto
+            } catch(e) {
+                btn.innerHTML = '<i class="ph ph-sign-in text-lg"></i> Entrar'; btn.disabled = false;
+                showAuthError('loginError', authErrorMsg(e.code));
+            }
+        }
+
+        async function doRegister() {
+            if (!window._firebaseReady) return;
+            const name  = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass  = document.getElementById('regPassword').value;
+            const btn   = document.getElementById('registerBtn');
+            if (!name || !email || !pass) { showAuthError('regError', 'Preencha todos os campos.'); return; }
+            if (pass.length < 6) { showAuthError('regError', 'Senha mínimo 6 caracteres.'); return; }
+            btn.innerHTML = '<i class="ph ph-spinner animate-spin text-lg"></i> Criando conta...'; btn.disabled = true;
+            try {
+                const cred = await window._authCreate(window._auth, email, pass);
+                await window._authUpdateProfile(cred.user, { displayName: name });
+                // Cria perfil no Firestore como 'pending'
+                await window._fsSetDoc(window._fsDoc(window._db, 'users', cred.user.uid), {
+                    uid: cred.user.uid, name: name, email: email,
+                    role: 'pending', createdAt: new Date().toISOString()
+                });
+                // onAuthStateChanged detectará e mostrará tela pending
+            } catch(e) {
+                btn.innerHTML = '<i class="ph ph-user-plus text-lg"></i> Solicitar Acesso'; btn.disabled = false;
+                showAuthError('regError', authErrorMsg(e.code));
+            }
+        }
+
+        async function doLogout() {
+            if (window._auth) await window._authSignOut(window._auth);
+            currentUser = null; currentProfile = null;
+            if (_unsubUsers) { _unsubUsers(); _unsubUsers = null; }
+            showAuthOverlay(); showScreen('login');
+        }
+
+        function showAuthError(elId, msg) {
+            const el = document.getElementById(elId);
+            if (!el) return;
+            el.querySelector('span').textContent = msg;
+            el.classList.remove('hidden');
+        }
+
+        function authErrorMsg(code) {
+            const msgs = {
+                'auth/user-not-found': 'Email não encontrado.',
+                'auth/wrong-password': 'Senha incorreta.',
+                'auth/invalid-credential': 'Email ou senha incorretos.',
+                'auth/email-already-in-use': 'Este email já está cadastrado.',
+                'auth/invalid-email': 'Email inválido.',
+                'auth/too-many-requests': 'Muitas tentativas. Aguarde um momento.',
+                'auth/weak-password': 'Senha muito fraca.',
+            };
+            return msgs[code] || 'Erro ao autenticar. Tente novamente.';
+        }
+
+        // ── INIT AUTH LISTENER ────────────────────────────────────────────────
+        async function initAuth() {
+            if (!window._firebaseReady) {
+                await new Promise(r => window.addEventListener('firebaseReady', r, { once: true }));
+            }
+            showScreen('loading');
+
+            window._authOnState(window._auth, async (user) => {
+                if (!user) {
+                    currentUser = null; currentProfile = null;
+                    showAuthOverlay(); showScreen('login'); return;
+                }
+                currentUser = user;
+
+                // Busca perfil no Firestore
+                const snap = await window._fsGetDoc(window._fsDoc(window._db, 'users', user.uid));
+                if (!snap.exists()) {
+                    // Primeiro login de admin (uid hard-coded abaixo) ou usuário sem perfil
+                    // Cria perfil automaticamente como approved para o primeiro usuário
+                    const allSnap = await window._fsGetDocs(window._fsCollection(window._db, 'users'));
+                    const isFirst = allSnap.empty;
+                    const role = isFirst ? 'admin' : 'pending';
+                    const profile = { uid: user.uid, name: user.displayName || user.email, email: user.email, role, createdAt: new Date().toISOString() };
+                    await window._fsSetDoc(window._fsDoc(window._db, 'users', user.uid), profile);
+                    currentProfile = profile;
+                } else {
+                    currentProfile = snap.data();
+                }
+
+                if (currentProfile.role === 'pending') {
+                    document.getElementById('pendingUserName').textContent = currentProfile.name;
+                    document.getElementById('pendingUserEmail').textContent = currentProfile.email;
+                    showAuthOverlay(); showScreen('pending'); return;
+                }
+
+                if (currentProfile.role === 'approved' || currentProfile.role === 'admin') {
+                    hideAuthOverlay();
+                    updateSidebarUserInfo();
+                    await loadData();
+                    if (currentProfile.role === 'admin') {
+                        document.getElementById('nav-users-btn').classList.remove('hidden');
+                        document.getElementById('nav-users-btn').classList.add('flex');
+                        subscribeUsers();
+                    }
+                    renderAll(); switchView('board');
+                }
+            });
+        }
+
+        function updateSidebarUserInfo() {
+            if (!currentProfile) return;
+            const av = document.getElementById('sidebarAvatar');
+            const nm = document.getElementById('sidebarUserName');
+            const rl = document.getElementById('sidebarUserRole');
+            if (av) { av.textContent = ini(currentProfile.name); av.className = `w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0 ${getAvatarColor(currentProfile.name)}`; }
+            if (nm) nm.textContent = currentProfile.name;
+            if (rl) rl.textContent = currentProfile.role === 'admin' ? '⭐ Administrador' : 'Colaborador';
+        }
+
+        // ── USERS MANAGEMENT (admin) ──────────────────────────────────────────
+        function subscribeUsers() {
+            if (!window._firebaseReady) return;
+            _unsubUsers = window._fsOnSnapshot(window._fsCollection(window._db, 'users'), (snap) => {
+                allUsersCache = snap.docs.map(d => d.data());
+                renderUsersPanel();
+                renderAdminHoursReport();
+            });
+        }
+
+        function renderUsersPanel() {
+            const pending = allUsersCache.filter(u => u.role === 'pending');
+            const active  = allUsersCache.filter(u => u.role === 'approved' || u.role === 'admin');
+
+            // Badge nav
+            const navBadge = document.getElementById('pending-badge-nav');
+            if (navBadge) { if (pending.length > 0) navBadge.classList.remove('hidden'); else navBadge.classList.add('hidden'); }
+
+            const pcBadge = document.getElementById('pending-count-badge');
+            if (pcBadge) pcBadge.textContent = pending.length;
+            const acBadge = document.getElementById('active-count-badge');
+            if (acBadge) acBadge.textContent = active.length;
+
+            const pendList = document.getElementById('users-pending-list');
+            if (pendList) {
+                if (!pending.length) {
+                    pendList.innerHTML = '<div class="p-8 text-center text-sm text-slate-400 font-medium">Nenhum pedido pendente. ✅</div>';
+                } else {
+                    pendList.innerHTML = pending.map(u => `
+                        <div class="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors">
+                            <div class="w-10 h-10 rounded-full ${getAvatarColor(u.name)} flex items-center justify-center text-sm font-bold text-white shadow-sm shrink-0">${ini(u.name)}</div>
+                            <div class="flex-1 min-w-0">
+                                <p class="font-bold text-slate-800 text-sm truncate">${esc(u.name)}</p>
+                                <p class="text-xs text-slate-500 truncate">${esc(u.email)}</p>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Solicitou em ${new Date(u.createdAt).toLocaleDateString('pt-BR')}</p>
+                            </div>
+                            <div class="flex gap-2 shrink-0">
+                                <button onclick="approveUser('${u.uid}')" class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5 shadow-sm">
+                                    <i class="ph ph-check-circle text-sm"></i> Aprovar
+                                </button>
+                                <button onclick="rejectUser('${u.uid}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold px-3 py-2 rounded-lg transition-colors flex items-center gap-1.5">
+                                    <i class="ph ph-x-circle text-sm"></i> Rejeitar
+                                </button>
+                            </div>
+                        </div>`).join('');
+                }
+            }
+
+            const actList = document.getElementById('users-active-list');
+            if (actList) {
+                if (!active.length) {
+                    actList.innerHTML = '<div class="p-8 text-center text-sm text-slate-400 font-medium">Nenhum colaborador ativo ainda.</div>';
+                } else {
+                    actList.innerHTML = active.map(u => {
+                        const userTasks = tasks.filter(t => t.owner === u.name);
+                        const totalSecs = userTasks.reduce((acc, t) => acc + getTaskTotalSecs(t), 0);
+                        const doneTasks = userTasks.filter(t => t.status === 'done').length;
+                        const isAdmin = u.role === 'admin';
+                        return `
+                        <div class="flex items-center gap-4 p-4 hover:bg-slate-50 transition-colors">
+                            <div class="w-10 h-10 rounded-full ${getAvatarColor(u.name)} flex items-center justify-center text-sm font-bold text-white shadow-sm shrink-0">${ini(u.name)}</div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <p class="font-bold text-slate-800 text-sm">${esc(u.name)}</p>
+                                    ${isAdmin ? '<span class="text-[9px] font-bold bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded border border-indigo-200">ADMIN</span>' : ''}
+                                </div>
+                                <p class="text-xs text-slate-500">${esc(u.email)}</p>
+                            </div>
+                            <div class="text-right shrink-0 hidden sm:block">
+                                <p class="text-xs font-bold text-slate-700">${userTasks.length} tarefas · ${doneTasks} concluídas</p>
+                                <p class="text-xs font-mono text-indigo-600 font-bold">${formatTimeSecs(totalSecs)}</p>
+                            </div>
+                            ${!isAdmin ? `<button onclick="revokeUser('${u.uid}')" class="text-slate-400 hover:text-rose-500 transition-colors ml-2 shrink-0" title="Revogar acesso"><i class="ph ph-user-minus text-lg"></i></button>` : ''}
+                        </div>`;
+                    }).join('');
+                }
+            }
+        }
+
+        async function approveUser(uid) {
+            await window._fsSetDoc(window._fsDoc(window._db, 'users', uid), { role: 'approved' }, { merge: true });
+            showToast('Usuário aprovado!', 'success');
+        }
+
+        async function rejectUser(uid) {
+            showDialog({ title: 'Rejeitar Acesso', msg: 'Remover este pedido de acesso?', confirmTxt: 'Rejeitar', danger: true }, async () => {
+                await window._fsDeleteDoc(window._fsDoc(window._db, 'users', uid));
+                showToast('Acesso rejeitado.', 'error');
+            });
+        }
+
+        async function revokeUser(uid) {
+            showDialog({ title: 'Revogar Acesso', msg: 'Revogar o acesso deste colaborador? Ele não conseguirá mais entrar.', confirmTxt: 'Revogar', danger: true }, async () => {
+                await window._fsSetDoc(window._fsDoc(window._db, 'users', uid), { role: 'pending' }, { merge: true });
+                showToast('Acesso revogado.', 'success');
+            });
+        }
+
+        function renderAdminHoursReport() {
+            const container = document.getElementById('admin-hours-report');
+            if (!container) return;
+            const { s: ws, e: we } = getWeekRange();
+            const { s: ms, e: me } = getMonthRange();
+
+            const approved = allUsersCache.filter(u => u.role === 'approved' || u.role === 'admin');
+            if (!approved.length) { container.innerHTML = '<p class="text-sm text-slate-400 text-center py-4">Nenhum colaborador ativo.</p>'; return; }
+
+            container.innerHTML = approved.map(u => {
+                const userTasks = tasks.filter(t => t.owner === u.name);
+                const totalSecs = userTasks.reduce((acc, t) => acc + getTaskTotalSecs(t), 0);
+                const weekSecs  = userTasks.reduce((acc, t) => acc + getTaskPeriodSecs(t, ws, we), 0);
+                const monthSecs = userTasks.reduce((acc, t) => acc + getTaskPeriodSecs(t, ms, me), 0);
+                const pct = totalSecs > 0 ? Math.min(100, Math.round((weekSecs / Math.max(totalSecs, 1)) * 100)) : 0;
+                return `
+                <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                    <div class="w-10 h-10 rounded-full ${getAvatarColor(u.name)} flex items-center justify-center text-sm font-bold text-white shadow-sm shrink-0">${ini(u.name)}</div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-bold text-slate-800 text-sm mb-1">${esc(u.name)}</p>
+                        <div class="w-full bg-slate-200 h-1.5 rounded-full"><div class="bg-indigo-500 h-1.5 rounded-full transition-all" style="width:${pct}%"></div></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 shrink-0 text-center">
+                        <div><p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Semana</p><p class="text-sm font-mono font-bold text-slate-700">${formatTimeSecs(weekSecs)}</p></div>
+                        <div><p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Mês</p><p class="text-sm font-mono font-bold text-slate-700">${formatTimeSecs(monthSecs)}</p></div>
+                        <div><p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Total</p><p class="text-sm font-mono font-bold text-indigo-600">${formatTimeSecs(totalSecs)}</p></div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function exportAllHoursCSV() {
+            if (!allUsersCache.length) { showToast('Sem dados para exportar.', 'error'); return; }
+            const { s: ws, e: we } = getWeekRange(); const { s: ms, e: me } = getMonthRange();
+            const header = ['Colaborador','Email','Tarefas Total','Concluídas','Horas Semana','Horas Mês','Horas Total'];
+            const rows = allUsersCache.filter(u => u.role !== 'pending').map(u => {
+                const ut = tasks.filter(t => t.owner === u.name);
+                const toH = s => (s/3600).toFixed(2);
+                return [esc(u.name), u.email, ut.length, ut.filter(t=>t.status==='done').length,
+                    toH(ut.reduce((a,t)=>a+getTaskPeriodSecs(t,ws,we),0)),
+                    toH(ut.reduce((a,t)=>a+getTaskPeriodSecs(t,ms,me),0)),
+                    toH(ut.reduce((a,t)=>a+getTaskTotalSecs(t),0))];
+            });
+            const csv = [header,...rows].map(r=>r.join(';')).join('\n');
+            const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+            const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+            a.download = `relatorio-equipa-${getIsoDate(new Date())}.csv`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            showToast('Relatório exportado!','success');
+        }
+
         // 1. STATE
         let tasks = [];
         let appSettings = {
@@ -1139,9 +1644,11 @@
             document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
             const panel = document.getElementById(`view-${viewId}`); if(panel) panel.classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(i => { if(i.dataset.view === viewId) { i.classList.add('bg-indigo-600', 'text-white'); i.classList.remove('hover:bg-slate-800'); } else { i.classList.remove('bg-indigo-600', 'text-white'); i.classList.add('hover:bg-slate-800'); } });
-            const titles = { board: 'Quadro Kanban', list: 'Lista de Demandas', calendar: 'Calendário de Entregas', analytics: 'Dashboard Analytics', time: 'Auditoria de Tempo', admin: 'Configurações' };
+            const titles = { board: 'Quadro Kanban', list: 'Lista de Demandas', calendar: 'Calendário de Entregas', analytics: 'Dashboard Analytics', time: 'Auditoria de Tempo', admin: 'Configurações', users: 'Gestão de Usuários' };
             const ht = document.getElementById('header-title'); if(ht) ht.textContent = titles[viewId] || '';
-            if(viewId === 'admin') renderAdmin(); else renderAll();
+            if(viewId === 'admin') renderAdmin();
+            else if(viewId === 'users') { renderUsersPanel(); renderAdminHoursReport(); }
+            else renderAll();
         }
 
         function updateSidebarStats() {
@@ -1166,7 +1673,8 @@
             if(activeView === 'list') renderList(); 
             if(activeView === 'calendar') renderCalendar(); 
             if(activeView === 'analytics') renderAnalytics(); 
-            if(activeView === 'time') renderTime(); 
+            if(activeView === 'time') renderTime();
+            if(activeView === 'users' && currentProfile?.role === 'admin') { renderUsersPanel(); renderAdminHoursReport(); }
         }
 
         function applyQuickFilter(type) { viewFilter.quick = type; switchView('board'); }
@@ -1323,15 +1831,18 @@
 
         function renderTime() {
             const tb = document.getElementById('time-table-body'); if(!tb) return;
+            // Non-admins see only their own tasks
+            const isAdmin = currentProfile?.role === 'admin';
+            const visibleTasks = isAdmin ? tasks : tasks.filter(t => t.owner === currentProfile?.name);
             const w=getWeekRange(), m=getMonthRange(), y=getYearRange();
             let tw=0, tm=0, ty=0;
-            tasks.forEach(t => { tw += getTaskPeriodSecs(t, w.s, w.e); tm += getTaskPeriodSecs(t, m.s, m.e); ty += getTaskPeriodSecs(t, y.s, y.e); });
+            visibleTasks.forEach(t => { tw += getTaskPeriodSecs(t, w.s, w.e); tm += getTaskPeriodSecs(t, m.s, m.e); ty += getTaskPeriodSecs(t, y.s, y.e); });
             
             const twEl = document.getElementById('time-week'); if(twEl) twEl.textContent = formatTimeSecs(tw);
             const tmEl = document.getElementById('time-month'); if(tmEl) tmEl.textContent = formatTimeSecs(tm);
             const tyEl = document.getElementById('time-year'); if(tyEl) tyEl.textContent = formatTimeSecs(ty);
             
-            const sorted = [...tasks].sort((a,b) => getTaskTotalSecs(b) - getTaskTotalSecs(a));
+            const sorted = [...visibleTasks].sort((a,b) => getTaskTotalSecs(b) - getTaskTotalSecs(a));
             tb.innerHTML = sorted.map(t => {
                 const total = getTaskTotalSecs(t); const wSecs = getTaskPeriodSecs(t, w.s, w.e); const mSecs = getTaskPeriodSecs(t, m.s, m.e);
                 const isRun = t.timerRunning;
@@ -1348,7 +1859,13 @@
             formSubtasks = []; formAttachments = [];
             
             const owSel = document.getElementById('taskOwner');
-            if(owSel) owSel.innerHTML = `<option value="">Nenhum Responsável</option>` + appSettings.owners.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+            if(owSel) {
+                owSel.innerHTML = `<option value="">Nenhum Responsável</option>` + appSettings.owners.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+                // Auto-select current user if their name is in the owners list
+                if (currentProfile && appSettings.owners.includes(currentProfile.name)) {
+                    owSel.value = currentProfile.name;
+                }
+            }
             
             const secSel = document.getElementById('taskRequesterSector');
             if(secSel) secSel.innerHTML = `<option value="">Sem Setor</option>` + appSettings.sectors.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
@@ -2041,8 +2558,7 @@
         // INIT E EVENT LISTENERS GLOBAIS
         document.addEventListener('DOMContentLoaded', () => {
             initDarkMode();
-            loadData(); // Firebase async - renders via onSnapshot
-            switchView('board');
+            initAuth(); // Auth controls loadData + renderAll
             
             setInterval(updateLiveClock, 1000);
             
