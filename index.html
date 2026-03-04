@@ -320,7 +320,10 @@
                     <div id="darkModeThumb" class="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-slate-400 transition-all duration-300 shadow-sm"></div>
                 </div>
             </button>
-            <span class="flex items-center justify-center gap-1 text-slate-600 text-[10px] font-medium"><i class="ph ph-hard-drive text-slate-600 text-sm"></i> Armazenamento Local</span>
+            <span class="flex items-center justify-center gap-2 text-slate-600 text-[10px] font-medium">
+                <span id="cloud-status-dot" class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                <span id="cloud-status-text">Conectando...</span>
+            </span>
         </div>
     </aside>
 
@@ -367,7 +370,7 @@
 
                 <!-- Live Team Activity -->
                 <div class="relative">
-                    <button id="liveBtn" onclick="toggleLivePanel()" class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-colors relative" title="Equipe ao Vivo">
+                    <button id="liveBtn" onclick="toggleLivePanel()" class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-colors relative" title="Equipa ao Vivo">
                         <i class="ph ph-broadcast text-lg"></i>
                         <span id="live-badge" class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white hidden"></span>
                     </button>
@@ -580,7 +583,7 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Owners -->
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-users text-indigo-500 text-lg"></i> Membros da Equipe</h4>
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-users text-indigo-500 text-lg"></i> Membros da Equipa</h4>
                             <div class="flex gap-2 mb-4">
                                 <input type="text" id="newOwnerInput" placeholder="Nome do novo membro..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddOwner();}">
                                 <button onclick="adminAddOwner()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Add</button>
@@ -633,7 +636,7 @@
     <div id="dailyPanelOverlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[200] hidden opacity-0 transition-opacity" onclick="toggleDailyPanel()"></div>
     <div id="dailyPanel" class="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-white shadow-2xl z-[250] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200">
         <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
-            <h3 class="text-lg font-display font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-sun text-amber-500 text-2xl"></i> Daily da Equipe</h3>
+            <h3 class="text-lg font-display font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-sun text-amber-500 text-2xl"></i> Daily da Equipa</h3>
             <button onclick="toggleDailyPanel()" class="text-slate-400 hover:bg-slate-200 p-2 rounded-full transition-colors"><i class="ph ph-x text-lg"></i></button>
         </div>
         <div id="dailyList" class="flex-1 overflow-y-auto p-6 custom-scrollbar bg-slate-50/50 space-y-6">
@@ -898,18 +901,146 @@
         </div>
     </div>
 
-    <!-- SCRIPT GESTOR DA INTERFACE E ARMAZENAMENTO LOCAL -->
+    <!-- FIREBASE SDK -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+        import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+        // ── FIREBASE CONFIG ───────────────────────────────────────────────────
+        const firebaseConfig = {
+            apiKey: "AIzaSyD0pCg9VCmog4Xi5nJGm65pLTBlTWwd2v4",
+            authDomain: "planner-ultimate.firebaseapp.com",
+            projectId: "planner-ultimate",
+            storageBucket: "planner-ultimate.firebasestorage.app",
+            messagingSenderId: "95861624348",
+            appId: "1:95861624348:web:cb7f656b4a8e1adeb3d9d9"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Expõe funções do Firestore para o script global
+        window._db = db;
+        window._fsCollection = collection;
+        window._fsDoc = doc;
+        window._fsOnSnapshot = onSnapshot;
+        window._fsSetDoc = setDoc;
+        window._fsDeleteDoc = deleteDoc;
+        window._fsGetDoc = getDoc;
+        window._firebaseReady = true;
+        window.dispatchEvent(new Event('firebaseReady'));
+    </script>
+
+    <!-- SCRIPT GESTOR DA INTERFACE E ARMAZENAMENTO FIREBASE -->
     <script>
         // 1. STATE
-        const STORE_KEY = 'planner_ultimate_data_v15';
-        const SETTINGS_KEY = 'planner_ultimate_settings_v15';
         let tasks = [];
         let appSettings = {
             owners: ['Ana Costa', 'Carlos Dev', 'Fernanda Silva', 'Lucas Tech', 'Maria CTO'],
             sectors: ['Marketing', 'TI', 'Financeiro', 'Design', 'RH'],
             tags: [ { name: 'Bug', color: 'rose' }, { name: 'Feature', color: 'indigo' }, { name: 'Melhoria', color: 'emerald' }, { name: 'Design', color: 'pink' } ]
         };
+        let _unsubTasks = null;
+        let _unsubSettings = null;
+        let _syncPaused = false; // evita loop ao salvar
 
+        // 2. FIREBASE STORAGE
+        async function loadData() {
+            // Aguarda Firebase estar pronto
+            if (!window._firebaseReady) {
+                await new Promise(r => window.addEventListener('firebaseReady', r, { once: true }));
+            }
+            const db = window._db;
+            const col = window._fsCollection;
+            const fsDoc = window._fsDoc;
+            const onSnap = window._fsOnSnapshot;
+
+            setCloudStatus('syncing');
+
+            // Listener em tempo real para tarefas
+            _unsubTasks = onSnap(col(db, 'tasks'), (snapshot) => {
+                if (_syncPaused) return;
+                tasks = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderAll();
+                setCloudStatus('ok');
+            }, (err) => {
+                console.error('Erro Firebase tasks:', err);
+                setCloudStatus('error');
+            });
+
+            // Listener em tempo real para settings
+            _unsubSettings = onSnap(fsDoc(db, 'config', 'settings'), (snap) => {
+                if (_syncPaused) return;
+                if (snap.exists()) {
+                    const data = snap.data();
+                    appSettings = { ...appSettings, ...data };
+                    renderAll();
+                }
+            }, (err) => {
+                console.error('Erro Firebase settings:', err);
+            });
+        }
+
+        async function saveTask(taskData) {
+            if (!window._firebaseReady) return;
+            const db = window._db;
+            const fsDoc = window._fsDoc;
+            const fsSet = window._fsSetDoc;
+            try {
+                await fsSet(fsDoc(db, 'tasks', taskData.id), taskData);
+            } catch(e) {
+                console.error('Erro ao salvar tarefa:', e);
+                showToast('Erro ao salvar no Firebase.', 'error');
+            }
+        }
+
+        async function deleteTaskFromDB(taskId) {
+            if (!window._firebaseReady) return;
+            const db = window._db;
+            const fsDoc = window._fsDoc;
+            const fsDel = window._fsDeleteDoc;
+            try {
+                await fsDel(fsDoc(db, 'tasks', taskId));
+            } catch(e) {
+                console.error('Erro ao excluir tarefa:', e);
+                showToast('Erro ao excluir no Firebase.', 'error');
+            }
+        }
+
+        async function saveSettings() {
+            if (!window._firebaseReady) return;
+            const db = window._db;
+            const fsDoc = window._fsDoc;
+            const fsSet = window._fsSetDoc;
+            try {
+                await fsSet(fsDoc(db, 'config', 'settings'), appSettings);
+            } catch(e) {
+                console.error('Erro ao salvar settings:', e);
+            }
+        }
+
+        // saveData agora é um wrapper que salva tasks localmente para uso interno
+        // e dispara o save individual quando necessário
+        function saveData() {
+            // usado apenas para compatibilidade com funções que chamam saveData()
+            // o save real é feito via saveTask() e saveSettings()
+        }
+
+        function setCloudStatus(state) {
+            const el = document.getElementById('cloud-status-text');
+            const dot = document.getElementById('cloud-status-dot');
+            if (!el || !dot) return;
+            if (state === 'ok') {
+                el.textContent = 'Sincronizado · Firebase';
+                dot.className = 'w-2 h-2 rounded-full bg-emerald-400';
+            } else if (state === 'syncing') {
+                el.textContent = 'Sincronizando...';
+                dot.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+            } else {
+                el.textContent = 'Erro de conexão';
+                dot.className = 'w-2 h-2 rounded-full bg-rose-400';
+            }
+        }
         const colorMap = {
             'slate': 'text-slate-600 bg-slate-50 border-slate-200 peer-checked:bg-slate-800 peer-checked:border-slate-800 peer-checked:text-white',
             'rose': 'text-rose-600 bg-rose-50 border-rose-200 peer-checked:bg-rose-600 peer-checked:border-rose-600 peer-checked:text-white',
@@ -936,32 +1067,6 @@
         let calMonth = new Date().getMonth();
         let isDragging = false;
 
-        // 2. STORAGE (Local Only)
-        function loadData() {
-            try {
-                const savedTasks = localStorage.getItem(STORE_KEY);
-                if (savedTasks) tasks = JSON.parse(savedTasks);
-                
-                const savedSettings = localStorage.getItem(SETTINGS_KEY);
-                if (savedSettings) {
-                    appSettings = { ...appSettings, ...JSON.parse(savedSettings) };
-                }
-                if (!appSettings.tags) appSettings.tags = [];
-                if (!appSettings.sectors) appSettings.sectors = [];
-                if (!appSettings.owners) appSettings.owners = [];
-            } catch (e) {
-                console.error('Erro ao carregar dados:', e);
-            }
-        }
-
-        function saveData() {
-            try {
-                localStorage.setItem(STORE_KEY, JSON.stringify(tasks));
-                localStorage.setItem(SETTINGS_KEY, JSON.stringify(appSettings));
-            } catch(e) {
-                console.error('Erro ao salvar dados:', e);
-            }
-        }
 
         // 3. UTILS
         function uid() { return Date.now().toString(36) + Math.random().toString(36).substr(2); }
@@ -1110,10 +1215,10 @@
             document.querySelectorAll('.kanban-column').forEach(col => {
                 col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('bg-indigo-50/50', 'border-indigo-200', 'border-dashed'); });
                 col.addEventListener('dragleave', e => { col.classList.remove('bg-indigo-50/50', 'border-indigo-200', 'border-dashed'); });
-                col.addEventListener('drop', e => {
+                col.addEventListener('drop', async e => {
                     e.preventDefault(); col.classList.remove('bg-indigo-50/50', 'border-indigo-200', 'border-dashed');
                     const id = e.dataTransfer.getData('text/plain'); const ns = col.dataset.status; const t = tasks.find(x => x.id === id);
-                    if(t && t.status !== ns) { if((ns === 'done' || ns === 'paused') && t.timerRunning) stopTimerInternal(t); t.status = ns; saveData(); showToast(`Movido para ${statusMap[ns]}`, 'success'); renderAll(); }
+                    if(t && t.status !== ns) { if((ns === 'done' || ns === 'paused') && t.timerRunning) stopTimerInternal(t); t.status = ns; await saveTaskToFirebase(t); showToast(`Movido para ${statusMap[ns]}`, 'success'); }
                 });
             });
         }
@@ -1286,7 +1391,7 @@
 
         function closeModal() { const m = document.getElementById('taskModal'); if(m) { m.classList.remove('modal-visible'); m.classList.add('modal-hidden'); } }
 
-        function saveTask() {
+        async function saveTask() {
             const tIdEl = document.getElementById('taskId'); const tId = tIdEl ? tIdEl.value : '';
             const tagEl = document.querySelector('input[name="taskTag"]:checked');
             const iTitle = document.getElementById('taskTitle'); const iOwner = document.getElementById('taskOwner'); const iDue = document.getElementById('taskDueDate'); const iStatus = document.getElementById('taskStatus'); const iPrio = document.getElementById('taskPriority'); const iSec = document.getElementById('taskRequesterSector'); const iDesc = document.getElementById('taskDescription'); const iReq = document.getElementById('taskRequester'); const iMail = document.getElementById('taskEmail');
@@ -1300,26 +1405,42 @@
                 requesterName: iReq ? iReq.value.trim() : '', requesterEmail: iMail ? iMail.value.trim() : '', subtasks: JSON.parse(JSON.stringify(formSubtasks)), attachments: JSON.parse(JSON.stringify(formAttachments))
             };
 
+            let finalData;
             if(tId) {
-                const idx = tasks.findIndex(x => x.id === tId);
-                if(idx > -1) {
-                    data.comments = tasks[idx].comments || []; data.timeLogs = tasks[idx].timeLogs || []; data.timerRunning = tasks[idx].timerRunning; data.timeSpent = tasks[idx].timeSpent; data.timerStart = tasks[idx].timerStart; data.isDaily = tasks[idx].isDaily;
-                    tasks[idx] = { ...tasks[idx], ...data, updatedAt: new Date().toISOString() };
-                }
-                showToast("Tarefa atualizada!", 'success');
+                const existing = tasks.find(x => x.id === tId);
+                finalData = { ...existing, ...data, id: tId, updatedAt: new Date().toISOString() };
+                showToast("Salvando...", 'info');
             } else {
-                data.id = uid(); data.createdAt = new Date().toISOString(); data.timerRunning = false; data.timeLogs = []; data.comments = []; data.isDaily = false;
-                tasks.push(data); showToast("Nova tarefa criada!", 'success');
+                finalData = { ...data, id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), timerRunning: false, timeLogs: [], comments: [], isDaily: false };
             }
-            
-            saveData();
-            
+
             viewFilter.status = 'all';
             document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-indigo-50', 'border-indigo-200', 'text-indigo-700'); b.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-600'); });
             const btnAll = document.querySelector('.filter-btn[data-status="all"]');
             if(btnAll) { btnAll.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-600'); btnAll.classList.add('bg-indigo-50', 'border-indigo-200', 'text-indigo-700'); }
 
-            closeModal(); closeViewModal(); renderAll();
+            closeModal(); closeViewModal();
+            await saveTask_DB(finalData);
+            showToast(tId ? "Tarefa atualizada!" : "Nova tarefa criada!", 'success');
+        }
+
+        // Alias to avoid naming conflict with the Firebase save function
+        async function saveTask_DB(taskData) {
+            await saveTaskToFirebase(taskData);
+        }
+        async function saveTaskToFirebase(taskData) {
+            if (!window._firebaseReady) return;
+            const db = window._db;
+            const fsDoc = window._fsDoc;
+            const fsSet = window._fsSetDoc;
+            try {
+                setCloudStatus('syncing');
+                await fsSet(fsDoc(db, 'tasks', taskData.id), taskData);
+            } catch(e) {
+                console.error('Erro ao salvar tarefa:', e);
+                showToast('Erro ao salvar no Firebase.', 'error');
+                setCloudStatus('error');
+            }
         }
 
         function renderFormSubtasks() {
@@ -1412,11 +1533,10 @@
             const btnDel = document.getElementById('btnDeleteTask'); 
             if(btnDel) {
                 btnDel.onclick = () => {
-                    showDialog({ title: 'Excluir Demanda', msg: 'Excluir definitivamente esta tarefa?', confirmTxt: 'Excluir', danger: true }, () => {
+                    showDialog({ title: 'Excluir Demanda', msg: 'Excluir definitivamente esta tarefa?', confirmTxt: 'Excluir', danger: true }, async () => {
                         if(t.timerRunning) stopTimerInternal(t);
-                        const idx = tasks.findIndex(x => x.id === t.id);
-                        if(idx > -1) tasks.splice(idx, 1);
-                        saveData(); closeViewModal(); showToast("Tarefa excluída", "error"); renderAll();
+                        closeViewModal(); showToast("Tarefa excluída", "error");
+                        await deleteTaskFromDB(t.id);
                     });
                 };
             }
@@ -1437,7 +1557,7 @@
             });
         }
 
-        function toggleSubtaskStatus(taskId, idx) { const t = tasks.find(x => x.id === taskId); if(t && t.subtasks) { t.subtasks[idx].done = !t.subtasks[idx].done; saveData(); renderViewSubtasks(t); renderAll(); } }
+        async function toggleSubtaskStatus(taskId, idx) { const t = tasks.find(x => x.id === taskId); if(t && t.subtasks) { t.subtasks[idx].done = !t.subtasks[idx].done; renderViewSubtasks(t); await saveTaskToFirebase(t); } }
         
         function renderViewSubtasks(task) {
             const w = document.getElementById('viewSubtasksWrapper'); const l = document.getElementById('viewSubtasksList'); const pb = document.getElementById('viewSubtasksProgressBar'); const pt = document.getElementById('viewSubtasksProgressText');
@@ -1470,16 +1590,17 @@
             setTimeout(() => { list.scrollTop = list.scrollHeight; }, 10);
         }
 
-        function addComment() {
+        async function addComment() {
             const inp = document.getElementById('newCommentInput'); if(!inp) return;
             const text = inp.value.trim(); if(!text || !currentViewTaskId) return;
             const task = tasks.find(t => t.id === currentViewTaskId);
             if(task) {
                 if(!task.comments) task.comments = [];
                 task.comments.push({ id: uid(), author: 'Utilizador Local', text: text, createdAt: new Date().toISOString() });
-                saveData(); renderViewComments(task); inp.value = '';
+                renderViewComments(task); inp.value = '';
                 const drop = document.getElementById('mentionDropdown'); if(drop) drop.classList.add('hidden');
-                showToast('Comentário enviado!', 'success'); renderAll(); 
+                showToast('Comentário enviado!', 'success');
+                await saveTaskToFirebase(task);
             }
         }
 
@@ -1526,13 +1647,11 @@
             }
         }
 
-        function toggleDailyStatus(taskId) {
+        async function toggleDailyStatus(taskId) {
             const t = tasks.find(x => x.id === taskId);
             if (t) {
                 t.isDaily = !t.isDaily;
-                saveData();
                 showToast(t.isDaily ? "Adicionado à Daily" : "Removido da Daily", "success");
-                renderAll();
                 if (currentViewTaskId === taskId) {
                     const btn = document.getElementById('btnToggleDaily');
                     if (btn) {
@@ -1545,19 +1664,19 @@
                         }
                     }
                 }
+                await saveTaskToFirebase(t);
             }
         }
 
         function clearDaily() {
-            showDialog({title:"Limpar Daily", msg:"Isto vai remover as marcações de Daily. Os cartões vão continuar no quadro normalmente.", confirmTxt:"Limpar", danger:true}, () => {
-                let changed = false;
-                tasks.forEach(t => {
-                    if (t.isDaily) {
-                        t.isDaily = false;
-                        changed = true;
-                    }
-                });
-                if(changed) { saveData(); showToast("Daily limpa.", "success"); renderAll(); toggleDailyPanel(); }
+            showDialog({title:"Limpar Daily", msg:"Isto vai remover as marcações de Daily. Os cartões vão continuar no quadro normalmente.", confirmTxt:"Limpar", danger:true}, async () => {
+                const changed = tasks.filter(t => t.isDaily);
+                changed.forEach(t => { t.isDaily = false; });
+                if(changed.length) {
+                    showToast("Daily limpa.", "success");
+                    toggleDailyPanel();
+                    await Promise.all(changed.map(t => saveTaskToFirebase(t)));
+                }
             });
         }
 
@@ -1679,7 +1798,7 @@
             task.timerStart = null;
         }
 
-        function toggleTimer(taskId, event) {
+        async function toggleTimer(taskId, event) {
             if (event) { event.stopPropagation(); event.preventDefault(); }
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
@@ -1694,26 +1813,20 @@
                 task.timerStart = Date.now();
                 showToast('Temporizador iniciado!', 'success');
             }
-            saveData();
             if (currentViewTaskId === taskId) updateModalTimerUI(task);
-            const runIndicator = document.getElementById('sb-run-indicator');
-            if (runIndicator) {
-                if (tasks.some(t => t.timerRunning)) runIndicator.classList.remove('hidden');
-                else runIndicator.classList.add('hidden');
-            }
             updateWeeklyClockDisplay();
-            renderAll();
+            await saveTaskToFirebase(task);
         }
 
-        function resetTimer(taskId, event) {
+        async function resetTimer(taskId, event) {
             if (event) event.stopPropagation();
             const task = tasks.find(t => t.id === taskId);
             if (!task) return;
-            showDialog({ title: 'Zerar Temporizador', msg: `Zerar todo o tempo registrado em "${task.title}"?`, confirmTxt: 'Zerar', danger: true }, () => {
+            showDialog({ title: 'Zerar Temporizador', msg: `Zerar todo o tempo registrado em "${task.title}"?`, confirmTxt: 'Zerar', danger: true }, async () => {
                 if (task.timerRunning) { task.timerRunning = false; task.timerStart = null; }
                 task.timeLogs = [];
                 task.timeSpent = 0;
-                saveData();
+                await saveTaskToFirebase(task);
                 if (currentViewTaskId === taskId) updateModalTimerUI(task);
                 showToast('Tempo zerado.', 'success');
                 renderAll();
@@ -1771,13 +1884,13 @@
             const inp = document.getElementById('newOwnerInput'); if (!inp || !inp.value.trim()) return;
             const name = inp.value.trim();
             if (appSettings.owners.includes(name)) { showToast('Membro já existe.', 'error'); return; }
-            appSettings.owners.push(name); saveData(); inp.value = ''; renderAdminOwners(); populateFilters(); showToast(`${name} adicionado!`, 'success');
+            appSettings.owners.push(name); saveSettings(); inp.value = ''; renderAdminOwners(); populateFilters(); showToast(`${name} adicionado!`, 'success');
         }
 
         function adminRemoveOwner(i) {
             const name = appSettings.owners[i];
             showDialog({ title: 'Remover Membro', msg: `Remover "${name}"? As tarefas dele permanecem no quadro.`, confirmTxt: 'Remover', danger: true }, () => {
-                appSettings.owners.splice(i, 1); saveData(); renderAdminOwners(); populateFilters(); showToast('Membro removido.', 'success');
+                appSettings.owners.splice(i, 1); saveSettings(); renderAdminOwners(); populateFilters(); showToast('Membro removido.', 'success');
             });
         }
 
@@ -1795,13 +1908,13 @@
             const inp = document.getElementById('newSectorInput'); if (!inp || !inp.value.trim()) return;
             const name = inp.value.trim();
             if (appSettings.sectors.includes(name)) { showToast('Setor já existe.', 'error'); return; }
-            appSettings.sectors.push(name); saveData(); inp.value = ''; renderAdminSectors(); populateFilters(); showToast(`Setor "${name}" criado!`, 'success');
+            appSettings.sectors.push(name); saveSettings(); inp.value = ''; renderAdminSectors(); populateFilters(); showToast(`Setor "${name}" criado!`, 'success');
         }
 
         function adminRemoveSector(i) {
             const name = appSettings.sectors[i];
             showDialog({ title: 'Remover Setor', msg: `Remover o setor "${name}"?`, confirmTxt: 'Remover', danger: true }, () => {
-                appSettings.sectors.splice(i, 1); saveData(); renderAdminSectors(); populateFilters(); showToast('Setor removido.', 'success');
+                appSettings.sectors.splice(i, 1); saveSettings(); renderAdminSectors(); populateFilters(); showToast('Setor removido.', 'success');
             });
         }
 
@@ -1823,26 +1936,27 @@
             const name = inp.value.trim(); const color = colorSel ? colorSel.value : 'slate';
             if (!appSettings.tags) appSettings.tags = [];
             if (appSettings.tags.some(t => t.name.toLowerCase() === name.toLowerCase())) { showToast('Tag já existe.', 'error'); return; }
-            appSettings.tags.push({ name, color }); saveData(); inp.value = ''; renderAdminTags(); showToast(`Tag "${name}" criada!`, 'success');
+            appSettings.tags.push({ name, color }); saveSettings(); inp.value = ''; renderAdminTags(); showToast(`Tag "${name}" criada!`, 'success');
         }
 
         function adminRemoveTag(i) {
             const tag = appSettings.tags[i];
             showDialog({ title: 'Remover Tag', msg: `Remover a tag "${tag.name}"?`, confirmTxt: 'Remover', danger: true }, () => {
-                appSettings.tags.splice(i, 1); saveData(); renderAdminTags(); showToast('Tag removida.', 'success');
+                appSettings.tags.splice(i, 1); saveSettings(); renderAdminTags(); showToast('Tag removida.', 'success');
             });
         }
 
         // ── DATA MANAGEMENT ───────────────────────────────────────────────────
         function clearAllData() {
-            showDialog({ title: 'Apagar Tudo', msg: 'Isto vai apagar TODAS as tarefas e dados permanentemente. Esta ação não pode ser desfeita!', confirmTxt: 'Apagar Tudo', danger: true }, () => {
-                tasks = []; saveData(); renderAll();
+            showDialog({ title: 'Apagar Tudo', msg: 'Isto vai apagar TODAS as tarefas permanentemente no Firebase. Esta ação não pode ser desfeita!', confirmTxt: 'Apagar Tudo', danger: true }, async () => {
+                showToast('Apagando dados...', 'info');
+                await Promise.all(tasks.map(t => deleteTaskFromDB(t.id)));
                 showToast('Todos os dados foram apagados.', 'error');
             });
         }
 
         function injectTestData() {
-            showDialog({ title: 'Gerar Dados de Teste', msg: 'Isto vai adicionar tarefas de exemplo ao seu quadro. Deseja continuar?', confirmTxt: 'Gerar', danger: false }, () => {
+            showDialog({ title: 'Gerar Dados de Teste', msg: 'Isto vai adicionar tarefas de exemplo ao quadro compartilhado. Todos do time irão ver. Continuar?', confirmTxt: 'Gerar', danger: false }, async () => {
                 const now = new Date();
                 const fmtDate = (daysOffset) => { const d = new Date(now); d.setDate(d.getDate() + daysOffset); return getIsoDate(d); };
                 const sampleTasks = [
@@ -1854,10 +1968,10 @@
                     { title: 'Migração para PostgreSQL 16', status: 'paused', priority: 'medium', owner: appSettings.owners[3] || 'Lucas Tech', dueDate: fmtDate(30), tag: appSettings.tags[1]?.name || 'Feature', requesterName: 'Fernanda CTO', requesterSector: appSettings.sectors[1] || 'TI', requesterEmail: 'fernanda@empresa.com', description: 'Bloqueado aguardando aprovação do budget para upgrade do servidor de produção.', subtasks: [{title:'Plano de migração',done:true},{title:'Ambiente staging',done:true},{title:'Migração produção',done:false}], timeLogs:[{start: Date.now()-5400000, duration:5400}] },
                     { title: 'Pesquisa de satisfação clientes Q1', status: 'done', priority: 'medium', owner: appSettings.owners[0] || 'Ana Costa', dueDate: fmtDate(-7), tag: appSettings.tags[2]?.name || 'Melhoria', requesterName: 'Fernanda Silva', requesterSector: appSettings.sectors[4] || 'RH', requesterEmail: 'fernanda@empresa.com', description: 'Pesquisa concluída com 94% de NPS positivo.', subtasks: [{title:'Criar formulário',done:true},{title:'Disparar emails',done:true},{title:'Analisar resultados',done:true}], timeLogs:[{start: Date.now()-10800000, duration:10800}] },
                 ];
-                sampleTasks.forEach(t => {
-                    tasks.push({ ...t, id: uid(), createdAt: new Date().toISOString(), timerRunning: false, timerStart: null, comments: [], isDaily: false });
-                });
-                saveData(); renderAll(); showToast(`${sampleTasks.length} tarefas de teste criadas!`, 'success');
+                const newTasks = sampleTasks.map(t => ({ ...t, id: uid(), createdAt: new Date().toISOString(), timerRunning: false, timerStart: null, comments: [], isDaily: false }));
+                showToast('Criando tarefas...', 'info');
+                await Promise.all(newTasks.map(t => saveTaskToFirebase(t)));
+                showToast(`${newTasks.length} tarefas de teste criadas!`, 'success');
             });
         }
 
@@ -1927,8 +2041,7 @@
         // INIT E EVENT LISTENERS GLOBAIS
         document.addEventListener('DOMContentLoaded', () => {
             initDarkMode();
-            loadData();
-            renderAll();
+            loadData(); // Firebase async - renders via onSnapshot
             switchView('board');
             
             setInterval(updateLiveClock, 1000);
