@@ -1861,10 +1861,6 @@
             const owSel = document.getElementById('taskOwner');
             if(owSel) {
                 owSel.innerHTML = `<option value="">Nenhum Responsável</option>` + appSettings.owners.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
-                // Auto-select current user if their name is in the owners list
-                if (currentProfile && appSettings.owners.includes(currentProfile.name)) {
-                    owSel.value = currentProfile.name;
-                }
             }
             
             const secSel = document.getElementById('taskRequesterSector');
@@ -2358,13 +2354,15 @@
 
         function updateWeeklyClockDisplay() {
             const { s, e } = getWeekRange();
-            const weekSecs = tasks.reduce((acc, t) => acc + getTaskPeriodSecs(t, s, e), 0);
+            // Mostra só as horas do utilizador atual
+            const myTasks = currentProfile ? tasks.filter(t => t.owner === currentProfile.name) : [];
+            const weekSecs = myTasks.reduce((acc, t) => acc + getTaskPeriodSecs(t, s, e), 0);
             const el = document.getElementById('weekly-clock-display');
             if (el) el.textContent = formatTimeSecs(weekSecs);
             const runIndicator = document.getElementById('sb-run-indicator');
             const dot = document.getElementById('weeklyTimerDot');
             const iconBg = document.getElementById('header-timer-icon-bg');
-            const hasRunning = tasks.some(t => t.timerRunning);
+            const hasRunning = myTasks.some(t => t.timerRunning);
             if (runIndicator) { if (hasRunning) runIndicator.classList.remove('hidden'); else runIndicator.classList.add('hidden'); }
             if (dot) { if (hasRunning) dot.classList.remove('hidden'); else dot.classList.add('hidden'); }
             if (iconBg) { if (hasRunning) { iconBg.classList.add('bg-rose-50', 'text-rose-500'); iconBg.classList.remove('bg-slate-100', 'text-slate-500'); } else { iconBg.classList.remove('bg-rose-50', 'text-rose-500'); iconBg.classList.add('bg-slate-100', 'text-slate-500'); } }
