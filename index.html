@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Planner Kanban Ultimate</title>
+    <title>MKT Flow</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,9 +28,9 @@
                             mono: ['ui-monospace', 'SFMono-Regular', 'monospace'],
                         },
                         colors: {
-                            primary: '#4f46e5',
-                            'primary-hover': '#4338ca',
-                            board: '#f8fafc',
+                            primary: '#db2777',
+                            'primary-hover': '#be185d',
+                            board: '#fff1f2',
                         },
                         boxShadow: {
                             'soft': '0 4px 20px -2px rgba(0,0,0,0.03)',
@@ -119,14 +119,14 @@
         /* Filter bar */
         .dark .bg-white.border-b.border-slate-200.px-8.py-3 { background-color: var(--bg-card) !important; border-color: var(--border-color) !important; }
         .dark .filter-btn { background-color: var(--bg-input-alt) !important; border-color: var(--border-color) !important; color: var(--text-secondary) !important; }
-        .dark .filter-btn.active, .dark .filter-btn[class*="indigo"] { background-color: #312e81 !important; border-color: #4338ca !important; color: #a5b4fc !important; }
+        .dark .filter-btn.active, .dark .filter-btn[class*="indigo"] { background-color: #831843 !important; border-color: #be185d !important; color: #f9a8d4 !important; }
         .dark select#fOwner, .dark select#fSector, .dark select#fPrio { background-color: var(--bg-input-alt) !important; border-color: var(--border-color) !important; color: var(--text-secondary) !important; }
 
         /* Kanban cards */
         .task-card { background-color: var(--bg-card) !important; border-color: var(--border-color) !important; box-shadow: var(--card-shadow) !important; }
         .dark .task-card h4 { color: var(--text-primary) !important; }
         .dark .kanban-column { border-color: transparent; }
-        .dark .kanban-column.drag-over { background-color: rgba(99,102,241,0.08) !important; border-color: #6366f1 !important; }
+        .dark .kanban-column.drag-over { background-color: rgba(99,102,241,0.08) !important; border-color: #ec4899 !important; }
 
         /* Column headers */
         .dark .text-xs.font-bold.text-slate-500 { color: var(--text-muted) !important; }
@@ -185,10 +185,10 @@
         .dark .rounded-2xl.border.border-slate-200 { background-color: var(--bg-card) !important; border-color: var(--border-color) !important; }
 
         /* Indigo highlights in dark mode */
-        .dark .bg-indigo-50 { background-color: rgba(79,70,229,0.12) !important; }
-        .dark .border-indigo-100 { border-color: rgba(99,102,241,0.25) !important; }
-        .dark .text-indigo-600 { color: #818cf8 !important; }
-        .dark .text-indigo-700 { color: #a5b4fc !important; }
+        .dark .bg-pink-50 { background-color: rgba(219,39,119,0.12) !important; }
+        .dark .border-pink-100 { border-color: rgba(219,39,119,0.25) !important; }
+        .dark .text-pink-600 { color: #f472b6 !important; }
+        .dark .text-pink-700 { color: #f9a8d4 !important; }
 
         /* Buttons in dark */
         .dark .bg-slate-100.border.border-slate-200 { background-color: var(--bg-input-alt) !important; border-color: var(--border-color) !important; }
@@ -200,7 +200,7 @@
         /* Toast */
         .dark .bg-emerald-50 { background-color: rgba(16,185,129,0.12) !important; }
         .dark .bg-rose-50 { background-color: rgba(239,68,68,0.12) !important; }
-        .dark .bg-indigo-50 { background-color: rgba(99,102,241,0.12) !important; }
+        .dark .bg-pink-50 { background-color: rgba(219,39,119,0.12) !important; }
 
         /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -211,7 +211,7 @@
         /* Drag & Drop */
         .sortable-ghost { opacity: 0.4; background-color: #f1f5f9; border: 2px dashed #94a3b8; transform: scale(0.97); border-radius: 1rem; }
         .kanban-column { min-height: 200px; transition: all 0.3s ease; }
-        .kanban-column.drag-over { background-color: rgba(79, 70, 229, 0.04); border-color: #a5b4fc; }
+        .kanban-column.drag-over { background-color: rgba(79, 70, 229, 0.04); border-color: #f9a8d4; }
 
         /* Card Styles */
         .task-card { cursor: grab; transition: all 0.25s ease; position: relative; overflow: hidden; }
@@ -245,30 +245,28 @@
         .timer-active-ring { animation: pulse-ring 2s infinite; }
     </style>
 </head>
-<body class="bg-board text-slate-800 h-screen flex overflow-hidden font-sans relative selection:bg-indigo-100 selection:text-indigo-900">
+<body class="bg-board text-slate-800 h-screen flex overflow-hidden font-sans relative selection:bg-pink-100 selection:text-pink-900">
 
     <!-- Background Decoration -->
-    <div class="absolute top-0 left-1/4 w-[800px] h-[300px] bg-indigo-400/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
+    <div class="absolute top-0 left-1/4 w-[800px] h-[300px] bg-pink-400/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
 
     <!-- ══════════════════════════════════════════════════════════════ -->
     <!-- AUTH OVERLAY — cobre tudo enquanto não autenticado            -->
     <!-- ══════════════════════════════════════════════════════════════ -->
     <div id="authOverlay" class="fixed inset-0 z-[500] flex items-center justify-center bg-slate-950 transition-all duration-500">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-indigo-600/10 rounded-full blur-[100px]"></div>
-            <div class="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-violet-600/10 rounded-full blur-[100px]"></div>
+            <div class="absolute top-[-100px] left-[-100px] w-[500px] h-[500px] bg-pink-600/10 rounded-full blur-[100px]"></div>
+            <div class="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] bg-pink-500/10 rounded-full blur-[100px]"></div>
         </div>
 
         <!-- ── TELA: LOGIN ─────────────────────────────────────────── -->
         <div id="screenLogin" class="relative w-full max-w-md mx-4">
             <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8">
                 <div class="flex items-center gap-3 mb-8">
-                    <div class="bg-gradient-to-br from-indigo-500 to-violet-500 text-white p-2 rounded-xl shadow-lg shadow-indigo-500/30">
-                        <i class="ph ph-kanban text-2xl"></i>
-                    </div>
+                    <div class="flex items-center justify-center w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-pink-500/30"><img src="https://blog.tripla.com.br/wp-content/uploads/2026/03/FLOW.png" alt="MKT Flow" style="width:100%;height:100%;object-fit:contain;background:white;padding:2px;border-radius:10px;"></div>
                     <div>
-                        <h1 class="text-xl font-display font-extrabold text-white tracking-tight">Workspace<span class="text-indigo-400">.</span></h1>
-                        <p class="text-xs text-slate-500">Planner da Equipa</p>
+                        <h1 class="text-xl font-display font-extrabold text-white tracking-tight">MKT Flow<span class="text-pink-400">.</span></h1>
+                        <p class="text-xs text-slate-500">Planner de Marketing</p>
                     </div>
                 </div>
                 <h2 class="text-2xl font-display font-bold text-white mb-1">Bem-vindo de volta</h2>
@@ -279,24 +277,24 @@
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
                         <div class="relative">
                             <i class="ph ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                            <input id="loginEmail" type="email" placeholder="seu@email.com" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm">
+                            <input id="loginEmail" type="email" placeholder="seu@email.com" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition-all text-sm">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Senha</label>
                         <div class="relative">
                             <i class="ph ph-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                            <input id="loginPassword" type="password" placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm" onkeypress="if(event.key==='Enter') doLogin()">
+                            <input id="loginPassword" type="password" placeholder="••••••••" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition-all text-sm" onkeypress="if(event.key==='Enter') doLogin()">
                         </div>
                     </div>
                     <div id="loginError" class="hidden text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 flex items-center gap-2"><i class="ph ph-warning-circle text-base"></i><span></span></div>
-                    <button onclick="doLogin()" id="loginBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 text-sm">
+                    <button onclick="doLogin()" id="loginBtn" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-pink-600/25 flex items-center justify-center gap-2 text-sm">
                         <i class="ph ph-sign-in text-lg"></i> Entrar
                     </button>
                 </div>
 
                 <div class="mt-6 pt-6 border-t border-slate-800 text-center">
-                    <p class="text-slate-500 text-sm">Não tem conta? <button onclick="showScreen('register')" class="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">Solicitar acesso</button></p>
+                    <p class="text-slate-500 text-sm">Não tem conta? <button onclick="showScreen('register')" class="text-pink-400 hover:text-pink-300 font-bold transition-colors">Solicitar acesso</button></p>
                 </div>
             </div>
         </div>
@@ -305,12 +303,10 @@
         <div id="screenRegister" class="relative w-full max-w-md mx-4 hidden">
             <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8">
                 <div class="flex items-center gap-3 mb-8">
-                    <div class="bg-gradient-to-br from-indigo-500 to-violet-500 text-white p-2 rounded-xl shadow-lg shadow-indigo-500/30">
-                        <i class="ph ph-kanban text-2xl"></i>
-                    </div>
+                    <div class="flex items-center justify-center w-10 h-10 rounded-xl overflow-hidden shadow-lg shadow-pink-500/30"><img src="https://blog.tripla.com.br/wp-content/uploads/2026/03/FLOW.png" alt="MKT Flow" style="width:100%;height:100%;object-fit:contain;background:white;padding:2px;border-radius:10px;"></div>
                     <div>
-                        <h1 class="text-xl font-display font-extrabold text-white tracking-tight">Workspace<span class="text-indigo-400">.</span></h1>
-                        <p class="text-xs text-slate-500">Planner da Equipa</p>
+                        <h1 class="text-xl font-display font-extrabold text-white tracking-tight">MKT Flow<span class="text-pink-400">.</span></h1>
+                        <p class="text-xs text-slate-500">Planner de Marketing</p>
                     </div>
                 </div>
                 <h2 class="text-2xl font-display font-bold text-white mb-1">Solicitar acesso</h2>
@@ -321,31 +317,31 @@
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nome completo</label>
                         <div class="relative">
                             <i class="ph ph-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                            <input id="regName" type="text" placeholder="Seu nome" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm">
+                            <input id="regName" type="text" placeholder="Seu nome" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition-all text-sm">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
                         <div class="relative">
                             <i class="ph ph-envelope absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                            <input id="regEmail" type="email" placeholder="seu@email.com" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm">
+                            <input id="regEmail" type="email" placeholder="seu@email.com" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition-all text-sm">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-1.5">Senha</label>
                         <div class="relative">
                             <i class="ph ph-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
-                            <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all text-sm" onkeypress="if(event.key==='Enter') doRegister()">
+                            <input id="regPassword" type="password" placeholder="Mínimo 6 caracteres" class="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl text-white placeholder:text-slate-500 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none transition-all text-sm" onkeypress="if(event.key==='Enter') doRegister()">
                         </div>
                     </div>
                     <div id="regError" class="hidden text-xs font-bold text-rose-400 bg-rose-500/10 border border-rose-500/20 rounded-xl px-4 py-3 flex items-center gap-2"><i class="ph ph-warning-circle text-base"></i><span></span></div>
-                    <button onclick="doRegister()" id="registerBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/25 flex items-center justify-center gap-2 text-sm">
+                    <button onclick="doRegister()" id="registerBtn" class="w-full bg-pink-600 hover:bg-pink-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-pink-600/25 flex items-center justify-center gap-2 text-sm">
                         <i class="ph ph-user-plus text-lg"></i> Solicitar Acesso
                     </button>
                 </div>
 
                 <div class="mt-6 pt-6 border-t border-slate-800 text-center">
-                    <p class="text-slate-500 text-sm">Já tem conta? <button onclick="showScreen('login')" class="text-indigo-400 hover:text-indigo-300 font-bold transition-colors">Entrar</button></p>
+                    <p class="text-slate-500 text-sm">Já tem conta? <button onclick="showScreen('login')" class="text-pink-400 hover:text-pink-300 font-bold transition-colors">Entrar</button></p>
                 </div>
             </div>
         </div>
@@ -372,7 +368,7 @@
 
         <!-- ── TELA: LOADING ───────────────────────────────────────── -->
         <div id="screenLoading" class="relative text-center">
-            <div class="w-16 h-16 border-4 border-slate-700 border-t-indigo-500 rounded-full animate-spin mx-auto mb-4"></div>
+            <div class="w-16 h-16 border-4 border-slate-700 border-t-pink-500 rounded-full animate-spin mx-auto mb-4"></div>
             <p class="text-slate-400 text-sm font-medium">Carregando...</p>
         </div>
     </div>
@@ -380,15 +376,13 @@
     <!-- SIDEBAR -->
     <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 transition-all duration-300 z-30 shadow-xl relative" id="sidebar">
         <div class="h-16 flex items-center px-6 border-b border-slate-800/60 bg-slate-950/50">
-            <div class="bg-gradient-to-br from-indigo-500 to-violet-500 text-white p-1.5 rounded-lg mr-3 shadow-lg shadow-indigo-500/20">
-                <i class="ph ph-kanban text-xl"></i>
-            </div>
-            <h1 class="text-xl font-display font-extrabold text-white tracking-tight">Workspace<span class="text-indigo-400">.</span></h1>
+            <div class="flex items-center justify-center w-9 h-9 rounded-lg overflow-hidden mr-3 shrink-0"><img src="https://blog.tripla.com.br/wp-content/uploads/2026/03/FLOW.png" alt="MKT Flow" style="width:100%;height:100%;object-fit:contain;background:white;padding:2px;border-radius:8px;"></div>
+            <h1 class="text-xl font-display font-extrabold text-white tracking-tight">MKT Flow<span class="text-pink-400">.</span></h1>
         </div>
 
         <!-- User info bar -->
         <div class="px-4 py-3 border-b border-slate-800/60 flex items-center gap-3">
-            <div id="sidebarAvatar" class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-xs font-bold text-white shrink-0">?</div>
+            <div id="sidebarAvatar" class="w-8 h-8 rounded-full bg-pink-600 flex items-center justify-center text-xs font-bold text-white shrink-0">?</div>
             <div class="flex-1 min-w-0">
                 <p id="sidebarUserName" class="text-xs font-bold text-white truncate">—</p>
                 <p id="sidebarUserRole" class="text-[10px] text-slate-500 truncate">—</p>
@@ -402,42 +396,42 @@
             <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mb-2">Visões</div>
             
             <button onclick="switchView('board')" class="nav-item flex items-center justify-between w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white group" data-view="board">
-                <div class="flex items-center gap-3 font-medium text-sm"><i class="ph ph-squares-four text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Kanban</div>
+                <div class="flex items-center gap-3 font-medium text-sm"><i class="ph ph-squares-four text-lg text-slate-400 group-hover:text-pink-400 transition-colors"></i> Kanban</div>
                 <span class="text-[10px] font-bold bg-slate-800 group-hover:bg-slate-700 px-2 py-0.5 rounded-full" id="sb-count-board">0</span>
             </button>
             
             <button onclick="switchView('list')" class="nav-item flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white font-medium text-sm group" data-view="list">
-                <i class="ph ph-list-dashes text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Lista
+                <i class="ph ph-list-dashes text-lg text-slate-400 group-hover:text-pink-400 transition-colors"></i> Lista
             </button>
             
             <button onclick="switchView('calendar')" class="nav-item flex items-center justify-between w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white group" data-view="calendar">
-                <div class="flex items-center gap-3 font-medium text-sm"><i class="ph ph-calendar-blank text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Calendário</div>
+                <div class="flex items-center gap-3 font-medium text-sm"><i class="ph ph-calendar-blank text-lg text-slate-400 group-hover:text-pink-400 transition-colors"></i> Calendário</div>
             </button>
             
             <button onclick="switchView('analytics')" class="nav-item flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white font-medium text-sm group" data-view="analytics">
-                <i class="ph ph-chart-pie-slice text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Analytics
+                <i class="ph ph-chart-pie-slice text-lg text-slate-400 group-hover:text-pink-400 transition-colors"></i> Analytics
             </button>
             
             <button onclick="switchView('time')" class="nav-item flex items-center justify-between w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white group" data-view="time">
-                <div class="flex items-center gap-3 font-medium text-sm"><i class="ph ph-clock text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Tempo Gasto</div>
+                <div class="flex items-center gap-3 font-medium text-sm"><i class="ph ph-clock text-lg text-slate-400 group-hover:text-pink-400 transition-colors"></i> Tempo Gasto</div>
                 <span id="sb-run-indicator" class="hidden w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_8px_#f43f5e]"></span>
             </button>
 
             <!-- BOTAO ADMIN -->
             <button onclick="switchView('admin')" class="nav-item flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white font-medium text-sm group mt-4 border border-slate-800" data-view="admin">
-                <i class="ph ph-gear text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Configurações
+                <i class="ph ph-gear text-lg text-slate-400 group-hover:text-pink-400 transition-colors"></i> Configurações
             </button>
             <!-- BOTAO USUARIOS (só admin) -->
             <button onclick="switchView('users')" id="nav-users-btn" class="nav-item hidden flex items-center justify-between gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white font-medium text-sm group border border-slate-800" data-view="users">
-                <div class="flex items-center gap-3"><i class="ph ph-users-three text-lg text-slate-400 group-hover:text-indigo-400 transition-colors"></i> Usuários</div>
+                <div class="flex items-center gap-3"><i class="ph ph-users-three text-lg text-slate-400 group-hover:text-pink-400 transition-colors"></i> Usuários</div>
                 <span id="pending-badge-nav" class="hidden text-[9px] font-bold bg-rose-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">!</span>
             </button>
 
             <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Filtros Rápidos</div>
             
             <button onclick="applyQuickFilter('critical')" class="flex items-center justify-between w-full px-3 py-2 rounded-lg transition-all hover:bg-slate-800 hover:text-white group">
-                <div class="flex items-center gap-3 font-medium text-sm text-slate-400 group-hover:text-white"><i class="ph ph-lightning text-violet-400"></i> Críticas</div>
-                <span class="text-[10px] font-bold text-violet-400" id="sb-count-crit">0</span>
+                <div class="flex items-center gap-3 font-medium text-sm text-slate-400 group-hover:text-white"><i class="ph ph-lightning text-pink-400"></i> Críticas</div>
+                <span class="text-[10px] font-bold text-pink-400" id="sb-count-crit">0</span>
             </button>
             
             <button onclick="applyQuickFilter('late')" class="flex items-center justify-between w-full px-3 py-2 rounded-lg transition-all hover:bg-slate-800 hover:text-white group">
@@ -501,7 +495,7 @@
                 <!-- Search -->
                 <div class="relative hidden md:block">
                     <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchInput" placeholder="Procurar (Ctrl+K)..." class="w-56 lg:w-64 pl-9 pr-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none" oninput="renderAll()">
+                    <input type="text" id="searchInput" placeholder="Procurar (Ctrl+K)..." class="w-56 lg:w-64 pl-9 pr-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:bg-white focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all outline-none" oninput="renderAll()">
                 </div>
 
                 <!-- Daily / Tarefas do Dia -->
@@ -514,7 +508,7 @@
 
                 <!-- Live Team Activity -->
                 <div class="relative">
-                    <button id="liveBtn" onclick="toggleLivePanel()" class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-colors relative" title="Equipa ao Vivo">
+                    <button id="liveBtn" onclick="toggleLivePanel()" class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-colors relative" title="Equipe ao Vivo">
                         <i class="ph ph-broadcast text-lg"></i>
                         <span id="live-badge" class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white hidden"></span>
                     </button>
@@ -539,7 +533,7 @@
                     <!-- Notif Dropdown -->
                     <div id="notifPanel" class="hidden absolute top-full mt-3 right-0 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden origin-top-right transition-all">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
-                            <h4 class="font-bold text-sm text-slate-800"><i class="ph ph-bell-ringing text-indigo-500 mr-1"></i> Avisos do Quadro</h4>
+                            <h4 class="font-bold text-sm text-slate-800"><i class="ph ph-bell-ringing text-pink-500 mr-1"></i> Avisos do Quadro</h4>
                             <button onclick="toggleNotifPanel()" class="text-slate-400 hover:text-slate-700"><i class="ph ph-x"></i></button>
                         </div>
                         <div id="notifList" class="max-h-80 overflow-y-auto p-2 custom-scrollbar"></div>
@@ -548,7 +542,7 @@
 
                 <div class="w-px h-6 bg-slate-300 hidden sm:block"></div>
 
-                <button onclick="openModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 lg:py-2.5 lg:px-5 rounded-full flex items-center gap-2 transition-all shadow-md shadow-indigo-500/20">
+                <button onclick="openModal()" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-4 lg:py-2.5 lg:px-5 rounded-full flex items-center gap-2 transition-all shadow-md shadow-pink-500/20">
                     <i class="ph ph-plus-bold"></i> <span class="hidden sm:inline">Nova Demanda</span>
                 </button>
             </div>
@@ -560,7 +554,7 @@
             <!-- VIEW: BOARD (Kanban) -->
             <div id="view-board" class="view-panel h-full flex flex-col">
                 <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center gap-4 overflow-x-auto custom-scrollbar shrink-0">
-                    <button class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-indigo-50 border-indigo-200 text-indigo-700" data-status="all" onclick="filterByStatus('all', this)">Todas</button>
+                    <button class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-pink-50 border-pink-200 text-pink-700" data-status="all" onclick="filterByStatus('all', this)">Todas</button>
                     <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100" data-status="todo" onclick="filterByStatus('todo', this)">A Fazer</button>
                     <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100" data-status="inProgress" onclick="filterByStatus('inProgress', this)">Em Andamento</button>
                     <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100" data-status="review" onclick="filterByStatus('review', this)">Revisão</button>
@@ -568,15 +562,15 @@
                     
                     <div class="w-px h-5 bg-slate-300 mx-2 shrink-0"></div>
                     
-                    <select id="fOwner" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-indigo-500 cursor-pointer">
+                    <select id="fOwner" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
                         <option value="all">Todos os Owners</option>
                     </select>
 
-                    <select id="fSector" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-indigo-500 cursor-pointer">
+                    <select id="fSector" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
                         <option value="all">Todos os Setores</option>
                     </select>
                     
-                    <select id="fPrio" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-indigo-500 cursor-pointer">
+                    <select id="fPrio" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
                         <option value="all">Prioridades</option>
                         <option value="critical">Crítica</option>
                         <option value="high">Alta</option>
@@ -614,7 +608,7 @@
                             <h3 class="text-xl font-display font-bold text-slate-800 w-48 text-center" id="cal-month-year">Janeiro 2026</h3>
                             <button onclick="calNext()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"><i class="ph ph-caret-right"></i></button>
                         </div>
-                        <button onclick="calToday()" class="px-4 py-2 bg-indigo-50 text-indigo-600 font-bold text-sm rounded-xl hover:bg-indigo-100 transition-colors">Voltar para Hoje</button>
+                        <button onclick="calToday()" class="px-4 py-2 bg-pink-50 text-pink-600 font-bold text-sm rounded-xl hover:bg-pink-100 transition-colors">Voltar para Hoje</button>
                     </div>
                     
                     <div class="grid grid-cols-7 gap-3 mb-3 text-center text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -631,7 +625,7 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"><i class="ph ph-stack text-indigo-500 text-sm mr-1"></i> Total Demandas</span>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"><i class="ph ph-stack text-pink-500 text-sm mr-1"></i> Total Demandas</span>
                             <span class="text-4xl font-display font-extrabold text-slate-800" id="an-total">0</span>
                         </div>
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
@@ -665,7 +659,7 @@
                     <!-- Tempo por Tag -->
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                         <div class="flex items-center justify-between mb-6">
-                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-tag text-indigo-500"></i> Tempo Gasto por Tag</h4>
+                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-tag text-pink-500"></i> Tempo Gasto por Tag</h4>
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">horas registradas</span>
                         </div>
                         <div id="an-tag-time-list" class="space-y-3"></div>
@@ -682,7 +676,7 @@
                             <h3 class="text-xl font-display font-bold text-slate-800 mb-1">Auditoria de Tempo</h3>
                             <p class="text-sm text-slate-500">Acompanhe as sessões de trabalho globais e exporte relatórios precisos.</p>
                         </div>
-                        <button onclick="exportTimeCSV()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors text-sm">
+                        <button onclick="exportTimeCSV()" class="bg-pink-50 text-pink-600 hover:bg-pink-100 font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors text-sm">
                             <i class="ph ph-file-csv text-lg"></i> Gerar Relatório CSV
                         </button>
                     </div>
@@ -691,11 +685,11 @@
                     <div id="time-live-container" class="mb-6 space-y-4"></div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-indigo-400">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-pink-400">
                             <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Esta Semana</span>
                             <span class="text-3xl font-display font-extrabold text-slate-800 tabular-nums" id="time-week">00:00:00</span>
                         </div>
-                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-violet-400">
+                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-pink-400">
                             <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Este Mês</span>
                             <span class="text-3xl font-display font-extrabold text-slate-800 tabular-nums" id="time-month">00:00:00</span>
                         </div>
@@ -720,14 +714,14 @@
                 <div class="p-8 max-w-6xl mx-auto">
                     <div class="mb-6">
                         <h3 class="text-xl font-display font-bold text-slate-800 mb-1">Configurações e Administração</h3>
-                        <p class="text-sm text-slate-500">Personalize a lista de colaboradores, os seus setores e as categorias da equipa.</p>
+                        <p class="text-sm text-slate-500">Personalize a lista de colaboradores, os seus setores e as categorias da equipe.</p>
                     </div>
 
                     <!-- Dados Teste & Apagar Tudo -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-                        <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-database text-indigo-500 text-lg"></i> Gerenciamento de Dados</h4>
+                        <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-database text-pink-500 text-lg"></i> Gerenciamento de Dados</h4>
                         <div class="flex flex-wrap gap-4">
-                            <button onclick="injectTestData()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors border border-indigo-200 flex items-center gap-2"><i class="ph ph-magic-wand text-lg"></i> Gerar Tarefas de Teste</button>
+                            <button onclick="injectTestData()" class="bg-pink-50 text-pink-600 hover:bg-pink-100 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors border border-pink-200 flex items-center gap-2"><i class="ph ph-magic-wand text-lg"></i> Gerar Tarefas de Teste</button>
                             <button onclick="clearAllData()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 px-5 py-2.5 rounded-xl text-sm font-bold transition-colors border border-rose-200 flex items-center gap-2"><i class="ph ph-trash text-lg"></i> Apagar Tudo</button>
                         </div>
                         <p class="text-xs text-slate-400 mt-3">Útil para popular o quadro inicial ou apagar tudo para recomeçar o projeto.</p>
@@ -736,35 +730,35 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Owners -->
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-users text-indigo-500 text-lg"></i> Membros da Equipa</h4>
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-users text-pink-500 text-lg"></i> Membros da Equipe</h4>
                             <div class="flex gap-2 mb-4">
-                                <input type="text" id="newOwnerInput" placeholder="Nome do novo membro..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddOwner();}">
-                                <button onclick="adminAddOwner()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Add</button>
+                                <input type="text" id="newOwnerInput" placeholder="Nome do novo membro..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddOwner();}">
+                                <button onclick="adminAddOwner()" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Add</button>
                             </div>
                             <div id="admin-owners-list" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
                         </div>
 
                         <!-- Sectors -->
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-buildings text-indigo-500 text-lg"></i> Setores / Departamentos</h4>
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-buildings text-pink-500 text-lg"></i> Setores / Departamentos</h4>
                             <div class="flex gap-2 mb-4">
-                                <input type="text" id="newSectorInput" placeholder="Nome do setor..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddSector();}">
-                                <button onclick="adminAddSector()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Add</button>
+                                <input type="text" id="newSectorInput" placeholder="Nome do setor..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddSector();}">
+                                <button onclick="adminAddSector()" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Add</button>
                             </div>
                             <div id="admin-sectors-list" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
                         </div>
 
                         <!-- Tags -->
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:col-span-2">
-                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-tag text-indigo-500 text-lg"></i> Gerenciar Categorias (Tags)</h4>
+                            <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-tag text-pink-500 text-lg"></i> Gerenciar Categorias (Tags)</h4>
                             <div class="flex gap-3 mb-4 items-end">
                                 <div class="flex-1">
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Nome da Tag</label>
-                                    <input type="text" id="newTagInput" placeholder="Ex: Urgente, Frontend..." class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddTag();}">
+                                    <input type="text" id="newTagInput" placeholder="Ex: Urgente, Frontend..." class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddTag();}">
                                 </div>
                                 <div class="w-48">
                                     <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Cor</label>
-                                    <select id="newTagColor" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all cursor-pointer">
+                                    <select id="newTagColor" class="w-full px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all cursor-pointer">
                                         <option value="slate">Cinza (Padrão)</option>
                                         <option value="rose">Vermelho</option>
                                         <option value="indigo">Roxo</option>
@@ -774,7 +768,7 @@
                                         <option value="sky">Azul</option>
                                     </select>
                                 </div>
-                                <button onclick="adminAddTag()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-bold transition-colors h-[38px]">Criar Tag</button>
+                                <button onclick="adminAddTag()" class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-2 rounded-lg text-sm font-bold transition-colors h-[38px]">Criar Tag</button>
                             </div>
                             <div id="admin-tags-list" class="flex flex-wrap gap-3 max-h-60 overflow-y-auto custom-scrollbar p-1"></div>
                         </div>
@@ -815,13 +809,13 @@
                     <!-- Relatório consolidado de horas -->
                     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm mt-6 overflow-hidden">
                         <div class="px-6 py-4 bg-slate-50 border-b border-slate-100">
-                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-chart-bar text-lg text-indigo-500"></i> Relatório de Horas — Todos os Colaboradores</h4>
+                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-chart-bar text-lg text-pink-500"></i> Relatório de Horas — Todos os Colaboradores</h4>
                         </div>
                         <div id="admin-hours-report" class="p-6 space-y-4">
                             <p class="text-sm text-slate-400 text-center py-4">Carregando dados...</p>
                         </div>
                         <div class="px-6 pb-5">
-                            <button onclick="exportAllHoursCSV()" class="bg-indigo-50 text-indigo-600 hover:bg-indigo-100 font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors text-sm border border-indigo-200">
+                            <button onclick="exportAllHoursCSV()" class="bg-pink-50 text-pink-600 hover:bg-pink-100 font-bold py-2 px-4 rounded-xl flex items-center gap-2 transition-colors text-sm border border-pink-200">
                                 <i class="ph ph-file-csv text-lg"></i> Exportar Relatório Completo CSV
                             </button>
                         </div>
@@ -836,7 +830,7 @@
     <div id="dailyPanelOverlay" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-[200] hidden opacity-0 transition-opacity" onclick="toggleDailyPanel()"></div>
     <div id="dailyPanel" class="fixed inset-y-0 right-0 w-full sm:w-[400px] bg-white shadow-2xl z-[250] transform translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200">
         <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
-            <h3 class="text-lg font-display font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-sun text-amber-500 text-2xl"></i> Daily da Equipa</h3>
+            <h3 class="text-lg font-display font-bold text-slate-800 flex items-center gap-2"><i class="ph ph-sun text-amber-500 text-2xl"></i> Daily da Equipe</h3>
             <button onclick="toggleDailyPanel()" class="text-slate-400 hover:bg-slate-200 p-2 rounded-full transition-colors"><i class="ph ph-x text-lg"></i></button>
         </div>
         <div id="dailyList" class="flex-1 overflow-y-auto p-6 custom-scrollbar bg-slate-50/50 space-y-6">
@@ -853,11 +847,11 @@
             <div class="p-6">
                 <h3 class="text-lg font-display font-bold text-slate-800 mb-2" id="dialogTitle">Título</h3>
                 <p class="text-sm text-slate-600 mb-4" id="dialogMsg">Mensagem</p>
-                <input type="text" id="dialogInput" class="hidden w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none text-sm mb-4 transition-all">
+                <input type="text" id="dialogInput" class="hidden w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none text-sm mb-4 transition-all">
                 
                 <div class="flex justify-end gap-3 mt-2">
                     <button id="dialogCancel" class="px-4 py-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-600 rounded-xl text-sm font-bold transition-colors">Cancelar</button>
-                    <button id="dialogConfirm" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition-colors shadow-md">Confirmar</button>
+                    <button id="dialogConfirm" class="px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-xl text-sm font-bold transition-colors shadow-md">Confirmar</button>
                 </div>
             </div>
         </div>
@@ -869,7 +863,7 @@
             
             <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center shrink-0 bg-white">
                 <div class="flex items-center gap-3">
-                    <div class="bg-indigo-50 text-indigo-600 p-2 rounded-xl"><i class="ph ph-note-pencil text-xl"></i></div>
+                    <div class="bg-pink-50 text-pink-600 p-2 rounded-xl"><i class="ph ph-note-pencil text-xl"></i></div>
                     <h3 class="text-xl font-display font-extrabold text-slate-800" id="modalTitle">Nova Demanda</h3>
                 </div>
                 <button type="button" onclick="closeModal()" class="text-slate-400 hover:text-slate-700 hover:bg-slate-100 p-2 rounded-full transition-colors"><i class="ph ph-x text-lg"></i></button>
@@ -882,7 +876,7 @@
                         
                         <div class="md:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Título da Demanda <span class="text-rose-500">*</span></label>
-                            <input type="text" id="taskTitle" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-slate-800 font-semibold shadow-sm" placeholder="O que precisa ser feito?">
+                            <input type="text" id="taskTitle" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-slate-800 font-semibold shadow-sm" placeholder="O que precisa ser feito?">
                         </div>
 
                         <div class="md:col-span-2">
@@ -894,7 +888,7 @@
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Responsável</label>
                             <div class="relative">
                                 <i class="ph ph-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <select id="taskOwner" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm cursor-pointer"></select>
+                                <select id="taskOwner" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-sm shadow-sm cursor-pointer"></select>
                             </div>
                         </div>
 
@@ -902,13 +896,13 @@
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Prazo Final</label>
                             <div class="relative">
                                 <i class="ph ph-calendar-blank absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="date" id="taskDueDate" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm text-slate-700">
+                                <input type="date" id="taskDueDate" class="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-sm shadow-sm text-slate-700">
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Status</label>
-                            <select id="taskStatus" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                            <select id="taskStatus" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-sm shadow-sm">
                                 <option value="unassigned">Demanda não atribuída</option>
                                 <option value="todo" selected>A Fazer</option>
                                 <option value="inProgress">Em Andamento</option>
@@ -920,7 +914,7 @@
 
                         <div>
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Prioridade</label>
-                            <select id="taskPriority" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm">
+                            <select id="taskPriority" class="w-full px-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-sm shadow-sm">
                                 <option value="low">Baixa</option>
                                 <option value="medium" selected>Média</option>
                                 <option value="high">Alta</option>
@@ -930,15 +924,15 @@
 
                         <div class="md:col-span-2">
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Escopo / Descrição</label>
-                            <textarea id="taskDescription" rows="3" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all text-sm shadow-sm resize-none" placeholder="Detalhes técnicos, links ou observações..."></textarea>
+                            <textarea id="taskDescription" rows="3" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all text-sm shadow-sm resize-none" placeholder="Detalhes técnicos, links ou observações..."></textarea>
                         </div>
 
                         <!-- Anexos -->
                         <div class="md:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                             <div class="flex items-center justify-between mb-3">
-                                <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><i class="ph ph-paperclip text-indigo-500 text-base"></i> Anexos (Max 300KB)</h4>
+                                <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><i class="ph ph-paperclip text-pink-500 text-base"></i> Anexos (Max 300KB)</h4>
                             </div>
-                            <label class="flex justify-center w-full h-20 px-4 transition bg-slate-50 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 flex-col items-center">
+                            <label class="flex justify-center w-full h-20 px-4 transition bg-slate-50 border-2 border-slate-200 border-dashed rounded-xl cursor-pointer hover:border-pink-400 hover:bg-pink-50 flex-col items-center">
                                 <span class="flex items-center gap-2 text-slate-500 text-sm font-medium"><i class="ph ph-upload-simple text-xl"></i> Clique ou arraste arquivos</span>
                                 <input type="file" id="fileInput" class="hidden" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt" onchange="handleFileUpload(event)">
                             </label>
@@ -948,30 +942,30 @@
                         <!-- Checklists -->
                         <div class="md:col-span-2 bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                             <div class="flex items-center justify-between mb-3">
-                                <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><i class="ph ph-check-square-offset text-indigo-500 text-base"></i> Subtarefas</h4>
+                                <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-1.5"><i class="ph ph-check-square-offset text-pink-500 text-base"></i> Subtarefas</h4>
                             </div>
                             <div id="subtasksContainer" class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1 custom-scrollbar"></div>
                             <div class="flex gap-2">
-                                <input type="text" id="newSubtaskInput" class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:border-indigo-500 outline-none transition-colors" placeholder="Adicionar item..." onkeypress="if(event.key==='Enter'){event.preventDefault();addSubtask();}">
+                                <input type="text" id="newSubtaskInput" class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:border-pink-500 outline-none transition-colors" placeholder="Adicionar item..." onkeypress="if(event.key==='Enter'){event.preventDefault();addSubtask();}">
                                 <button type="button" onclick="addSubtask()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors">Add</button>
                             </div>
                         </div>
 
                         <!-- Solicitante -->
-                        <div class="md:col-span-2 bg-indigo-50/50 p-5 rounded-xl border border-indigo-100/60 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2 bg-pink-50/50 p-5 rounded-xl border border-pink-100/60 grid grid-cols-1 md:grid-cols-3 gap-4">
                             <div class="md:col-span-3 mb-[-5px]">
-                                <h4 class="text-[11px] font-bold text-indigo-600 uppercase tracking-widest flex items-center gap-1.5"><i class="ph ph-identification-card text-base"></i> Dados do Solicitante</h4>
+                                <h4 class="text-[11px] font-bold text-pink-600 uppercase tracking-widest flex items-center gap-1.5"><i class="ph ph-identification-card text-base"></i> Dados do Solicitante</h4>
                             </div>
-                            <div><input type="text" id="taskRequester" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-indigo-500 shadow-sm" placeholder="Nome"></div>
-                            <div><select id="taskRequesterSector" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-indigo-500 shadow-sm cursor-pointer"></select></div>
-                            <div><input type="email" id="taskEmail" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-indigo-500 shadow-sm" placeholder="E-mail"></div>
+                            <div><input type="text" id="taskRequester" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-pink-500 shadow-sm" placeholder="Nome"></div>
+                            <div><select id="taskRequesterSector" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-pink-500 shadow-sm cursor-pointer"></select></div>
+                            <div><input type="email" id="taskEmail" class="w-full px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm outline-none focus:border-pink-500 shadow-sm" placeholder="E-mail"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="px-8 py-4 border-t border-slate-100 flex justify-end gap-3 bg-white shrink-0">
                     <button type="button" onclick="closeModal()" class="px-5 py-2.5 text-slate-500 hover:text-slate-800 bg-slate-50 border border-slate-200 rounded-xl font-bold transition-colors text-sm">Cancelar</button>
-                    <button type="button" onclick="saveTask()" class="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md shadow-indigo-600/20 text-sm flex items-center gap-2">
+                    <button type="button" onclick="saveTask()" class="px-6 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-bold transition-all shadow-md shadow-pink-600/20 text-sm flex items-center gap-2">
                         <i class="ph ph-floppy-disk text-lg"></i> Guardar Demanda
                     </button>
                 </div>
@@ -1016,78 +1010,78 @@
                 </div>
 
                 <!-- CONTROLE DE TEMPO NO MODAL -->
-                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 shadow-sm space-y-4">
+                <div class="bg-pink-50 border border-pink-100 rounded-2xl p-5 shadow-sm space-y-4">
                     <!-- Linha principal: total + botões -->
                     <div class="flex items-center justify-between">
                         <div>
-                            <h4 class="text-[10px] text-indigo-400 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5"><i class="ph ph-clock text-sm"></i> Tempo Registrado</h4>
-                            <div class="font-mono text-3xl font-extrabold text-indigo-700 tracking-tight" id="viewTimerDisplay">00:00:00</div>
+                            <h4 class="text-[10px] text-pink-400 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5"><i class="ph ph-clock text-sm"></i> Tempo Registrado</h4>
+                            <div class="font-mono text-3xl font-extrabold text-pink-700 tracking-tight" id="viewTimerDisplay">00:00:00</div>
                         </div>
                         <div class="flex gap-2 items-center">
-                            <button id="viewTimerBtn" class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md text-sm">
+                            <button id="viewTimerBtn" class="flex items-center gap-2 px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-bold transition-all shadow-md text-sm">
                                 <i id="viewTimerIcon" class="ph ph-play-circle text-xl"></i> <span id="viewTimerText">Iniciar</span>
                             </button>
-                            <button id="viewTimerReset" class="w-10 h-10 flex items-center justify-center bg-white border border-indigo-200 text-indigo-400 hover:text-rose-500 hover:border-rose-200 rounded-xl transition-all shadow-sm" title="Zerar Tempo">
+                            <button id="viewTimerReset" class="w-10 h-10 flex items-center justify-center bg-white border border-pink-200 text-pink-400 hover:text-rose-500 hover:border-rose-200 rounded-xl transition-all shadow-sm" title="Zerar Tempo">
                                 <i class="ph ph-arrow-counter-clockwise text-lg"></i>
                             </button>
-                            <button onclick="toggleManualTimeEntry()" class="w-10 h-10 flex items-center justify-center bg-white border border-indigo-200 text-indigo-400 hover:text-indigo-600 hover:border-indigo-400 rounded-xl transition-all shadow-sm" title="Lançar tempo manualmente">
+                            <button onclick="toggleManualTimeEntry()" class="w-10 h-10 flex items-center justify-center bg-white border border-pink-200 text-pink-400 hover:text-pink-600 hover:border-pink-400 rounded-xl transition-all shadow-sm" title="Lançar tempo manualmente">
                                 <i class="ph ph-pencil-simple-line text-lg"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- Lançamento manual (oculto por padrão) -->
-                    <div id="manualTimeEntry" class="hidden border-t border-indigo-200 pt-4">
-                        <p class="text-[10px] text-indigo-500 uppercase tracking-widest font-bold mb-3">Lançar tempo manualmente</p>
+                    <div id="manualTimeEntry" class="hidden border-t border-pink-200 pt-4">
+                        <p class="text-[10px] text-pink-500 uppercase tracking-widest font-bold mb-3">Lançar tempo manualmente</p>
                         <div class="flex flex-wrap gap-3 items-end">
                             <div class="flex flex-col gap-1">
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horas</label>
-                                <input id="manualHours" type="number" min="0" max="99" placeholder="0" class="w-20 px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm font-mono font-bold text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-center">
+                                <input id="manualHours" type="number" min="0" max="99" placeholder="0" class="w-20 px-3 py-2 bg-white border border-pink-200 rounded-lg text-sm font-mono font-bold text-slate-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-center">
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Minutos</label>
-                                <input id="manualMinutes" type="number" min="0" max="59" placeholder="0" class="w-20 px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm font-mono font-bold text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-center">
+                                <input id="manualMinutes" type="number" min="0" max="59" placeholder="0" class="w-20 px-3 py-2 bg-white border border-pink-200 rounded-lg text-sm font-mono font-bold text-slate-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-center">
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Data</label>
-                                <input id="manualDate" type="date" class="px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                                <input id="manualDate" type="date" class="px-3 py-2 bg-white border border-pink-200 rounded-lg text-sm text-slate-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none">
                             </div>
                             <div class="flex flex-col gap-1">
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nota (opcional)</label>
-                                <input id="manualNote" type="text" placeholder="ex: reunião, revisão..." class="w-44 px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                                <input id="manualNote" type="text" placeholder="ex: reunião, revisão..." class="w-44 px-3 py-2 bg-white border border-pink-200 rounded-lg text-sm text-slate-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none">
                             </div>
-                            <button onclick="addManualTimeEntry()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
+                            <button onclick="addManualTimeEntry()" class="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
                                 <i class="ph ph-plus-circle text-base"></i> Adicionar
                             </button>
                         </div>
                     </div>
 
                     <!-- Histórico de lançamentos -->
-                    <div id="timeLogsWrapper" class="hidden border-t border-indigo-200 pt-4">
-                        <p class="text-[10px] text-indigo-500 uppercase tracking-widest font-bold mb-2">Histórico de lançamentos</p>
+                    <div id="timeLogsWrapper" class="hidden border-t border-pink-200 pt-4">
+                        <p class="text-[10px] text-pink-500 uppercase tracking-widest font-bold mb-2">Histórico de lançamentos</p>
                         <div id="timeLogsList" class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar"></div>
                     </div>
                 </div>
 
                 <div>
-                    <h4 class="text-[11px] text-slate-400 uppercase tracking-widest font-bold mb-2 flex items-center gap-1.5"><i class="ph ph-text-align-left text-base text-indigo-500"></i> Escopo</h4>
+                    <h4 class="text-[11px] text-slate-400 uppercase tracking-widest font-bold mb-2 flex items-center gap-1.5"><i class="ph ph-text-align-left text-base text-pink-500"></i> Escopo</h4>
                     <div class="text-slate-600 text-sm leading-relaxed whitespace-pre-wrap bg-white border border-slate-200 p-5 rounded-xl shadow-sm" id="viewDescription"></div>
                 </div>
 
                 <!-- Anexos -->
                 <div id="viewAttachmentsWrapper" class="hidden">
-                    <h4 class="text-[11px] text-slate-400 uppercase tracking-widest font-bold mb-2 flex items-center gap-1.5"><i class="ph ph-paperclip text-base text-indigo-500"></i> Anexos</h4>
+                    <h4 class="text-[11px] text-slate-400 uppercase tracking-widest font-bold mb-2 flex items-center gap-1.5"><i class="ph ph-paperclip text-base text-pink-500"></i> Anexos</h4>
                     <div id="viewAttachmentsList" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
                 </div>
 
                 <!-- Checklists -->
                 <div id="viewSubtasksWrapper" class="hidden">
                     <h4 class="text-[11px] text-slate-400 uppercase tracking-widest font-bold mb-2 flex items-center justify-between">
-                        <span class="flex items-center gap-1.5"><i class="ph ph-check-square-offset text-base text-indigo-500"></i> Progresso</span>
-                        <span id="viewSubtasksProgressText" class="text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded text-[10px] font-bold"></span>
+                        <span class="flex items-center gap-1.5"><i class="ph ph-check-square-offset text-base text-pink-500"></i> Progresso</span>
+                        <span id="viewSubtasksProgressText" class="text-pink-600 bg-pink-50 px-2 py-0.5 rounded text-[10px] font-bold"></span>
                     </h4>
                     <div class="w-full bg-slate-200 rounded-full h-1.5 mb-3 shadow-inner">
-                      <div id="viewSubtasksProgressBar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
+                      <div id="viewSubtasksProgressBar" class="bg-pink-500 h-1.5 rounded-full transition-all duration-500 ease-out" style="width: 0%"></div>
                     </div>
                     <div id="viewSubtasksList" class="space-y-1.5 bg-white border border-slate-200 p-3 rounded-xl shadow-sm"></div>
                 </div>
@@ -1096,26 +1090,26 @@
                     <div class="flex flex-col sm:flex-row gap-6">
                         <div class="flex-1"><span class="text-slate-400 text-[10px] uppercase tracking-widest font-bold block mb-1">Solicitante</span><span class="font-bold text-slate-700 text-sm" id="viewRequester"></span></div>
                         <div class="flex-1"><span class="text-slate-400 text-[10px] uppercase tracking-widest font-bold block mb-1">Setor</span><span class="font-bold text-slate-700 text-sm" id="viewRequesterSector"></span></div>
-                        <div class="flex-1"><span class="text-slate-400 text-[10px] uppercase tracking-widest font-bold block mb-1">E-mail</span><a href="" id="viewEmail" class="font-bold text-indigo-500 hover:underline text-sm"></a></div>
+                        <div class="flex-1"><span class="text-slate-400 text-[10px] uppercase tracking-widest font-bold block mb-1">E-mail</span><a href="" id="viewEmail" class="font-bold text-pink-500 hover:underline text-sm"></a></div>
                     </div>
                 </div>
                 
                 <!-- COMENTÁRIOS DA EQUIPA -->
                 <div class="pt-6 border-t border-slate-200/60">
-                    <h4 class="text-[11px] text-slate-400 uppercase tracking-widest font-bold mb-4 flex items-center gap-2"><i class="ph ph-chat-circle-text text-lg text-indigo-500"></i> Notas e Anotações</h4>
+                    <h4 class="text-[11px] text-slate-400 uppercase tracking-widest font-bold mb-4 flex items-center gap-2"><i class="ph ph-chat-circle-text text-lg text-pink-500"></i> Notas e Anotações</h4>
                     
                     <div id="viewCommentsList" class="space-y-4 mb-4 max-h-60 overflow-y-auto custom-scrollbar pr-2">
                         <!-- Comentários injetados aqui -->
                     </div>
                     
-                    <div class="relative bg-white rounded-xl border border-slate-200 p-3 shadow-sm focus-within:ring-2 focus-within:ring-indigo-500/20 focus-within:border-indigo-500 transition-all">
+                    <div class="relative bg-white rounded-xl border border-slate-200 p-3 shadow-sm focus-within:ring-2 focus-within:ring-pink-500/20 focus-within:border-pink-500 transition-all">
                         <!-- Mention Dropdown -->
                         <div id="mentionDropdown" class="hidden absolute bottom-full mb-1 left-0 w-60 bg-white rounded-xl shadow-2xl border border-slate-100 z-50 overflow-hidden"></div>
                         <textarea id="newCommentInput" rows="2" class="w-full bg-transparent text-sm outline-none resize-none placeholder:text-slate-400 text-slate-700" placeholder="Escreva um comentário ou nota... (use @ para mencionar)" oninput="handleMentionInput(this)" onkeydown="if(event.ctrlKey && event.key==='Enter'){event.preventDefault();addComment();}"></textarea>
                         
                         <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-100">
                             <span class="text-[10px] text-slate-400 font-medium"><kbd class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Ctrl</kbd> + <kbd class="bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">Enter</kbd> para guardar</span>
-                            <button onclick="addComment()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md">Guardar Nota</button>
+                            <button onclick="addComment()" class="bg-pink-600 hover:bg-pink-700 text-white px-5 py-1.5 rounded-lg text-xs font-bold transition-colors shadow-md">Guardar Nota</button>
                         </div>
                     </div>
                 </div>
@@ -1410,13 +1404,13 @@
                             <div class="flex-1 min-w-0">
                                 <div class="flex items-center gap-2 mb-0.5">
                                     <p class="font-bold text-slate-800 text-sm">${esc(u.name)}</p>
-                                    ${isAdmin ? '<span class="text-[9px] font-bold bg-indigo-100 text-indigo-600 px-1.5 py-0.5 rounded border border-indigo-200">ADMIN</span>' : ''}
+                                    ${isAdmin ? '<span class="text-[9px] font-bold bg-pink-100 text-pink-600 px-1.5 py-0.5 rounded border border-pink-200">ADMIN</span>' : ''}
                                 </div>
                                 <p class="text-xs text-slate-500">${esc(u.email)}</p>
                             </div>
                             <div class="text-right shrink-0 hidden sm:block">
                                 <p class="text-xs font-bold text-slate-700">${userTasks.length} tarefas · ${doneTasks} concluídas</p>
-                                <p class="text-xs font-mono text-indigo-600 font-bold">${formatTimeSecs(totalSecs)}</p>
+                                <p class="text-xs font-mono text-pink-600 font-bold">${formatTimeSecs(totalSecs)}</p>
                             </div>
                             ${!isAdmin ? `<button onclick="revokeUser('${u.uid}')" class="text-slate-400 hover:text-rose-500 transition-colors ml-2 shrink-0" title="Revogar acesso"><i class="ph ph-user-minus text-lg"></i></button>` : ''}
                         </div>`;
@@ -1464,12 +1458,12 @@
                     <div class="w-10 h-10 rounded-full ${getAvatarColor(u.name)} flex items-center justify-center text-sm font-bold text-white shadow-sm shrink-0">${ini(u.name)}</div>
                     <div class="flex-1 min-w-0">
                         <p class="font-bold text-slate-800 text-sm mb-1">${esc(u.name)}</p>
-                        <div class="w-full bg-slate-200 h-1.5 rounded-full"><div class="bg-indigo-500 h-1.5 rounded-full transition-all" style="width:${pct}%"></div></div>
+                        <div class="w-full bg-slate-200 h-1.5 rounded-full"><div class="bg-pink-500 h-1.5 rounded-full transition-all" style="width:${pct}%"></div></div>
                     </div>
                     <div class="grid grid-cols-3 gap-4 shrink-0 text-center">
                         <div><p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Semana</p><p class="text-sm font-mono font-bold text-slate-700">${formatTimeSecs(weekSecs)}</p></div>
                         <div><p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Mês</p><p class="text-sm font-mono font-bold text-slate-700">${formatTimeSecs(monthSecs)}</p></div>
-                        <div><p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Total</p><p class="text-sm font-mono font-bold text-indigo-600">${formatTimeSecs(totalSecs)}</p></div>
+                        <div><p class="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Total</p><p class="text-sm font-mono font-bold text-pink-600">${formatTimeSecs(totalSecs)}</p></div>
                     </div>
                 </div>`;
             }).join('');
@@ -1490,7 +1484,7 @@
             const csv = [header,...rows].map(r=>r.join(';')).join('\n');
             const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
             const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-            a.download = `relatorio-equipa-${getIsoDate(new Date())}.csv`;
+            a.download = `relatorio-equipe-${getIsoDate(new Date())}.csv`;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
             showToast('Relatório exportado!','success');
         }
@@ -1623,7 +1617,7 @@
         const colorMap = {
             'slate': 'text-slate-600 bg-slate-50 border-slate-200 peer-checked:bg-slate-800 peer-checked:border-slate-800 peer-checked:text-white',
             'rose': 'text-rose-600 bg-rose-50 border-rose-200 peer-checked:bg-rose-600 peer-checked:border-rose-600 peer-checked:text-white',
-            'indigo': 'text-indigo-600 bg-indigo-50 border-indigo-200 peer-checked:bg-indigo-600 peer-checked:border-indigo-600 peer-checked:text-white',
+            'indigo': 'text-pink-600 bg-pink-50 border-pink-200 peer-checked:bg-pink-600 peer-checked:border-pink-600 peer-checked:text-white',
             'emerald': 'text-emerald-600 bg-emerald-50 border-emerald-200 peer-checked:bg-emerald-600 peer-checked:border-emerald-600 peer-checked:text-white',
             'amber': 'text-amber-600 bg-amber-50 border-amber-200 peer-checked:bg-amber-600 peer-checked:border-amber-600 peer-checked:text-white',
             'pink': 'text-pink-600 bg-pink-50 border-pink-200 peer-checked:bg-pink-600 peer-checked:border-pink-600 peer-checked:text-white',
@@ -1635,7 +1629,7 @@
             review: 'Revisão', done: 'Concluído', paused: 'Bloqueado'
         };
 
-        const avatarColors = ['bg-indigo-500','bg-sky-500','bg-emerald-500','bg-rose-500','bg-amber-500','bg-violet-500','bg-pink-500'];
+        const avatarColors = ['bg-pink-500','bg-sky-500','bg-emerald-500','bg-rose-500','bg-amber-500','bg-pink-500','bg-pink-500'];
 
         let formSubtasks = []; 
         let formAttachments = [];
@@ -1683,7 +1677,7 @@
             let icon, bg, text, border;
             if(type === 'success') { icon='ph-check-circle'; bg='bg-emerald-50'; text='text-emerald-700'; border='border-emerald-200'; }
             else if(type === 'error') { icon='ph-warning-circle'; bg='bg-rose-50'; text='text-rose-700'; border='border-rose-200'; }
-            else { icon='ph-info'; bg='bg-indigo-50'; text='text-indigo-700'; border='border-indigo-200'; }
+            else { icon='ph-info'; bg='bg-pink-50'; text='text-pink-700'; border='border-pink-200'; }
             toast.className = `flex items-center gap-3 px-4 py-3 rounded-xl border shadow-lg toast-enter ${bg} ${text} ${border}`;
             toast.innerHTML = `<i class="ph ${icon} text-xl"></i><span class="text-sm font-bold">${msg}</span>`;
             container.appendChild(toast);
@@ -1699,7 +1693,7 @@
             const input = document.getElementById('dialogInput');
             if(type === 'prompt') { input.classList.remove('hidden'); input.value = defaultVal; } else { input.classList.add('hidden'); }
             const btnConf = document.getElementById('dialogConfirm'); btnConf.textContent = confirmTxt;
-            btnConf.className = danger ? "px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-bold transition-colors shadow-md" : "px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-sm font-bold transition-colors shadow-md";
+            btnConf.className = danger ? "px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-sm font-bold transition-colors shadow-md" : "px-4 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-xl text-sm font-bold transition-colors shadow-md";
             dialogCallback = callback;
             ovl.classList.remove('hidden'); void ovl.offsetWidth; ovl.classList.remove('opacity-0'); box.classList.remove('scale-95');
             if(type === 'prompt') setTimeout(() => input.focus(), 100);
@@ -1717,7 +1711,7 @@
             activeView = viewId;
             document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
             const panel = document.getElementById(`view-${viewId}`); if(panel) panel.classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(i => { if(i.dataset.view === viewId) { i.classList.add('bg-indigo-600', 'text-white'); i.classList.remove('hover:bg-slate-800'); } else { i.classList.remove('bg-indigo-600', 'text-white'); i.classList.add('hover:bg-slate-800'); } });
+            document.querySelectorAll('.nav-item').forEach(i => { if(i.dataset.view === viewId) { i.classList.add('bg-pink-600', 'text-white'); i.classList.remove('hover:bg-slate-800'); } else { i.classList.remove('bg-pink-600', 'text-white'); i.classList.add('hover:bg-slate-800'); } });
             const titles = { board: 'Quadro Kanban', list: 'Lista de Demandas', calendar: 'Calendário de Entregas', analytics: 'Dashboard Analytics', time: 'Auditoria de Tempo', admin: 'Configurações', users: 'Gestão de Usuários' };
             const ht = document.getElementById('header-title'); if(ht) ht.textContent = titles[viewId] || '';
             if(viewId === 'admin') renderAdmin();
@@ -1752,7 +1746,7 @@
         }
 
         function applyQuickFilter(type) { viewFilter.quick = type; switchView('board'); }
-        function filterByStatus(status, btn) { viewFilter.status = status; document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-indigo-50', 'border-indigo-200', 'text-indigo-700'); b.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-600'); }); btn.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-600'); btn.classList.add('bg-indigo-50', 'border-indigo-200', 'text-indigo-700'); renderBoard(); }
+        function filterByStatus(status, btn) { viewFilter.status = status; document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-pink-50', 'border-pink-200', 'text-pink-700'); b.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-600'); }); btn.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-600'); btn.classList.add('bg-pink-50', 'border-pink-200', 'text-pink-700'); renderBoard(); }
 
         function getFilteredTasks() {
             const sInp = document.getElementById('searchInput'); viewFilter.query = sInp ? sInp.value.toLowerCase() : '';
@@ -1775,7 +1769,7 @@
         function renderBoard() {
             const container = document.getElementById('board-container'); if(!container) return;
             const filtered = getFilteredTasks();
-            const cols = [ {id:'unassigned', name:'Backlog', color:'bg-slate-400', cId:'count-unassigned'}, {id:'todo', name:'A Fazer', color:'bg-sky-400', cId:'count-todo'}, {id:'inProgress', name:'Em Andamento', color:'bg-indigo-500', cId:'count-inProgress'}, {id:'paused', name:'Bloqueado', color:'bg-orange-400', cId:'count-paused'}, {id:'review', name:'Revisão', color:'bg-pink-400', cId:'count-review'}, {id:'done', name:'Finalizado', color:'bg-emerald-500', cId:'count-done'} ];
+            const cols = [ {id:'unassigned', name:'Backlog', color:'bg-slate-400', cId:'count-unassigned'}, {id:'todo', name:'A Fazer', color:'bg-sky-400', cId:'count-todo'}, {id:'inProgress', name:'Em Andamento', color:'bg-pink-500', cId:'count-inProgress'}, {id:'paused', name:'Bloqueado', color:'bg-orange-400', cId:'count-paused'}, {id:'review', name:'Revisão', color:'bg-pink-400', cId:'count-review'}, {id:'done', name:'Finalizado', color:'bg-emerald-500', cId:'count-done'} ];
             
             let finalHtml = '';
             cols.forEach(col => {
@@ -1787,7 +1781,7 @@
                 <div class="w-80 flex flex-col max-h-full shrink-0">
                     <div class="flex items-center justify-between mb-3 px-1"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full ${col.color}"></span> ${col.name}</h3><span class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">${colTasks.length}</span></div>
                     <div class="kanban-column flex-1 overflow-y-auto pb-4 custom-scrollbar flex flex-col gap-3 rounded-xl border-2 border-transparent p-1" data-status="${col.id}">
-                        ${colTasks.length === 0 ? `<div onclick="openModal('${col.id}')" class="h-24 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-indigo-500 hover:border-indigo-200 hover:bg-indigo-50/50 cursor-pointer transition-all"><span class="text-xs font-bold">+ Adicionar Demanda</span></div>` : colTasks.map(t => generateCardHtml(t)).join('')}
+                        ${colTasks.length === 0 ? `<div onclick="openModal('${col.id}')" class="h-24 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-pink-500 hover:border-pink-200 hover:bg-pink-50/50 cursor-pointer transition-all"><span class="text-xs font-bold">+ Adicionar Demanda</span></div>` : colTasks.map(t => generateCardHtml(t)).join('')}
                     </div>
                 </div>`;
             });
@@ -1795,10 +1789,10 @@
 
             document.querySelectorAll('.task-card').forEach(c => { c.addEventListener('dragstart', dragStart); c.addEventListener('dragend', dragEnd); });
             document.querySelectorAll('.kanban-column').forEach(col => {
-                col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('bg-indigo-50/50', 'border-indigo-200', 'border-dashed'); });
-                col.addEventListener('dragleave', e => { col.classList.remove('bg-indigo-50/50', 'border-indigo-200', 'border-dashed'); });
+                col.addEventListener('dragover', e => { e.preventDefault(); col.classList.add('bg-pink-50/50', 'border-pink-200', 'border-dashed'); });
+                col.addEventListener('dragleave', e => { col.classList.remove('bg-pink-50/50', 'border-pink-200', 'border-dashed'); });
                 col.addEventListener('drop', async e => {
-                    e.preventDefault(); col.classList.remove('bg-indigo-50/50', 'border-indigo-200', 'border-dashed');
+                    e.preventDefault(); col.classList.remove('bg-pink-50/50', 'border-pink-200', 'border-dashed');
                     const id = e.dataTransfer.getData('text/plain'); const ns = col.dataset.status; const t = tasks.find(x => x.id === id);
                     if(t && t.status !== ns) { if((ns === 'done' || ns === 'paused') && t.timerRunning) stopTimerInternal(t); t.status = ns; await saveTaskToFirebase(t); showToast(`Movido para ${statusMap[ns]}`, 'success'); }
                 });
@@ -1806,14 +1800,14 @@
         }
         
         function dragStart(e) { isDragging = true; e.currentTarget.classList.add('opacity-40', 'scale-95'); if(e.dataTransfer){ e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', e.currentTarget.dataset.id); } setTimeout(() => e.currentTarget.style.display = 'none', 0); }
-        function dragEnd(e) { isDragging = false; e.currentTarget.classList.remove('opacity-40', 'scale-95'); e.currentTarget.style.display = 'flex'; document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('bg-indigo-50/50', 'border-indigo-200', 'border-dashed')); renderAll(); }
+        function dragEnd(e) { isDragging = false; e.currentTarget.classList.remove('opacity-40', 'scale-95'); e.currentTarget.style.display = 'flex'; document.querySelectorAll('.kanban-column').forEach(c => c.classList.remove('bg-pink-50/50', 'border-pink-200', 'border-dashed')); renderAll(); }
 
         function generateCardHtml(t) {
             let pColor = '', pText = '';
             if(t.priority==='low'){ pColor='border-emerald-500 text-emerald-600 bg-emerald-50'; pText='Baixa'; }
             if(t.priority==='medium'){ pColor='border-amber-500 text-amber-600 bg-amber-50'; pText='Média'; }
             if(t.priority==='high'){ pColor='border-rose-500 text-rose-600 bg-rose-50'; pText='Alta'; }
-            if(t.priority==='critical'){ pColor='border-violet-500 text-violet-600 bg-violet-50 ring-2 ring-violet-200 timer-active-ring'; pText='Crítica'; }
+            if(t.priority==='critical'){ pColor='border-pink-500 text-pink-500 bg-pink-50 ring-2 ring-pink-200 timer-active-ring'; pText='Crítica'; }
 
             const late = isOverdue(t.dueDate) && t.status !== 'done' ? `<span class="text-[9px] font-bold text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-200 ml-1">⚠ Atrasada</span>` : '';
             const tag = t.tag ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ml-1 ${getTagClass(t.tag)}">${esc(t.tag)}</span>` : '';
@@ -1825,7 +1819,7 @@
             let subs = '';
             if(t.subtasks && t.subtasks.length > 0) {
                 const tot = t.subtasks.length; const d = t.subtasks.filter(s=>s.done).length; const pct = (d/tot)*100;
-                subs = `<div class="mt-3 pt-2 border-t border-slate-100/50"><div class="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-1"><span>Checklist</span><span>${d}/${tot}</span></div><div class="w-full bg-slate-200 h-1 rounded-full"><div class="bg-indigo-500 h-1 rounded-full" style="width:${pct}%"></div></div></div>`;
+                subs = `<div class="mt-3 pt-2 border-t border-slate-100/50"><div class="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-1"><span>Checklist</span><span>${d}/${tot}</span></div><div class="w-full bg-slate-200 h-1 rounded-full"><div class="bg-pink-500 h-1 rounded-full" style="width:${pct}%"></div></div></div>`;
             }
 
             let attHtml = '';
@@ -1841,8 +1835,8 @@
             if(filtered.length === 0) { tbody.innerHTML = '<div class="p-8 text-center text-sm font-medium text-slate-400">Nenhuma tarefa encontrada.</div>'; return; }
             tbody.innerHTML = filtered.map(t => {
                 const late = isOverdue(t.dueDate) && t.status !== 'done';
-                let pCol = 'text-slate-500'; if(t.priority==='high') pCol='text-rose-500'; if(t.priority==='critical') pCol='text-violet-600 font-bold';
-                return `<div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_100px] gap-4 p-3.5 hover:bg-slate-50 items-center text-sm transition-colors cursor-pointer" onclick="openViewModal('${t.id}')"><div class="font-bold text-slate-800 truncate pr-4">${esc(t.title)}</div><div><span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-slate-100 rounded text-slate-600">${statusMap[t.status]}</span></div><div class="${pCol} text-xs font-bold uppercase">${t.priority}</div><div class="flex items-center gap-2"><div class="w-5 h-5 rounded-full ${getAvatarColor(t.owner)} text-white text-[8px] flex items-center justify-center">${ini(t.owner)}</div><span class="truncate text-xs font-medium">${esc(t.owner)||'--'}</span></div><div class="text-xs text-slate-500 truncate">${esc(t.requesterSector)||'--'}</div><div class="text-xs font-medium ${late ? 'text-rose-500' : 'text-slate-600'}">${formatDate(t.dueDate)}</div><div class="text-center" onclick="event.stopPropagation()"><button onclick="openModal('${t.id}')" class="p-1.5 text-slate-400 hover:text-indigo-600 transition-colors"><i class="ph ph-pencil-simple text-base"></i></button><button onclick="resetTimer('${t.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 transition-colors" title="Zerar Tempo"><i class="ph ph-clock-counter-clockwise text-base"></i></button></div></div>`;
+                let pCol = 'text-slate-500'; if(t.priority==='high') pCol='text-rose-500'; if(t.priority==='critical') pCol='text-pink-500 font-bold';
+                return `<div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_100px] gap-4 p-3.5 hover:bg-slate-50 items-center text-sm transition-colors cursor-pointer" onclick="openViewModal('${t.id}')"><div class="font-bold text-slate-800 truncate pr-4">${esc(t.title)}</div><div><span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-slate-100 rounded text-slate-600">${statusMap[t.status]}</span></div><div class="${pCol} text-xs font-bold uppercase">${t.priority}</div><div class="flex items-center gap-2"><div class="w-5 h-5 rounded-full ${getAvatarColor(t.owner)} text-white text-[8px] flex items-center justify-center">${ini(t.owner)}</div><span class="truncate text-xs font-medium">${esc(t.owner)||'--'}</span></div><div class="text-xs text-slate-500 truncate">${esc(t.requesterSector)||'--'}</div><div class="text-xs font-medium ${late ? 'text-rose-500' : 'text-slate-600'}">${formatDate(t.dueDate)}</div><div class="text-center" onclick="event.stopPropagation()"><button onclick="openModal('${t.id}')" class="p-1.5 text-slate-400 hover:text-pink-600 transition-colors"><i class="ph ph-pencil-simple text-base"></i></button><button onclick="resetTimer('${t.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 transition-colors" title="Zerar Tempo"><i class="ph ph-clock-counter-clockwise text-base"></i></button></div></div>`;
             }).join('');
         }
 
@@ -1862,9 +1856,9 @@
             for(let d=1; d<=daysInMonth; d++) {
                 const isToday = d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear();
                 const dayTasks = monthTasks[d] || [];
-                let tasksHtml = dayTasks.slice(0,4).map(t => `<div onclick="openViewModal('${t.id}')" class="text-[10px] font-bold border px-1.5 py-1 mb-1 rounded truncate cursor-pointer hover:border-indigo-400 ${t.status==='done'?'bg-emerald-50 text-emerald-700 border-emerald-200 line-through opacity-70':'bg-white text-slate-700 border-slate-200 shadow-sm'}">${esc(t.title)}</div>`).join('');
+                let tasksHtml = dayTasks.slice(0,4).map(t => `<div onclick="openViewModal('${t.id}')" class="text-[10px] font-bold border px-1.5 py-1 mb-1 rounded truncate cursor-pointer hover:border-pink-400 ${t.status==='done'?'bg-emerald-50 text-emerald-700 border-emerald-200 line-through opacity-70':'bg-white text-slate-700 border-slate-200 shadow-sm'}">${esc(t.title)}</div>`).join('');
                 if(dayTasks.length > 4) tasksHtml += `<div class="text-[9px] font-bold text-slate-400 text-center mt-1">+${dayTasks.length - 4} mais</div>`;
-                html += `<div class="min-h-[100px] bg-white rounded-xl border ${isToday ? 'border-indigo-400 shadow-sm' : 'border-slate-200'} p-2 transition-colors hover:border-indigo-200 flex flex-col"><div class="text-xs font-extrabold mb-2 ${isToday ? 'text-indigo-600 bg-indigo-50 w-6 h-6 flex items-center justify-center rounded-full' : 'text-slate-400 ml-1'}">${d}</div><div class="flex-1 flex flex-col gap-0.5">${tasksHtml}</div></div>`;
+                html += `<div class="min-h-[100px] bg-white rounded-xl border ${isToday ? 'border-pink-400 shadow-sm' : 'border-slate-200'} p-2 transition-colors hover:border-pink-200 flex flex-col"><div class="text-xs font-extrabold mb-2 ${isToday ? 'text-pink-600 bg-pink-50 w-6 h-6 flex items-center justify-center rounded-full' : 'text-slate-400 ml-1'}">${d}</div><div class="flex-1 flex flex-col gap-0.5">${tasksHtml}</div></div>`;
             }
             grid.innerHTML = html;
         }
@@ -1884,7 +1878,7 @@
             const totalSecs = tasks.reduce((acc, t) => acc + getTaskTotalSecs(t), 0);
             const anHours = document.getElementById('an-hours'); if(anHours) anHours.textContent = formatTimeSecs(totalSecs);
 
-            const sMap = { 'todo': {lbl:'A Fazer', col:'bg-sky-400'}, 'inProgress': {lbl:'Andamento', col:'bg-indigo-500'}, 'review': {lbl:'Revisão', col:'bg-pink-400'}, 'done': {lbl:'Feito', col:'bg-emerald-500'} };
+            const sMap = { 'todo': {lbl:'A Fazer', col:'bg-sky-400'}, 'inProgress': {lbl:'Andamento', col:'bg-pink-500'}, 'review': {lbl:'Revisão', col:'bg-pink-400'}, 'done': {lbl:'Feito', col:'bg-emerald-500'} };
             const chartArea = document.getElementById('an-status-chart');
             if(chartArea) {
                 const maxS = Math.max(...Object.keys(sMap).map(k => tasks.filter(t=>t.status===k).length), 1);
@@ -1899,21 +1893,21 @@
             const oArea = document.getElementById('an-owner-list');
             if(oArea) {
                 if(oList.length === 0) oArea.innerHTML = '<p class="text-xs text-slate-400">Nenhum responsável mapeado.</p>';
-                else oArea.innerHTML = oList.map(([name, cnt]) => { const pct = Math.round((cnt/tasks.length)*100); return `<div><div class="flex justify-between items-center text-xs font-bold mb-1.5"><div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full ${getAvatarColor(name)} text-[7px] text-white flex items-center justify-center">${ini(name)}</div><span class="text-slate-700">${esc(name)}</span></div><span class="text-indigo-600">${cnt} t</span></div><div class="w-full h-1.5 bg-slate-100 rounded-full"><div class="h-full bg-indigo-500 rounded-full" style="width:${pct}%"></div></div></div>`; }).join('');
+                else oArea.innerHTML = oList.map(([name, cnt]) => { const pct = Math.round((cnt/tasks.length)*100); return `<div><div class="flex justify-between items-center text-xs font-bold mb-1.5"><div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full ${getAvatarColor(name)} text-[7px] text-white flex items-center justify-center">${ini(name)}</div><span class="text-slate-700">${esc(name)}</span></div><span class="text-pink-600">${cnt} t</span></div><div class="w-full h-1.5 bg-slate-100 rounded-full"><div class="h-full bg-pink-500 rounded-full" style="width:${pct}%"></div></div></div>`; }).join('');
             }
 
             // ── Tempo por Tag ─────────────────────────────────────────────────
             const tagArea = document.getElementById('an-tag-time-list');
             if (tagArea) {
                 const tagColors = {
-                    rose: 'bg-rose-500', indigo: 'bg-indigo-500', emerald: 'bg-emerald-500',
-                    amber: 'bg-amber-500', pink: 'bg-pink-500', sky: 'bg-sky-500', slate: 'bg-slate-500', violet: 'bg-violet-500'
+                    rose: 'bg-rose-500', indigo: 'bg-pink-500', emerald: 'bg-emerald-500',
+                    amber: 'bg-amber-500', pink: 'bg-pink-500', sky: 'bg-sky-500', slate: 'bg-slate-500', violet: 'bg-pink-500'
                 };
                 const tagTextColors = {
-                    rose: 'text-rose-600 bg-rose-50 border-rose-200', indigo: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+                    rose: 'text-rose-600 bg-rose-50 border-rose-200', indigo: 'text-pink-600 bg-pink-50 border-pink-200',
                     emerald: 'text-emerald-600 bg-emerald-50 border-emerald-200', amber: 'text-amber-600 bg-amber-50 border-amber-200',
                     pink: 'text-pink-600 bg-pink-50 border-pink-200', sky: 'text-sky-600 bg-sky-50 border-sky-200',
-                    slate: 'text-slate-600 bg-slate-50 border-slate-200', violet: 'text-violet-600 bg-violet-50 border-violet-200'
+                    slate: 'text-slate-600 bg-slate-50 border-slate-200', violet: 'text-pink-500 bg-pink-50 border-pink-200'
                 };
 
                 // Build tag stats
@@ -2065,9 +2059,9 @@
             }
 
             viewFilter.status = 'all';
-            document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-indigo-50', 'border-indigo-200', 'text-indigo-700'); b.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-600'); });
+            document.querySelectorAll('.filter-btn').forEach(b => { b.classList.remove('bg-pink-50', 'border-pink-200', 'text-pink-700'); b.classList.add('bg-slate-50', 'border-slate-200', 'text-slate-600'); });
             const btnAll = document.querySelector('.filter-btn[data-status="all"]');
-            if(btnAll) { btnAll.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-600'); btnAll.classList.add('bg-indigo-50', 'border-indigo-200', 'text-indigo-700'); }
+            if(btnAll) { btnAll.classList.remove('bg-slate-50', 'border-slate-200', 'text-slate-600'); btnAll.classList.add('bg-pink-50', 'border-pink-200', 'text-pink-700'); }
 
             closeModal(); closeViewModal();
             await saveTask_DB(finalData);
@@ -2127,7 +2121,7 @@
             if(!display || !btn || !icon || !txt) return;
             display.textContent = formatTimeSecs(getTaskTotalSecs(task));
             if(task.timerRunning) { btn.className = 'flex items-center gap-2 px-5 py-2.5 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl font-bold transition-all shadow-sm text-sm border border-rose-200'; icon.className = 'ph ph-pause-circle text-xl animate-pulse'; txt.textContent = 'Pausar'; } 
-            else { btn.className = 'flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md text-sm'; icon.className = 'ph ph-play-circle text-xl'; txt.textContent = 'Iniciar'; }
+            else { btn.className = 'flex items-center gap-2 px-5 py-2.5 bg-pink-600 hover:bg-pink-700 text-white rounded-xl font-bold transition-all shadow-md text-sm'; icon.className = 'ph ph-play-circle text-xl'; txt.textContent = 'Iniciar'; }
             btn.onclick = (e) => toggleTimer(task.id, e); 
         }
 
@@ -2157,7 +2151,7 @@
                 if(t.priority==='low'){ pb.className='text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-widest shadow-sm border border-emerald-200 text-emerald-600 bg-emerald-50'; pb.textContent='Baixa';}
                 if(t.priority==='medium'){ pb.className='text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-widest shadow-sm border border-amber-200 text-amber-600 bg-amber-50'; pb.textContent='Média';}
                 if(t.priority==='high'){ pb.className='text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-widest shadow-sm border border-rose-200 text-rose-600 bg-rose-50'; pb.textContent='Alta';}
-                if(t.priority==='critical'){ pb.className='text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-widest shadow-sm border border-violet-200 text-violet-600 bg-violet-50'; pb.textContent='Crítica';}
+                if(t.priority==='critical'){ pb.className='text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-widest shadow-sm border border-pink-200 text-pink-500 bg-pink-50'; pb.textContent='Crítica';}
             }
 
             const tb = document.getElementById('viewTagBadge');
@@ -2209,7 +2203,7 @@
             task.attachments.forEach(a => {
                 const isImg = a.type.startsWith('image/');
                 if(isImg) l.innerHTML += `<a href="${a.url}" download="${a.name}" class="block group relative rounded-xl overflow-hidden border border-slate-200 shadow-sm aspect-video"><img src="${a.url}" class="w-full h-full object-cover transition-transform group-hover:scale-105"><div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"><i class="ph ph-download-simple text-white text-2xl"></i></div></a>`;
-                else l.innerHTML += `<a href="${a.url}" download="${a.name}" class="flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-xl aspect-video hover:bg-indigo-50 hover:border-indigo-200 transition-colors group p-2 text-center"><i class="ph ph-file-text text-3xl text-slate-400 group-hover:text-indigo-500 mb-1 transition-colors"></i><span class="text-[10px] font-bold text-slate-500 truncate w-full px-1" title="${esc(a.name)}">${esc(a.name)}</span></a>`;
+                else l.innerHTML += `<a href="${a.url}" download="${a.name}" class="flex flex-col items-center justify-center bg-slate-50 border border-slate-200 rounded-xl aspect-video hover:bg-pink-50 hover:border-pink-200 transition-colors group p-2 text-center"><i class="ph ph-file-text text-3xl text-slate-400 group-hover:text-pink-500 mb-1 transition-colors"></i><span class="text-[10px] font-bold text-slate-500 truncate w-full px-1" title="${esc(a.name)}">${esc(a.name)}</span></a>`;
             });
         }
 
@@ -2221,18 +2215,18 @@
             if(!task.subtasks || task.subtasks.length===0) { w.classList.add('hidden'); return; }
             w.classList.remove('hidden'); l.innerHTML = '';
             const tot = task.subtasks.length; const d = task.subtasks.filter(s=>s.done).length; const pct = (d/tot)*100;
-            pb.style.width = `${pct}%`; pb.className = `h-1.5 rounded-full transition-all duration-500 ${d===tot?'bg-emerald-500':'bg-indigo-500'}`;
+            pb.style.width = `${pct}%`; pb.className = `h-1.5 rounded-full transition-all duration-500 ${d===tot?'bg-emerald-500':'bg-pink-500'}`;
             pt.textContent = `${d}/${tot} concluídas`;
             task.subtasks.forEach((s, i) => {
                 const id = `cb_${task.id}_${i}`;
-                l.innerHTML += `<div class="flex items-start gap-3 p-2.5 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer" onclick="toggleSubtaskStatus('${task.id}', ${i})"><div class="pt-0.5"><input type="checkbox" id="${id}" ${s.done?'checked':''} class="custom-checkbox w-4 h-4 text-indigo-500 bg-slate-100 border-slate-300 rounded focus:ring-indigo-500 cursor-pointer pointer-events-none"></div><label for="${id}" class="text-sm font-semibold select-none cursor-pointer w-full ${s.done?'text-slate-400 line-through':'text-slate-700'}">${esc(s.title)}</label></div>`;
+                l.innerHTML += `<div class="flex items-start gap-3 p-2.5 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer" onclick="toggleSubtaskStatus('${task.id}', ${i})"><div class="pt-0.5"><input type="checkbox" id="${id}" ${s.done?'checked':''} class="custom-checkbox w-4 h-4 text-pink-500 bg-slate-100 border-slate-300 rounded focus:ring-pink-500 cursor-pointer pointer-events-none"></div><label for="${id}" class="text-sm font-semibold select-none cursor-pointer w-full ${s.done?'text-slate-400 line-through':'text-slate-700'}">${esc(s.title)}</label></div>`;
             });
         }
 
         function formatCommentText(text) {
             let formatted = esc(text);
-            appSettings.owners.forEach(o => { const regex = new RegExp(`@${esc(o)}`, 'gi'); formatted = formatted.replace(regex, `<span class="font-bold text-indigo-600 bg-indigo-50 px-1 rounded border border-indigo-100">@${esc(o)}</span>`); });
-            formatted = formatted.replace(/@([a-zA-Z0-9_]+)/g, `<span class="font-bold text-indigo-500">@$1</span>`);
+            appSettings.owners.forEach(o => { const regex = new RegExp(`@${esc(o)}`, 'gi'); formatted = formatted.replace(regex, `<span class="font-bold text-pink-600 bg-pink-50 px-1 rounded border border-pink-100">@${esc(o)}</span>`); });
+            formatted = formatted.replace(/@([a-zA-Z0-9_]+)/g, `<span class="font-bold text-pink-500">@$1</span>`);
             return formatted;
         }
 
@@ -2252,7 +2246,7 @@
             const task = tasks.find(t => t.id === currentViewTaskId);
             if(task) {
                 if(!task.comments) task.comments = [];
-                task.comments.push({ id: uid(), author: 'Utilizador Local', text: text, createdAt: new Date().toISOString() });
+                task.comments.push({ id: uid(), author: 'Usuário Local', text: text, createdAt: new Date().toISOString() });
                 renderViewComments(task); inp.value = '';
                 const drop = document.getElementById('mentionDropdown'); if(drop) drop.classList.add('hidden');
                 showToast('Comentário enviado!', 'success');
@@ -2267,7 +2261,7 @@
             if (match) {
                 const q = match[1].toLowerCase(); const owns = appSettings.owners.filter(o => o.toLowerCase().includes(q));
                 if (owns.length > 0) {
-                    dp.innerHTML = owns.map(o => `<div class="px-3 py-2 text-sm hover:bg-indigo-50 cursor-pointer text-slate-700 border-b border-slate-50 last:border-0" onclick="insertMention('${esc(o)}')"><div class="flex items-center gap-2"><div class="w-5 h-5 rounded-full ${getAvatarColor(o)} text-white flex items-center justify-center text-[8px] font-bold">${ini(o)}</div>${esc(o)}</div></div>`).join('');
+                    dp.innerHTML = owns.map(o => `<div class="px-3 py-2 text-sm hover:bg-pink-50 cursor-pointer text-slate-700 border-b border-slate-50 last:border-0" onclick="insertMention('${esc(o)}')"><div class="flex items-center gap-2"><div class="w-5 h-5 rounded-full ${getAvatarColor(o)} text-white flex items-center justify-center text-[8px] font-bold">${ini(o)}</div>${esc(o)}</div></div>`).join('');
                     dp.classList.remove('hidden');
                 } else dp.classList.add('hidden');
             } else dp.classList.add('hidden');
@@ -2379,7 +2373,7 @@
                                     <i class="ph ph-sun-dim text-lg hover:animate-spin"></i>
                                 </button>
                                 <div class="min-w-0 flex-1">
-                                    <h5 class="text-sm font-semibold text-slate-800 group-hover:text-indigo-600 transition-colors leading-tight truncate ${isDone?'line-through opacity-50':''}">${esc(t.title)}</h5>
+                                    <h5 class="text-sm font-semibold text-slate-800 group-hover:text-pink-600 transition-colors leading-tight truncate ${isDone?'line-through opacity-50':''}">${esc(t.title)}</h5>
                                     <div class="flex items-center gap-2 mt-1.5 flex-wrap">
                                         <span class="text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded bg-slate-100 text-slate-500 border border-slate-200">${statusName}</span>
                                         ${t.timerRunning ? `<span class="text-[9px] font-mono font-bold text-rose-600 flex items-center gap-1"><i class="ph ph-clock animate-pulse"></i> ${formatTimeSecs(getTaskTotalSecs(t))}</span>` : ''}
@@ -2412,7 +2406,7 @@
                 list.innerHTML = html;
             } else {
                 badge.classList.add('hidden'); badge.classList.remove('animate-pulse');
-                list.innerHTML = '<div class="p-8 text-center text-sm font-medium text-slate-400 flex flex-col items-center"><i class="ph ph-coffee text-3xl mb-2 text-slate-300"></i>Ninguém está a trabalhar agora.</div>';
+                list.innerHTML = '<div class="p-8 text-center text-sm font-medium text-slate-400 flex flex-col items-center"><i class="ph ph-coffee text-3xl mb-2 text-slate-300"></i>Ninguém está trabalhando agora.</div>';
             }
         }
 
@@ -2439,7 +2433,7 @@
             let html = '';
             if(!late.length && !crit.length && !soon.length) { list.innerHTML = '<div class="p-8 text-center text-sm font-bold text-slate-400 flex flex-col items-center"><i class="ph ph-check-circle text-3xl text-emerald-400 mb-2"></i>Tudo em dia!</div>'; return; }
             late.forEach(t => { html += `<div onclick="toggleNotifPanel();openViewModal('${t.id}')" class="p-3 border-b border-slate-100 hover:bg-rose-50 cursor-pointer transition-colors"><div class="text-[10px] font-bold text-rose-600 uppercase tracking-widest mb-1"><i class="ph ph-warning-circle"></i> Atrasada</div><div class="text-sm font-bold text-slate-800">${esc(t.title)}</div></div>`; });
-            crit.forEach(t => { html += `<div onclick="toggleNotifPanel();openViewModal('${t.id}')" class="p-3 border-b border-slate-100 hover:bg-violet-50 cursor-pointer transition-colors"><div class="text-[10px] font-bold text-violet-600 uppercase tracking-widest mb-1"><i class="ph ph-lightning"></i> Crítica</div><div class="text-sm font-bold text-slate-800">${esc(t.title)}</div></div>`; });
+            crit.forEach(t => { html += `<div onclick="toggleNotifPanel();openViewModal('${t.id}')" class="p-3 border-b border-slate-100 hover:bg-pink-50 cursor-pointer transition-colors"><div class="text-[10px] font-bold text-pink-500 uppercase tracking-widest mb-1"><i class="ph ph-lightning"></i> Crítica</div><div class="text-sm font-bold text-slate-800">${esc(t.title)}</div></div>`; });
             soon.forEach(t => { html += `<div onclick="toggleNotifPanel();openViewModal('${t.id}')" class="p-3 border-b border-slate-100 hover:bg-amber-50 cursor-pointer transition-colors"><div class="text-[10px] font-bold text-amber-600 uppercase tracking-widest mb-1"><i class="ph ph-clock"></i> Vence em Breve</div><div class="text-sm font-bold text-slate-800">${esc(t.title)}</div></div>`; });
             list.innerHTML = html;
         }
@@ -2512,10 +2506,10 @@
                 const time = formatTimeSecs(log.duration);
                 const isManual = log.manual;
                 return `
-                <div class="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-indigo-100 text-xs gap-3">
+                <div class="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-pink-100 text-xs gap-3">
                     <div class="flex items-center gap-2 flex-1 min-w-0">
-                        <i class="ph ph-${isManual ? 'pencil-simple' : 'play-circle'} text-sm ${isManual ? 'text-amber-500' : 'text-indigo-400'} shrink-0"></i>
-                        <span class="font-mono font-bold text-indigo-700">${time}</span>
+                        <i class="ph ph-${isManual ? 'pencil-simple' : 'play-circle'} text-sm ${isManual ? 'text-amber-500' : 'text-pink-400'} shrink-0"></i>
+                        <span class="font-mono font-bold text-pink-700">${time}</span>
                         <span class="text-slate-400">${date}</span>
                         ${log.note ? `<span class="text-slate-500 truncate italic">"${esc(log.note)}"</span>` : ''}
                         ${log.addedBy ? `<span class="text-slate-400 truncate">· ${esc(log.addedBy)}</span>` : ''}
@@ -2589,7 +2583,7 @@
 
         function updateWeeklyClockDisplay() {
             const { s, e } = getWeekRange();
-            // Mostra só as horas do utilizador atual
+            // Mostra só as horas do usuário atual
             const myTasks = currentProfile ? tasks.filter(t => t.owner === currentProfile.name) : [];
             const weekSecs = myTasks.reduce((acc, t) => acc + getTaskPeriodSecs(t, s, e), 0);
             const el = document.getElementById('weekly-clock-display');
@@ -2649,7 +2643,7 @@
             if (!appSettings.sectors.length) { list.innerHTML = '<p class="text-xs text-slate-400 italic">Nenhum setor cadastrado.</p>'; return; }
             list.innerHTML = appSettings.sectors.map((s, i) => `
                 <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-lg group">
-                    <div class="flex items-center gap-2"><i class="ph ph-buildings text-indigo-400 text-sm"></i><span class="text-sm font-semibold text-slate-700">${esc(s)}</span></div>
+                    <div class="flex items-center gap-2"><i class="ph ph-buildings text-pink-400 text-sm"></i><span class="text-sm font-semibold text-slate-700">${esc(s)}</span></div>
                     <button onclick="adminRemoveSector(${i})" class="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="ph ph-trash text-lg"></i></button>
                 </div>`).join('');
         }
@@ -2763,13 +2757,13 @@
                 html.classList.add('dark');
                 if (icon) { icon.classList.remove('ph-moon'); icon.classList.add('ph-sun'); }
                 if (label) label.textContent = 'Modo Claro';
-                if (track) { track.classList.remove('bg-slate-700'); track.classList.add('bg-indigo-500'); }
+                if (track) { track.classList.remove('bg-slate-700'); track.classList.add('bg-pink-500'); }
                 if (thumb) { thumb.classList.remove('left-0.5', 'bg-slate-400'); thumb.classList.add('left-[18px]', 'bg-white'); }
             } else {
                 html.classList.remove('dark');
                 if (icon) { icon.classList.remove('ph-sun'); icon.classList.add('ph-moon'); }
                 if (label) label.textContent = 'Modo Escuro';
-                if (track) { track.classList.remove('bg-indigo-500'); track.classList.add('bg-slate-700'); }
+                if (track) { track.classList.remove('bg-pink-500'); track.classList.add('bg-slate-700'); }
                 if (thumb) { thumb.classList.remove('left-[18px]', 'bg-white'); thumb.classList.add('left-0.5', 'bg-slate-400'); }
             }
         }

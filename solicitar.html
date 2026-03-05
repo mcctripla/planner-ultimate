@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solicitar Demanda</title>
+    <title>MKT Flow — Solicitar Demanda</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,8 +19,8 @@
             --bg:     #f7f6f2;
             --bg2:    #efede7;
             --white:  #ffffff;
-            --accent: #5b4fcf;
-            --accent2:#7c6ff7;
+            --accent: #db2777;
+            --accent2:#ec4899;
             --success:#22c55e;
             --danger: #ef4444;
             --border: #e2e0d8;
@@ -48,8 +48,8 @@
             position: fixed;
             inset: 0;
             background:
-                radial-gradient(ellipse 800px 600px at 20% 10%, rgba(91,79,207,0.06) 0%, transparent 70%),
-                radial-gradient(ellipse 600px 500px at 80% 90%, rgba(124,111,247,0.05) 0%, transparent 70%);
+                radial-gradient(ellipse 800px 600px at 20% 10%, rgba(219,39,119,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 600px 500px at 80% 90%, rgba(236,72,153,0.05) 0%, transparent 70%);
             pointer-events: none;
             z-index: 0;
         }
@@ -60,8 +60,8 @@
             position: fixed;
             inset: 0;
             background-image:
-                linear-gradient(rgba(91,79,207,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(91,79,207,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(219,39,119,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(219,39,119,0.03) 1px, transparent 1px);
             background-size: 48px 48px;
             pointer-events: none;
             z-index: 0;
@@ -90,7 +90,7 @@
             justify-content: center;
             color: white;
             font-size: 18px;
-            box-shadow: 0 4px 12px rgba(91,79,207,0.35);
+            box-shadow: 0 4px 12px rgba(219,39,119,0.35);
             flex-shrink: 0;
         }
 
@@ -260,7 +260,7 @@
         .field textarea:focus {
             border-color: var(--accent);
             background: var(--white);
-            box-shadow: 0 0 0 3px rgba(91,79,207,0.1);
+            box-shadow: 0 0 0 3px rgba(219,39,119,0.1);
         }
 
         .field input::placeholder,
@@ -326,8 +326,8 @@
         }
 
         .priority-option.low label { color: #16a34a; }
-        .priority-option.low:has(input:checked) label { border-color: #16a34a; box-shadow: 0 0 0 2px #16a34a; background: #f0fdf4; }
-        .priority-option.low .dot { background: #16a34a; }
+        .priority-option.low:has(input:checked) label { border-color: #db2777; box-shadow: 0 0 0 2px #db2777; background: #fdf2f8; }
+        .priority-option.low .dot { background: #db2777; }
 
         .priority-option.medium label { color: #d97706; }
         .priority-option.medium:has(input:checked) label { border-color: #d97706; box-shadow: 0 0 0 2px #d97706; background: #fffbeb; }
@@ -337,7 +337,7 @@
         .priority-option.high:has(input:checked) label { border-color: #dc2626; box-shadow: 0 0 0 2px #dc2626; background: #fef2f2; }
         .priority-option.high .dot { background: #dc2626; }
 
-        .priority-option.critical label { color: #7c3aed; }
+        .priority-option.critical label { color: #16a34a; }
         .priority-option.critical:has(input:checked) label { border-color: #7c3aed; box-shadow: 0 0 0 2px #7c3aed; background: #f5f3ff; }
         .priority-option.critical .dot { background: #7c3aed; }
 
@@ -375,7 +375,7 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
-            box-shadow: 0 4px 16px rgba(91,79,207,0.35);
+            box-shadow: 0 4px 16px rgba(219,39,119,0.35);
             position: relative;
             overflow: hidden;
         }
@@ -390,7 +390,7 @@
         }
 
         .btn-submit:hover::before { opacity: 1; }
-        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(91,79,207,0.4); }
+        .btn-submit:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(219,39,119,0.4); }
         .btn-submit:active { transform: translateY(0); }
         .btn-submit:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
 
@@ -474,7 +474,7 @@
             transition: all 0.2s ease;
         }
 
-        .btn-new:hover { border-color: var(--accent); color: var(--accent); background: #f5f3ff; }
+        .btn-new:hover { border-color: var(--accent); color: var(--accent); background: #fdf2f8; }
 
         /* ── Footer ────────────────────────────────── */
         footer {
@@ -551,12 +551,10 @@
     </div>
 
     <header>
-        <div class="logo-mark">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 256" fill="currentColor">
-                <path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM80,176a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm48,0a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Zm48,0a8,8,0,0,1-16,0V144a8,8,0,0,1,16,0Z"/>
-            </svg>
+        <div class="logo-mark" style="background:white;padding:4px;">
+            <img src="https://blog.tripla.com.br/wp-content/uploads/2026/03/FLOW.png" alt="MKT Flow" style="width:100%;height:100%;object-fit:contain;display:block;">
         </div>
-        <div class="logo-text">Workspace<span>.</span></div>
+        <div class="logo-text">MKT Flow<span>.</span></div>
     </header>
 
     <main>
@@ -568,8 +566,8 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
                     Nova Solicitação
                 </div>
-                <h1>Solicite uma <em>demanda</em><br>para a nossa equipa</h1>
-                <p>Preencha o formulário abaixo com os detalhes do seu pedido. Nossa equipa analisará e retornará em breve.</p>
+                <h1>Solicite uma <em>demanda</em><br>para a nossa equipe</h1>
+                <p>Preencha o formulário abaixo com os detalhes do seu pedido. Nossa equipe analisará e retornará em breve.</p>
             </div>
 
             <!-- Form -->
@@ -660,7 +658,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
                 </div>
                 <h2>Solicitação enviada!</h2>
-                <p>Sua demanda foi registrada com sucesso e já está visível para a equipa. Você receberá um retorno pelo e-mail informado.</p>
+                <p>Sua demanda foi registrada com sucesso e já está visível para a equipe. Você receberá um retorno pelo e-mail informado.</p>
                 <div class="success-ref">
                     Protocolo: <strong id="successRef">—</strong>
                 </div>
@@ -675,7 +673,7 @@
     </main>
 
     <footer>
-        Planner da equipa &mdash; <span>Workspace.</span> &copy; 2025
+        MKT Flow &mdash; <span>Planner de Marketing</span> &copy; 2025
     </footer>
 
     <!-- Firebase SDK -->
