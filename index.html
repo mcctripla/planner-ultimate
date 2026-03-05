@@ -1016,18 +1016,56 @@
                 </div>
 
                 <!-- CONTROLE DE TEMPO NO MODAL -->
-                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 flex items-center justify-between shadow-sm">
-                    <div>
-                        <h4 class="text-[10px] text-indigo-400 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5"><i class="ph ph-clock text-sm"></i> Tempo Registrado</h4>
-                        <div class="font-mono text-3xl font-extrabold text-indigo-700 tracking-tight" id="viewTimerDisplay">00:00:00</div>
+                <div class="bg-indigo-50 border border-indigo-100 rounded-2xl p-5 shadow-sm space-y-4">
+                    <!-- Linha principal: total + botões -->
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-[10px] text-indigo-400 uppercase tracking-widest font-bold mb-1 flex items-center gap-1.5"><i class="ph ph-clock text-sm"></i> Tempo Registrado</h4>
+                            <div class="font-mono text-3xl font-extrabold text-indigo-700 tracking-tight" id="viewTimerDisplay">00:00:00</div>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <button id="viewTimerBtn" class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md text-sm">
+                                <i id="viewTimerIcon" class="ph ph-play-circle text-xl"></i> <span id="viewTimerText">Iniciar</span>
+                            </button>
+                            <button id="viewTimerReset" class="w-10 h-10 flex items-center justify-center bg-white border border-indigo-200 text-indigo-400 hover:text-rose-500 hover:border-rose-200 rounded-xl transition-all shadow-sm" title="Zerar Tempo">
+                                <i class="ph ph-arrow-counter-clockwise text-lg"></i>
+                            </button>
+                            <button onclick="toggleManualTimeEntry()" class="w-10 h-10 flex items-center justify-center bg-white border border-indigo-200 text-indigo-400 hover:text-indigo-600 hover:border-indigo-400 rounded-xl transition-all shadow-sm" title="Lançar tempo manualmente">
+                                <i class="ph ph-pencil-simple-line text-lg"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="flex gap-2">
-                        <button id="viewTimerBtn" class="flex items-center gap-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all shadow-md text-sm">
-                            <i id="viewTimerIcon" class="ph ph-play-circle text-xl"></i> <span id="viewTimerText">Iniciar</span>
-                        </button>
-                        <button id="viewTimerReset" class="w-10 h-10 flex items-center justify-center bg-white border border-indigo-200 text-indigo-400 hover:text-rose-500 hover:border-rose-200 rounded-xl transition-all shadow-sm" title="Zerar Tempo">
-                            <i class="ph ph-arrow-counter-clockwise text-lg"></i>
-                        </button>
+
+                    <!-- Lançamento manual (oculto por padrão) -->
+                    <div id="manualTimeEntry" class="hidden border-t border-indigo-200 pt-4">
+                        <p class="text-[10px] text-indigo-500 uppercase tracking-widest font-bold mb-3">Lançar tempo manualmente</p>
+                        <div class="flex flex-wrap gap-3 items-end">
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horas</label>
+                                <input id="manualHours" type="number" min="0" max="99" placeholder="0" class="w-20 px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm font-mono font-bold text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-center">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Minutos</label>
+                                <input id="manualMinutes" type="number" min="0" max="59" placeholder="0" class="w-20 px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm font-mono font-bold text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none text-center">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Data</label>
+                                <input id="manualDate" type="date" class="px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                            </div>
+                            <div class="flex flex-col gap-1">
+                                <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Nota (opcional)</label>
+                                <input id="manualNote" type="text" placeholder="ex: reunião, revisão..." class="w-44 px-3 py-2 bg-white border border-indigo-200 rounded-lg text-sm text-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 outline-none">
+                            </div>
+                            <button onclick="addManualTimeEntry()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold rounded-lg transition-colors shadow-sm flex items-center gap-1.5">
+                                <i class="ph ph-plus-circle text-base"></i> Adicionar
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Histórico de lançamentos -->
+                    <div id="timeLogsWrapper" class="hidden border-t border-indigo-200 pt-4">
+                        <p class="text-[10px] text-indigo-500 uppercase tracking-widest font-bold mb-2">Histórico de lançamentos</p>
+                        <div id="timeLogsList" class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar"></div>
                     </div>
                 </div>
 
@@ -2139,7 +2177,7 @@
                 }
             }
 
-            renderViewAttachments(t); renderViewSubtasks(t); updateModalTimerUI(t); renderViewComments(t);
+            renderViewAttachments(t); renderViewSubtasks(t); updateModalTimerUI(t); renderViewComments(t); renderTimeLogsHistory(t);
 
             const btnEdit = document.getElementById('btnEditTask'); if(btnEdit) btnEdit.onclick = () => { closeViewModal(); openModal(t.id); };
             const btnDel = document.getElementById('btnDeleteTask'); 
@@ -2155,7 +2193,13 @@
             const m = document.getElementById('viewModal'); if(m) { m.classList.remove('modal-hidden'); m.classList.add('modal-visible'); }
         }
 
-        function closeViewModal() { const m = document.getElementById('viewModal'); if(m) { m.classList.remove('modal-visible'); m.classList.add('modal-hidden'); currentViewTaskId = null; } }
+        function closeViewModal() {
+            const m = document.getElementById('viewModal');
+            if(m) { m.classList.remove('modal-visible'); m.classList.add('modal-hidden'); currentViewTaskId = null; }
+            // Reset manual entry panel
+            const mte = document.getElementById('manualTimeEntry');
+            if (mte) mte.classList.add('hidden');
+        }
 
         function renderViewAttachments(task) {
             const w = document.getElementById('viewAttachmentsWrapper'); const l = document.getElementById('viewAttachmentsList');
@@ -2408,6 +2452,98 @@
             task.timeLogs.push({ start: task.timerStart, duration: duration });
             task.timerRunning = false;
             task.timerStart = null;
+        }
+
+        function toggleManualTimeEntry() {
+            const panel = document.getElementById('manualTimeEntry');
+            if (!panel) return;
+            const isHidden = panel.classList.contains('hidden');
+            panel.classList.toggle('hidden');
+            if (isHidden) {
+                // Set today as default date
+                const dateInput = document.getElementById('manualDate');
+                if (dateInput && !dateInput.value) dateInput.value = getIsoDate(new Date());
+                document.getElementById('manualHours')?.focus();
+            }
+        }
+
+        async function addManualTimeEntry() {
+            const task = tasks.find(t => t.id === currentViewTaskId);
+            if (!task) return;
+
+            const h = parseInt(document.getElementById('manualHours')?.value || '0') || 0;
+            const m = parseInt(document.getElementById('manualMinutes')?.value || '0') || 0;
+            const dateVal = document.getElementById('manualDate')?.value;
+            const note = document.getElementById('manualNote')?.value.trim() || '';
+
+            if (h === 0 && m === 0) { showToast('Informe pelo menos 1 minuto.', 'error'); return; }
+            if (m > 59) { showToast('Minutos devem ser entre 0 e 59.', 'error'); return; }
+
+            const duration = (h * 3600) + (m * 60);
+            const startTs = dateVal ? new Date(dateVal + 'T12:00:00').getTime() : Date.now();
+
+            if (!task.timeLogs) task.timeLogs = [];
+            task.timeLogs.push({ start: startTs, duration, manual: true, note, addedBy: currentProfile?.name || '' });
+
+            // Clear inputs
+            document.getElementById('manualHours').value = '';
+            document.getElementById('manualMinutes').value = '';
+            document.getElementById('manualNote').value = '';
+
+            showToast(`${h}h ${m}m adicionados manualmente!`, 'success');
+            await saveTaskToFirebase(task);
+            renderTimeLogsHistory(task);
+
+            const display = document.getElementById('viewTimerDisplay');
+            if (display) display.textContent = formatTimeSecs(getTaskTotalSecs(task));
+        }
+
+        function renderTimeLogsHistory(task) {
+            const wrapper = document.getElementById('timeLogsWrapper');
+            const list = document.getElementById('timeLogsList');
+            if (!wrapper || !list || !task.timeLogs?.length) {
+                if (wrapper) wrapper.classList.add('hidden');
+                return;
+            }
+            wrapper.classList.remove('hidden');
+            const sorted = [...task.timeLogs].sort((a, b) => b.start - a.start);
+            list.innerHTML = sorted.map((log, idx) => {
+                const date = new Date(log.start).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+                const time = formatTimeSecs(log.duration);
+                const isManual = log.manual;
+                return `
+                <div class="flex items-center justify-between bg-white rounded-lg px-3 py-2 border border-indigo-100 text-xs gap-3">
+                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                        <i class="ph ph-${isManual ? 'pencil-simple' : 'play-circle'} text-sm ${isManual ? 'text-amber-500' : 'text-indigo-400'} shrink-0"></i>
+                        <span class="font-mono font-bold text-indigo-700">${time}</span>
+                        <span class="text-slate-400">${date}</span>
+                        ${log.note ? `<span class="text-slate-500 truncate italic">"${esc(log.note)}"</span>` : ''}
+                        ${log.addedBy ? `<span class="text-slate-400 truncate">· ${esc(log.addedBy)}</span>` : ''}
+                    </div>
+                    <button onclick="removeTimeLog('${task.id}', ${idx})" class="text-slate-300 hover:text-rose-500 transition-colors shrink-0" title="Remover lançamento">
+                        <i class="ph ph-x text-sm"></i>
+                    </button>
+                </div>`;
+            }).join('');
+        }
+
+        async function removeTimeLog(taskId, logIndex) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task || !task.timeLogs) return;
+            // Find the actual index in original (non-sorted) array
+            const sorted = [...task.timeLogs].sort((a, b) => b.start - a.start);
+            const logToRemove = sorted[logIndex];
+            const originalIdx = task.timeLogs.findIndex(l => l.start === logToRemove.start && l.duration === logToRemove.duration);
+            if (originalIdx === -1) return;
+
+            showDialog({ title: 'Remover Lançamento', msg: `Remover este registro de ${formatTimeSecs(logToRemove.duration)}?`, confirmTxt: 'Remover', danger: true }, async () => {
+                task.timeLogs.splice(originalIdx, 1);
+                await saveTaskToFirebase(task);
+                renderTimeLogsHistory(task);
+                const display = document.getElementById('viewTimerDisplay');
+                if (display) display.textContent = formatTimeSecs(getTaskTotalSecs(task));
+                showToast('Lançamento removido.', 'success');
+            });
         }
 
         async function toggleTimer(taskId, event) {
