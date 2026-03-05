@@ -661,6 +661,15 @@
                             <div id="an-owner-list" class="space-y-4"></div>
                         </div>
                     </div>
+
+                    <!-- Tempo por Tag -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                        <div class="flex items-center justify-between mb-6">
+                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2"><i class="ph ph-tag text-indigo-500"></i> Tempo Gasto por Tag</h4>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">horas registradas</span>
+                        </div>
+                        <div id="an-tag-time-list" class="space-y-3"></div>
+                    </div>
                 </div>
             </div>
 
@@ -1294,8 +1303,18 @@
             if (!window._firebaseReady) return;
             _unsubUsers = window._fsOnSnapshot(window._fsCollection(window._db, 'users'), (snap) => {
                 allUsersCache = snap.docs.map(d => d.data());
+                // Sync approved users into owners list automatically
+                const approvedNames = allUsersCache
+                    .filter(u => u.role === 'approved' || u.role === 'admin')
+                    .map(u => u.name);
+                approvedNames.forEach(name => {
+                    if (!appSettings.owners.includes(name)) {
+                        appSettings.owners.push(name);
+                    }
+                });
                 renderUsersPanel();
                 renderAdminHoursReport();
+                populateFilters();
             });
         }
 
@@ -1451,7 +1470,6 @@
 
         // 2. FIREBASE STORAGE
         async function loadData() {
-            // Aguarda Firebase estar pronto
             if (!window._firebaseReady) {
                 await new Promise(r => window.addEventListener('firebaseReady', r, { once: true }));
             }
@@ -1461,6 +1479,24 @@
             const onSnap = window._fsOnSnapshot;
 
             setCloudStatus('syncing');
+
+            // Sync approved users into owners for ALL users (not just admin)
+            onSnap(col(db, 'users'), (snap) => {
+                allUsersCache = snap.docs.map(d => d.data());
+                const approvedNames = allUsersCache
+                    .filter(u => u.role === 'approved' || u.role === 'admin')
+                    .map(u => u.name);
+                approvedNames.forEach(name => {
+                    if (!appSettings.owners.includes(name)) appSettings.owners.push(name);
+                });
+                // Remove revoked users from owners
+                appSettings.owners = appSettings.owners.filter(name =>
+                    approvedNames.includes(name) ||
+                    !allUsersCache.some(u => u.name === name) // keep manually added owners
+                );
+                populateFilters();
+                if (currentProfile?.role === 'admin') { renderUsersPanel(); renderAdminHoursReport(); }
+            });
 
             // Listener em tempo real para tarefas
             _unsubTasks = onSnap(col(db, 'tasks'), (snapshot) => {
@@ -1826,6 +1862,69 @@
             if(oArea) {
                 if(oList.length === 0) oArea.innerHTML = '<p class="text-xs text-slate-400">Nenhum responsável mapeado.</p>';
                 else oArea.innerHTML = oList.map(([name, cnt]) => { const pct = Math.round((cnt/tasks.length)*100); return `<div><div class="flex justify-between items-center text-xs font-bold mb-1.5"><div class="flex items-center gap-2"><div class="w-4 h-4 rounded-full ${getAvatarColor(name)} text-[7px] text-white flex items-center justify-center">${ini(name)}</div><span class="text-slate-700">${esc(name)}</span></div><span class="text-indigo-600">${cnt} t</span></div><div class="w-full h-1.5 bg-slate-100 rounded-full"><div class="h-full bg-indigo-500 rounded-full" style="width:${pct}%"></div></div></div>`; }).join('');
+            }
+
+            // ── Tempo por Tag ─────────────────────────────────────────────────
+            const tagArea = document.getElementById('an-tag-time-list');
+            if (tagArea) {
+                const tagColors = {
+                    rose: 'bg-rose-500', indigo: 'bg-indigo-500', emerald: 'bg-emerald-500',
+                    amber: 'bg-amber-500', pink: 'bg-pink-500', sky: 'bg-sky-500', slate: 'bg-slate-500', violet: 'bg-violet-500'
+                };
+                const tagTextColors = {
+                    rose: 'text-rose-600 bg-rose-50 border-rose-200', indigo: 'text-indigo-600 bg-indigo-50 border-indigo-200',
+                    emerald: 'text-emerald-600 bg-emerald-50 border-emerald-200', amber: 'text-amber-600 bg-amber-50 border-amber-200',
+                    pink: 'text-pink-600 bg-pink-50 border-pink-200', sky: 'text-sky-600 bg-sky-50 border-sky-200',
+                    slate: 'text-slate-600 bg-slate-50 border-slate-200', violet: 'text-violet-600 bg-violet-50 border-violet-200'
+                };
+
+                // Build tag stats
+                const tagStats = {};
+                // Add "Sem Tag" bucket
+                tagStats[''] = { name: 'Sem Tag', color: 'slate', secs: 0, count: 0, done: 0 };
+                (appSettings.tags || []).forEach(t => {
+                    tagStats[t.name] = { name: t.name, color: t.color || 'slate', secs: 0, count: 0, done: 0 };
+                });
+                tasks.forEach(t => {
+                    const key = t.tag || '';
+                    if (!tagStats[key]) tagStats[key] = { name: key || 'Sem Tag', color: 'slate', secs: 0, count: 0, done: 0 };
+                    tagStats[key].secs += getTaskTotalSecs(t);
+                    tagStats[key].count++;
+                    if (t.status === 'done') tagStats[key].done++;
+                });
+
+                const tagList = Object.values(tagStats).filter(t => t.count > 0).sort((a, b) => b.secs - a.secs);
+                const maxSecs = Math.max(...tagList.map(t => t.secs), 1);
+
+                if (tagList.length === 0) {
+                    tagArea.innerHTML = '<p class="text-xs text-slate-400">Nenhuma tarefa com tag registrada.</p>';
+                } else {
+                    tagArea.innerHTML = tagList.map(t => {
+                        const pct = Math.round((t.secs / maxSecs) * 100);
+                        const barColor = tagColors[t.color] || 'bg-slate-400';
+                        const badgeCls = tagTextColors[t.color] || tagTextColors['slate'];
+                        const hours = (t.secs / 3600).toFixed(1);
+                        const donePct = t.count > 0 ? Math.round((t.done / t.count) * 100) : 0;
+                        return `
+                        <div class="flex items-center gap-4">
+                            <div class="w-28 shrink-0">
+                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${badgeCls} truncate block text-center">${esc(t.name)}</span>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between text-[10px] text-slate-400 font-medium mb-1">
+                                    <span>${t.count} tarefa${t.count !== 1 ? 's' : ''} · ${donePct}% concluído</span>
+                                    <span class="font-mono font-bold text-slate-600">${formatTimeSecs(t.secs)}</span>
+                                </div>
+                                <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                    <div class="h-full ${barColor} rounded-full transition-all duration-700" style="width:${pct}%"></div>
+                                </div>
+                            </div>
+                            <div class="w-12 text-right shrink-0">
+                                <span class="text-xs font-bold text-slate-500">${hours}h</span>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
             }
         }
 
