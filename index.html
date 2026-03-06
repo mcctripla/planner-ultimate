@@ -2123,27 +2123,32 @@
                     tagArea.innerHTML = '<p class="text-xs text-slate-400">Nenhuma tarefa com tag registrada.</p>';
                 } else {
                     tagArea.innerHTML = tagList.map(t => {
-                        const pct = Math.round((t.secs / maxSecs) * 100);
+                        const pct     = Math.round((t.secs / maxSecs) * 100);
                         const barColor = tagColors[t.color] || 'bg-slate-400';
                         const badgeCls = tagTextColors[t.color] || tagTextColors['slate'];
-                        const hours = (t.secs / 3600).toFixed(1);
+                        const totalH  = (t.secs / 3600).toFixed(1);
+                        const avgSecs = t.count > 0 ? t.secs / t.count : 0;
+                        const avgH    = (avgSecs / 3600).toFixed(1);
                         const donePct = t.count > 0 ? Math.round((t.done / t.count) * 100) : 0;
                         return `
-                        <div class="flex items-center gap-4">
-                            <div class="w-28 shrink-0">
-                                <span class="text-[10px] font-bold px-2.5 py-1 rounded-full border ${badgeCls} truncate block text-center">${esc(t.name)}</span>
+                        <div class="flex items-center gap-3 md:gap-4 py-0.5">
+                            <div class="w-24 md:w-28 shrink-0">
+                                <span class="text-[10px] font-bold px-2 py-1 rounded-full border ${badgeCls} truncate block text-center">${esc(t.name)}</span>
                             </div>
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between text-[10px] text-slate-400 font-medium mb-1">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center justify-between text-[10px] text-slate-400 font-medium mb-1 gap-2">
                                     <span>${t.count} tarefa${t.count !== 1 ? 's' : ''} · ${donePct}% concluído</span>
-                                    <span class="font-mono font-bold text-slate-600">${formatTimeSecs(t.secs)}</span>
+                                    <span class="font-mono font-bold text-slate-600 shrink-0">${formatTimeSecs(t.secs)}</span>
                                 </div>
                                 <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                                     <div class="h-full ${barColor} rounded-full transition-all duration-700" style="width:${pct}%"></div>
                                 </div>
                             </div>
-                            <div class="w-12 text-right shrink-0">
-                                <span class="text-xs font-bold text-slate-500">${hours}h</span>
+                            <div class="shrink-0 text-right flex flex-col items-end gap-0.5">
+                                <span class="text-xs font-bold text-slate-600 font-mono leading-none">${totalH}h</span>
+                                <span class="text-[9px] text-slate-400 leading-none flex items-center gap-0.5">
+                                    <i class="ph ph-equals"></i>${avgH}h/dem
+                                </span>
                             </div>
                         </div>`;
                     }).join('');
