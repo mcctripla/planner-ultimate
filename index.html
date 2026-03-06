@@ -2,7 +2,7 @@
 <html lang="pt-PT">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MKT Flow</title>
     
     <!-- Tailwind CSS -->
@@ -243,9 +243,137 @@
         /* Pulse Animation for active timer */
         @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(244, 63, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); } }
         .timer-active-ring { animation: pulse-ring 2s infinite; }
+
+        /* ══ MOBILE RESPONSIVE ══════════════════════════════════════════════ */
+
+        /* Safe area support for notch/home indicator */
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 8px); }
+
+        /* No scrollbar utility */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Bottom nav active state */
+        .bottom-nav-btn { color: #94a3b8; }
+        .bottom-nav-btn.active { color: #db2777; background: #fdf2f8; }
+
+        /* Sidebar slide-over behavior */
+        #sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        #sidebar.open { transform: translateX(0) !important; }
+
+        /* Kanban columns — min-width for mobile */
+        .kanban-column { min-width: 260px; }
+        @media (max-width: 640px) {
+            .kanban-column { min-width: 240px; }
+        }
+
+        /* Board padding bottom for mobile nav bar */
+        @media (max-width: 767px) {
+            #view-board, #view-list, #view-calendar,
+            #view-analytics, #view-time, #view-admin, #view-users,
+            .dark #view-list, .dark #view-calendar, .dark #view-analytics,
+            .dark #view-time, .dark #view-admin, .dark #view-users {
+                padding-bottom: 72px;
+            }
+            #view-board { padding-bottom: 0; }
+            #view-board > .flex-1 { padding-bottom: 72px; }
+
+            /* Main content takes full width */
+            #mainContent { padding-bottom: 72px; }
+        }
+
+        /* Modal bottom sheet on mobile */
+        @media (max-width: 639px) {
+            .modal-content {
+                border-radius: 24px 24px 0 0 !important;
+                max-height: 92dvh !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+            /* Drag handle visual cue */
+            .modal-content::before {
+                content: '';
+                display: block;
+                width: 40px;
+                height: 4px;
+                background: #cbd5e1;
+                border-radius: 2px;
+                margin: 12px auto 0;
+                flex-shrink: 0;
+            }
+        }
+
+        /* View panels responsive padding */
+        @media (max-width: 767px) {
+            .view-section-pad { padding: 16px !important; }
+            .analytics-grid { grid-template-columns: 1fr 1fr !important; gap: 12px !important; }
+            .time-grid { grid-template-columns: 1.5fr 1fr 1fr !important; }
+        }
+
+        /* Lists responsive */
+        @media (max-width: 767px) {
+            .list-grid-header { display: none !important; }
+            .list-grid-row {
+                grid-template-columns: 1fr auto !important;
+                gap: 8px !important;
+            }
+        }
+
+        /* Modal form responsive */
+        @media (max-width: 639px) {
+            .modal-form-grid { grid-template-columns: 1fr !important; }
+        }
+
+        /* Auth overlay — full height on mobile */
+        #authOverlay { min-height: 100dvh; }
+        #screenLogin .bg-slate-900,
+        #screenRegister .bg-slate-900,
+        #screenPending .bg-slate-900 {
+            max-height: 92dvh;
+            overflow-y: auto;
+        }
+
+        /* Dropdowns — position right on mobile to avoid overflow */
+        @media (max-width: 639px) {
+            #livePanel, #notifPanel {
+                right: -60px !important;
+                width: calc(100vw - 24px) !important;
+                max-width: 360px;
+            }
+        }
+
+        /* Header title — truncate long view names */
+        #header-title { max-width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        @media (min-width: 640px) { #header-title { max-width: none; } }
+
+        /* Daily panel — full screen on mobile */
+        @media (max-width: 639px) {
+            #dailyPanel { width: 100% !important; }
+        }
+
+        /* Users panel — stack layout on mobile */
+        @media (max-width: 767px) {
+            .admin-hours-row { flex-direction: column; gap: 8px; }
+            .admin-hours-stats { grid-template-columns: repeat(3, 1fr) !important; }
+        }
+
+        /* Manual time entry — stack on mobile */
+        @media (max-width: 639px) {
+            #manualTimeEntry .flex { flex-wrap: wrap; }
+            #manualTimeEntry input, #manualTimeEntry .w-20, #manualTimeEntry .w-44 {
+                width: 100% !important;
+            }
+        }
+
+        /* View time table — simplified on mobile */
+        @media (max-width: 767px) {
+            .time-table-row { grid-template-columns: 1fr auto auto !important; }
+            .time-table-col-hide { display: none !important; }
+        }
+
     </style>
 </head>
-<body class="bg-board text-slate-800 h-screen flex overflow-hidden font-sans relative selection:bg-pink-100 selection:text-pink-900">
+<body class="bg-board text-slate-800 h-[100dvh] flex overflow-hidden font-sans relative selection:bg-pink-100 selection:text-pink-900">
 
     <!-- Background Decoration -->
     <div class="absolute top-0 left-1/4 w-[800px] h-[300px] bg-pink-400/5 rounded-full blur-[120px] pointer-events-none -z-10"></div>
@@ -261,7 +389,7 @@
 
         <!-- ── TELA: LOGIN ─────────────────────────────────────────── -->
         <div id="screenLogin" class="relative w-full max-w-md mx-4">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-6 md:p-8 max-h-[90dvh] overflow-y-auto">
                 <div class="flex items-center gap-3 mb-8">
                     <div class="flex items-center justify-center w-10 h-10 rounded-xl shadow-lg shadow-pink-500/30" style="background:linear-gradient(135deg,#db2777,#ec4899)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg></div>
                     <div>
@@ -301,7 +429,7 @@
 
         <!-- ── TELA: CADASTRO ──────────────────────────────────────── -->
         <div id="screenRegister" class="relative w-full max-w-md mx-4 hidden">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-8">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-6 md:p-8 max-h-[90dvh] overflow-y-auto">
                 <div class="flex items-center gap-3 mb-8">
                     <div class="flex items-center justify-center w-10 h-10 rounded-xl shadow-lg shadow-pink-500/30" style="background:linear-gradient(135deg,#db2777,#ec4899)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg></div>
                     <div>
@@ -348,7 +476,7 @@
 
         <!-- ── TELA: AGUARDANDO APROVAÇÃO ──────────────────────────── -->
         <div id="screenPending" class="relative w-full max-w-md mx-4 hidden">
-            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-10 text-center">
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl p-6 md:p-10 text-center">
                 <div class="w-20 h-20 bg-amber-500/10 border border-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <i class="ph ph-hourglass-medium text-4xl text-amber-400 animate-pulse"></i>
                 </div>
@@ -373,8 +501,11 @@
         </div>
     </div>
 
+    <!-- SIDEBAR OVERLAY -->
+    <div id="sidebarOverlay" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 hidden md:hidden" onclick="closeSidebar()"></div>
+
     <!-- SIDEBAR -->
-    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 transition-all duration-300 z-30 shadow-xl relative" id="sidebar">
+    <aside class="w-72 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 transition-all duration-300 z-50 shadow-2xl fixed md:relative md:z-30 inset-y-0 left-0 -translate-x-full md:translate-x-0" id="sidebar">
         <div class="h-16 flex items-center px-6 border-b border-slate-800/60 bg-slate-950/50">
             <div class="flex items-center justify-center w-9 h-9 rounded-lg mr-3 shrink-0" style="background:linear-gradient(135deg,#db2777,#ec4899)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="16 12 12 8 8 12"/><line x1="12" y1="16" x2="12" y2="8"/></svg></div>
             <h1 class="text-xl font-display font-extrabold text-white tracking-tight">MKT Flow<span class="text-pink-400">.</span></h1>
@@ -466,14 +597,18 @@
     </aside>
 
     <!-- MAIN CONTENT -->
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50/50">
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-50/50 w-full">
         
         <!-- HEADER -->
-        <header class="h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-6 lg:px-8 z-20 shrink-0 shadow-sm">
-            <div class="flex items-center gap-6">
+        <header class="h-14 md:h-16 bg-white/80 backdrop-blur-md border-b border-slate-200 flex items-center justify-between px-3 md:px-6 lg:px-8 z-20 shrink-0 shadow-sm">
+            <div class="flex items-center gap-2 md:gap-4">
+                <!-- Hamburger -->
+                <button onclick="toggleSidebar()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-xl text-slate-600 hover:bg-slate-100 transition-colors" id="hamburgerBtn">
+                    <i class="ph ph-list text-xl"></i>
+                </button>
                 <div>
-                    <h2 class="text-lg font-display font-bold text-slate-800" id="header-title">Quadro Kanban</h2>
-                    <p class="text-[11px] font-medium text-slate-500 flex items-center gap-1.5" id="live-datetime"><i class="ph ph-clock"></i> A carregar...</p>
+                    <h2 class="text-sm md:text-lg font-display font-bold text-slate-800 leading-tight" id="header-title">Quadro Kanban</h2>
+                    <p class="text-[10px] md:text-[11px] font-medium text-slate-500 hidden sm:flex items-center gap-1.5" id="live-datetime"><i class="ph ph-clock"></i> A carregar...</p>
                 </div>
             </div>
 
@@ -491,16 +626,16 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1.5 md:gap-3">
                 <!-- Search -->
                 <div class="relative hidden md:block">
                     <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchInput" placeholder="Procurar (Ctrl+K)..." class="w-56 lg:w-64 pl-9 pr-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:bg-white focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all outline-none" oninput="renderAll()">
+                    <input type="text" id="searchInput" placeholder="Procurar (Ctrl+K)..." class="w-40 lg:w-64 pl-9 pr-4 py-2 bg-slate-100 border border-slate-200 rounded-full text-sm focus:bg-white focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 transition-all outline-none" oninput="renderAll()">
                 </div>
 
                 <!-- Daily / Tarefas do Dia -->
                 <div class="relative">
-                    <button id="dailyBtn" onclick="toggleDailyPanel()" class="w-10 h-10 rounded-full flex items-center justify-center bg-amber-50 border border-amber-200 text-amber-600 hover:bg-amber-100 transition-colors relative" title="Painel Daily">
+                    <button id="dailyBtn" onclick="toggleDailyPanel()" class="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-amber-50 border border-amber-200 text-amber-600 hover:bg-amber-100 transition-colors relative" title="Painel Daily">
                         <i class="ph ph-sun text-lg"></i>
                         <span id="daily-badge" class="absolute top-2 right-2 w-2.5 h-2.5 bg-amber-500 rounded-full border-2 border-white hidden"></span>
                     </button>
@@ -508,13 +643,13 @@
 
                 <!-- Live Team Activity -->
                 <div class="relative">
-                    <button id="liveBtn" onclick="toggleLivePanel()" class="w-10 h-10 rounded-full flex items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-colors relative" title="Equipe ao Vivo">
+                    <button id="liveBtn" onclick="toggleLivePanel()" class="hidden sm:flex w-8 h-8 md:w-10 md:h-10 rounded-full items-center justify-center bg-emerald-50 border border-emerald-200 text-emerald-600 hover:bg-emerald-100 transition-colors relative" title="Equipe ao Vivo">
                         <i class="ph ph-broadcast text-lg"></i>
                         <span id="live-badge" class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white hidden"></span>
                     </button>
                     
                     <!-- Live Dropdown -->
-                    <div id="livePanel" class="hidden absolute top-full mt-3 right-0 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden origin-top-right transition-all">
+                    <div id="livePanel" class="hidden absolute top-full mt-3 right-0 w-[calc(100vw-24px)] sm:w-96 max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden origin-top-right transition-all">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <h4 class="font-bold text-sm text-slate-800 flex items-center gap-2"><i class="ph ph-users text-emerald-500"></i> Trabalhando Agora</h4>
                             <button onclick="toggleLivePanel()" class="text-slate-400 hover:text-slate-700"><i class="ph ph-x"></i></button>
@@ -525,13 +660,13 @@
 
                 <!-- Notifications -->
                 <div class="relative">
-                    <button id="notifBtn" onclick="toggleNotifPanel()" class="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200 transition-colors relative">
+                    <button id="notifBtn" onclick="toggleNotifPanel()" class="hidden sm:flex w-8 h-8 md:w-10 md:h-10 rounded-full items-center justify-center bg-slate-100 border border-slate-200 text-slate-600 hover:bg-slate-200 transition-colors relative">
                         <i class="ph ph-bell text-lg"></i>
                         <span id="notif-badge" class="absolute top-2 right-2 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-white hidden"></span>
                     </button>
                     
                     <!-- Notif Dropdown -->
-                    <div id="notifPanel" class="hidden absolute top-full mt-3 right-0 w-80 bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden origin-top-right transition-all">
+                    <div id="notifPanel" class="hidden absolute top-full mt-3 right-0 w-[calc(100vw-24px)] sm:w-80 max-w-sm bg-white rounded-2xl shadow-2xl border border-slate-100 z-50 overflow-hidden origin-top-right transition-all">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                             <h4 class="font-bold text-sm text-slate-800"><i class="ph ph-bell-ringing text-pink-500 mr-1"></i> Avisos do Quadro</h4>
                             <button onclick="toggleNotifPanel()" class="text-slate-400 hover:text-slate-700"><i class="ph ph-x"></i></button>
@@ -540,10 +675,10 @@
                     </div>
                 </div>
 
-                <div class="w-px h-6 bg-slate-300 hidden sm:block"></div>
+                <div class="w-px h-6 bg-slate-300 hidden md:block"></div>
 
-                <button onclick="openModal()" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-2 px-4 lg:py-2.5 lg:px-5 rounded-full flex items-center gap-2 transition-all shadow-md shadow-pink-500/20">
-                    <i class="ph ph-plus-bold"></i> <span class="hidden sm:inline">Nova Demanda</span>
+                <button onclick="openModal()" class="bg-pink-600 hover:bg-pink-700 text-white font-semibold py-1.5 px-3 md:py-2 md:px-4 lg:py-2.5 lg:px-5 rounded-full flex items-center gap-1.5 transition-all shadow-md shadow-pink-500/20 text-sm">
+                    <i class="ph ph-plus-bold text-sm"></i> <span class="hidden sm:inline">Nova</span>
                 </button>
             </div>
         </header>
@@ -552,25 +687,25 @@
         <main class="flex-1 overflow-hidden relative">
             
             <!-- VIEW: BOARD (Kanban) -->
-            <div id="view-board" class="view-panel h-full flex flex-col">
-                <div class="bg-white border-b border-slate-200 px-8 py-3 flex items-center gap-4 overflow-x-auto custom-scrollbar shrink-0">
-                    <button class="filter-btn active px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-pink-50 border-pink-200 text-pink-700" data-status="all" onclick="filterByStatus('all', this)">Todas</button>
-                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100" data-status="todo" onclick="filterByStatus('todo', this)">A Fazer</button>
-                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100" data-status="inProgress" onclick="filterByStatus('inProgress', this)">Em Andamento</button>
-                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100" data-status="review" onclick="filterByStatus('review', this)">Revisão</button>
-                    <button class="filter-btn px-4 py-1.5 rounded-full text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100" data-status="done" onclick="filterByStatus('done', this)">Finalizadas</button>
+            <div id="view-board" class="view-panel h-full flex flex-col" style="padding-bottom: env(safe-area-inset-bottom, 0px)">
+                <div class="bg-white border-b border-slate-200 px-3 md:px-6 py-2.5 flex items-center gap-2 md:gap-3 overflow-x-auto custom-scrollbar shrink-0 no-scrollbar">
+                    <button class="filter-btn active px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold border transition-all bg-pink-50 border-pink-200 text-pink-700 shrink-0" data-status="all" onclick="filterByStatus('all', this)">Todas</button>
+                    <button class="filter-btn px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 shrink-0" data-status="todo" onclick="filterByStatus('todo', this)">A Fazer</button>
+                    <button class="filter-btn px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 shrink-0" data-status="inProgress" onclick="filterByStatus('inProgress', this)">Em Andamento</button>
+                    <button class="filter-btn px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 shrink-0" data-status="review" onclick="filterByStatus('review', this)">Revisão</button>
+                    <button class="filter-btn px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-bold border transition-all bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100 shrink-0" data-status="done" onclick="filterByStatus('done', this)">Finalizadas</button>
                     
                     <div class="w-px h-5 bg-slate-300 mx-2 shrink-0"></div>
                     
-                    <select id="fOwner" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
+                    <select id="fOwner" onchange="renderAll()" class="px-2 md:px-3 py-1 md:py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] md:text-xs font-medium outline-none focus:border-pink-500 cursor-pointer max-w-[100px] md:max-w-none">
                         <option value="all">Todos os Owners</option>
                     </select>
 
-                    <select id="fSector" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
+                    <select id="fSector" onchange="renderAll()" class="px-2 md:px-3 py-1 md:py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] md:text-xs font-medium outline-none focus:border-pink-500 cursor-pointer max-w-[100px] md:max-w-none">
                         <option value="all">Todos os Setores</option>
                     </select>
                     
-                    <select id="fPrio" onchange="renderAll()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
+                    <select id="fPrio" onchange="renderAll()" class="px-2 md:px-3 py-1 md:py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-[10px] md:text-xs font-medium outline-none focus:border-pink-500 cursor-pointer max-w-[100px] md:max-w-none">
                         <option value="all">Prioridades</option>
                         <option value="critical">Crítica</option>
                         <option value="high">Alta</option>
@@ -579,29 +714,29 @@
                     </select>
                 </div>
 
-                <div class="flex-1 overflow-x-auto overflow-y-hidden p-6 custom-scrollbar">
-                    <div class="flex gap-6 h-full min-w-max items-start pb-4" id="board-container"></div>
+                <div class="flex-1 overflow-x-auto overflow-y-hidden p-3 md:p-6 custom-scrollbar">
+                    <div class="flex gap-3 md:gap-5 h-full min-w-max items-start pb-20 md:pb-4" id="board-container"></div>
                 </div>
             </div>
 
             <!-- VIEW: LIST -->
             <div id="view-list" class="view-panel hidden h-full overflow-y-auto bg-white custom-scrollbar">
-                <div class="p-8 max-w-7xl mx-auto">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-display font-bold text-slate-800">Visualização em Lista</h3>
+                <div class="p-4 md:p-8 max-w-7xl mx-auto">
+                    <div class="flex justify-between items-center mb-4 md:mb-6">
+                        <h3 class="text-lg md:text-xl font-display font-bold text-slate-800">Visualização em Lista</h3>
                     </div>
                     <div class="border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
-                        <div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_100px] gap-4 p-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-widest">
+                        <div class="hidden md:grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_100px] gap-4 p-4 bg-slate-50 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-widest">
                             <div>Título da Demanda</div><div>Status</div><div>Prioridade</div><div>Owner</div><div>Setor</div><div>Prazo</div><div class="text-center">Ações</div>
                         </div>
-                        <div id="list-body" class="divide-y divide-slate-100"></div>
+                        <div id="list-body"></div>
                     </div>
                 </div>
             </div>
 
             <!-- VIEW: CALENDAR -->
             <div id="view-calendar" class="view-panel hidden h-full overflow-y-auto bg-slate-50 custom-scrollbar">
-                <div class="p-8 max-w-6xl mx-auto">
+                <div class="p-4 md:p-8 max-w-6xl mx-auto">
                     <div class="flex items-center justify-between mb-8 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                         <div class="flex items-center gap-4">
                             <button onclick="calPrev()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"><i class="ph ph-caret-left"></i></button>
@@ -620,32 +755,32 @@
 
             <!-- VIEW: ANALYTICS -->
             <div id="view-analytics" class="view-panel hidden h-full overflow-y-auto bg-slate-50 custom-scrollbar">
-                <div class="p-8 max-w-6xl mx-auto space-y-6">
-                    <h3 class="text-xl font-display font-bold text-slate-800 mb-2">Visão Geral do Projeto</h3>
+                <div class="p-4 md:p-8 max-w-6xl mx-auto space-y-4 md:space-y-6">
+                    <h3 class="text-lg md:text-xl font-display font-bold text-slate-800 mb-2">Visão Geral do Projeto</h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"><i class="ph ph-stack text-pink-500 text-sm mr-1"></i> Total Demandas</span>
-                            <span class="text-4xl font-display font-extrabold text-slate-800" id="an-total">0</span>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-4 md:mb-6">
+                        <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 md:mb-2"><i class="ph ph-stack text-pink-500 text-sm mr-1"></i> Total Demandas</span>
+                            <span class="text-3xl md:text-4xl font-display font-extrabold text-slate-800" id="an-total">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"><i class="ph ph-check-circle text-emerald-500 text-sm mr-1"></i> Concluídas</span>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 md:mb-2"><i class="ph ph-check-circle text-emerald-500 text-sm mr-1"></i> Concluídas</span>
                             <div class="flex items-end gap-3">
-                                <span class="text-4xl font-display font-extrabold text-emerald-500" id="an-done">0</span>
+                                <span class="text-3xl md:text-4xl font-display font-extrabold text-emerald-500" id="an-done">0</span>
                                 <span class="text-sm font-bold text-slate-400 mb-1" id="an-done-pct">0%</span>
                             </div>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"><i class="ph ph-warning-circle text-rose-500 text-sm mr-1"></i> Atrasadas</span>
-                            <span class="text-4xl font-display font-extrabold text-rose-500" id="an-late">0</span>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 md:mb-2"><i class="ph ph-warning-circle text-rose-500 text-sm mr-1"></i> Atrasadas</span>
+                            <span class="text-3xl md:text-4xl font-display font-extrabold text-rose-500" id="an-late">0</span>
                         </div>
-                        <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
-                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2"><i class="ph ph-clock text-amber-500 text-sm mr-1"></i> Horas Lançadas</span>
-                            <span class="text-3xl font-display font-extrabold text-amber-500 tabular-nums" id="an-hours">00:00:00</span>
+                        <div class="bg-white p-4 md:p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                            <span class="text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest mb-1 md:mb-2"><i class="ph ph-clock text-amber-500 text-sm mr-1"></i> Horas Lançadas</span>
+                            <span class="text-2xl md:text-3xl font-display font-extrabold text-amber-500 tabular-nums" id="an-hours">00:00:00</span>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                         <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                             <h4 class="text-sm font-bold text-slate-700 mb-6">Status do Funil</h4>
                             <div class="flex items-end gap-4 h-40" id="an-status-chart"></div>
@@ -669,7 +804,7 @@
 
             <!-- VIEW: TIME TRACKING -->
             <div id="view-time" class="view-panel hidden h-full overflow-y-auto bg-slate-50 custom-scrollbar">
-                <div class="p-8 max-w-6xl mx-auto">
+                <div class="p-4 md:p-8 max-w-6xl mx-auto">
                     
                     <div class="flex justify-between items-end mb-6">
                         <div>
@@ -684,7 +819,7 @@
                     <!-- Container for multiple active sessions -->
                     <div id="time-live-container" class="mb-6 space-y-4"></div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="grid grid-cols-3 gap-3 md:gap-6 mb-4 md:mb-8">
                         <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm border-t-4 border-t-pink-400">
                             <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-1">Esta Semana</span>
                             <span class="text-3xl font-display font-extrabold text-slate-800 tabular-nums" id="time-week">00:00:00</span>
@@ -711,7 +846,7 @@
 
             <!-- VIEW: ADMIN / CONFIGURAÇÕES -->
             <div id="view-admin" class="view-panel hidden h-full overflow-y-auto bg-slate-50 custom-scrollbar">
-                <div class="p-8 max-w-6xl mx-auto">
+                <div class="p-4 md:p-8 max-w-6xl mx-auto">
                     <div class="mb-6">
                         <h3 class="text-xl font-display font-bold text-slate-800 mb-1">Configurações e Administração</h3>
                         <p class="text-sm text-slate-500">Personalize a lista de colaboradores, os seus setores e as categorias da equipe.</p>
@@ -778,9 +913,9 @@
 
             <!-- VIEW: USUÁRIOS (admin only) -->
             <div id="view-users" class="view-panel hidden h-full overflow-y-auto bg-slate-50 custom-scrollbar">
-                <div class="p-8 max-w-5xl mx-auto">
-                    <div class="mb-6">
-                        <h3 class="text-xl font-display font-bold text-slate-800 mb-1">Gestão de Usuários</h3>
+                <div class="p-4 md:p-8 max-w-5xl mx-auto">
+                    <div class="mb-4 md:mb-6">
+                        <h3 class="text-lg md:text-xl font-display font-bold text-slate-800 mb-1">Gestão de Usuários</h3>
                         <p class="text-sm text-slate-500">Aprove ou revogue o acesso dos colaboradores ao planner.</p>
                     </div>
 
@@ -858,7 +993,7 @@
     </div>
 
     <!-- MODAL FORM (CRIAR/EDITAR) -->
-    <div id="taskModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-center justify-center modal-transition modal-hidden px-4 py-8">
+    <div id="taskModal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center modal-transition modal-hidden sm:px-4 sm:py-8">
         <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-3xl flex flex-col max-h-full overflow-hidden modal-content border border-slate-100">
             
             <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-center shrink-0 bg-white">
@@ -974,7 +1109,7 @@
     </div>
 
     <!-- MODAL DE VISUALIZAÇÃO -->
-    <div id="viewModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-center justify-center modal-transition modal-hidden px-4 py-8">
+    <div id="viewModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[100] flex items-end sm:items-center justify-center modal-transition modal-hidden sm:px-4 sm:py-8">
         <div class="bg-white rounded-[24px] shadow-2xl w-full max-w-2xl flex flex-col max-h-full overflow-hidden modal-content border border-slate-100 relative">
             
             <div class="px-8 py-5 border-b border-slate-100 flex justify-between items-start bg-white shrink-0 relative">
@@ -1033,7 +1168,7 @@
                     <!-- Lançamento manual (oculto por padrão) -->
                     <div id="manualTimeEntry" class="hidden border-t border-pink-200 pt-4">
                         <p class="text-[10px] text-pink-500 uppercase tracking-widest font-bold mb-3">Lançar tempo manualmente</p>
-                        <div class="flex flex-wrap gap-3 items-end">
+                        <div class="flex flex-wrap gap-2 md:gap-3 items-end">
                             <div class="flex flex-col gap-1">
                                 <label class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Horas</label>
                                 <input id="manualHours" type="number" min="0" max="99" placeholder="0" class="w-20 px-3 py-2 bg-white border border-pink-200 rounded-lg text-sm font-mono font-bold text-slate-700 focus:border-pink-500 focus:ring-2 focus:ring-pink-500/20 outline-none text-center">
@@ -1709,6 +1844,7 @@
         // 5. NAVIGATION & RENDER CORE
         function switchView(viewId) {
             activeView = viewId;
+            updateBottomNav(viewId);
             document.querySelectorAll('.view-panel').forEach(p => p.classList.add('hidden'));
             const panel = document.getElementById(`view-${viewId}`); if(panel) panel.classList.remove('hidden');
             document.querySelectorAll('.nav-item').forEach(i => { if(i.dataset.view === viewId) { i.classList.add('bg-pink-600', 'text-white'); i.classList.remove('hover:bg-slate-800'); } else { i.classList.remove('bg-pink-600', 'text-white'); i.classList.add('hover:bg-slate-800'); } });
@@ -1778,7 +1914,7 @@
                 const countEl = document.getElementById(col.cId); if(countEl) countEl.textContent = tasks.filter(t=>t.status===col.id).length;
                 
                 finalHtml += `
-                <div class="w-80 flex flex-col max-h-full shrink-0">
+                <div class="w-64 md:w-80 flex flex-col max-h-full shrink-0">
                     <div class="flex items-center justify-between mb-3 px-1"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full ${col.color}"></span> ${col.name}</h3><span class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">${colTasks.length}</span></div>
                     <div class="kanban-column flex-1 overflow-y-auto pb-4 custom-scrollbar flex flex-col gap-3 rounded-xl border-2 border-transparent p-1" data-status="${col.id}">
                         ${colTasks.length === 0 ? `<div onclick="openModal('${col.id}')" class="h-24 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-pink-500 hover:border-pink-200 hover:bg-pink-50/50 cursor-pointer transition-all"><span class="text-xs font-bold">+ Adicionar Demanda</span></div>` : colTasks.map(t => generateCardHtml(t)).join('')}
@@ -1836,7 +1972,24 @@
             tbody.innerHTML = filtered.map(t => {
                 const late = isOverdue(t.dueDate) && t.status !== 'done';
                 let pCol = 'text-slate-500'; if(t.priority==='high') pCol='text-rose-500'; if(t.priority==='critical') pCol='text-pink-500 font-bold';
-                return `<div class="grid grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_100px] gap-4 p-3.5 hover:bg-slate-50 items-center text-sm transition-colors cursor-pointer" onclick="openViewModal('${t.id}')"><div class="font-bold text-slate-800 truncate pr-4">${esc(t.title)}</div><div><span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-slate-100 rounded text-slate-600">${statusMap[t.status]}</span></div><div class="${pCol} text-xs font-bold uppercase">${t.priority}</div><div class="flex items-center gap-2"><div class="w-5 h-5 rounded-full ${getAvatarColor(t.owner)} text-white text-[8px] flex items-center justify-center">${ini(t.owner)}</div><span class="truncate text-xs font-medium">${esc(t.owner)||'--'}</span></div><div class="text-xs text-slate-500 truncate">${esc(t.requesterSector)||'--'}</div><div class="text-xs font-medium ${late ? 'text-rose-500' : 'text-slate-600'}">${formatDate(t.dueDate)}</div><div class="text-center" onclick="event.stopPropagation()"><button onclick="openModal('${t.id}')" class="p-1.5 text-slate-400 hover:text-pink-600 transition-colors"><i class="ph ph-pencil-simple text-base"></i></button><button onclick="resetTimer('${t.id}')" class="p-1.5 text-slate-400 hover:text-rose-600 transition-colors" title="Zerar Tempo"><i class="ph ph-clock-counter-clockwise text-base"></i></button></div></div>`;
+                return `<div class="relative flex md:grid md:grid-cols-[2fr_1fr_1fr_1fr_1fr_1fr_100px] gap-2 md:gap-4 p-3 md:p-3.5 hover:bg-slate-50 items-start md:items-center text-sm transition-colors cursor-pointer flex-col md:flex-row" onclick="openViewModal('${t.id}')">
+<div class="w-full md:w-auto">
+  <div class="font-bold text-slate-800 truncate">${esc(t.title)}</div>
+  <div class="flex items-center gap-2 mt-1 md:hidden">
+    <span class="text-[9px] font-bold uppercase px-2 py-0.5 bg-slate-100 rounded text-slate-600">${statusMap[t.status]}</span>
+    <span class="${pCol} text-[9px] font-bold uppercase">${t.priority}</span>
+    ${t.dueDate ? `<span class="text-[9px] font-medium ${late ? 'text-rose-500' : 'text-slate-400'}">${formatDate(t.dueDate)}</span>` : ''}
+  </div>
+</div>
+<div class="hidden md:block"><span class="text-[10px] font-bold uppercase tracking-widest px-2 py-1 bg-slate-100 rounded text-slate-600">${statusMap[t.status]}</span></div>
+<div class="hidden md:block ${pCol} text-xs font-bold uppercase">${t.priority}</div>
+<div class="hidden md:flex items-center gap-2"><div class="w-5 h-5 rounded-full ${getAvatarColor(t.owner)} text-white text-[8px] flex items-center justify-center">${ini(t.owner)}</div><span class="truncate text-xs font-medium">${esc(t.owner)||'--'}</span></div>
+<div class="hidden md:block text-xs text-slate-500 truncate">${esc(t.requesterSector)||'--'}</div>
+<div class="hidden md:block text-xs font-medium ${late ? 'text-rose-500' : 'text-slate-600'}">${formatDate(t.dueDate)}</div>
+<div class="absolute right-3 top-3 md:static md:text-center" onclick="event.stopPropagation()">
+  <button onclick="openModal('${t.id}')" class="p-1.5 text-slate-400 hover:text-pink-600 transition-colors"><i class="ph ph-pencil-simple text-base"></i></button>
+</div>
+</div>`;
             }).join('');
         }
 
@@ -2786,6 +2939,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initDarkMode();
             initAuth(); // Auth controls loadData + renderAll
+            updateBottomNav('board'); // init bottom nav state
             
             setInterval(updateLiveClock, 1000);
             
@@ -2830,6 +2984,74 @@
                 if(dp) { dp.classList.add('translate-x-full'); if(dovl) { dovl.classList.add('opacity-0'); setTimeout(()=>dovl.classList.add('hidden'), 300); } }
             }
         });
-    </script>
+    
+        // ── MOBILE SIDEBAR ────────────────────────────────────────────────────
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebarOverlay');
+            const isOpen = sb.classList.contains('open');
+            if (isOpen) { closeSidebar(); } else { openSidebar(); }
+        }
+
+        function openSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebarOverlay');
+            sb.classList.add('open');
+            if (ov) { ov.classList.remove('hidden'); }
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('sidebarOverlay');
+            sb.classList.remove('open');
+            if (ov) { ov.classList.add('hidden'); }
+            document.body.style.overflow = '';
+        }
+
+        // Close sidebar when a nav item is clicked on mobile
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    if (window.innerWidth < 768) closeSidebar();
+                });
+            });
+        });
+
+        // Update bottom nav active state
+        function updateBottomNav(viewId) {
+            document.querySelectorAll('#bottomNav .bottom-nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.view === viewId) btn.classList.add('active');
+            });
+        }
+
+        </script>
+
+    <!-- BOTTOM NAV BAR (mobile only) -->
+    <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 z-30 md:hidden bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg">
+        <div class="flex items-center justify-around px-1 py-1 pb-[env(safe-area-inset-bottom,4px)]">
+            <button onclick="switchView('board'); closeSidebar();" class="bottom-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all" data-view="board">
+                <i class="ph ph-squares-four text-xl"></i>
+                <span class="text-[9px] font-bold">Kanban</span>
+            </button>
+            <button onclick="switchView('list'); closeSidebar();" class="bottom-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all" data-view="list">
+                <i class="ph ph-list-dashes text-xl"></i>
+                <span class="text-[9px] font-bold">Lista</span>
+            </button>
+            <button onclick="openModal()" class="flex flex-col items-center justify-center w-12 h-12 rounded-full bg-pink-600 text-white shadow-lg shadow-pink-500/30 -mt-4 transition-all active:scale-95">
+                <i class="ph ph-plus-bold text-xl"></i>
+            </button>
+            <button onclick="switchView('analytics'); closeSidebar();" class="bottom-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all" data-view="analytics">
+                <i class="ph ph-chart-pie-slice text-xl"></i>
+                <span class="text-[9px] font-bold">Analytics</span>
+            </button>
+            <button onclick="toggleSidebar()" class="bottom-nav-btn flex flex-col items-center gap-0.5 px-3 py-2 rounded-xl transition-all">
+                <i class="ph ph-list text-xl"></i>
+                <span class="text-[9px] font-bold">Menu</span>
+            </button>
+        </div>
+    </nav>
+
 </body>
 </html>
