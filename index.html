@@ -11,6 +11,10 @@
     <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>emailjs.init("ffksw1rgax_a8M9Kf");</script>
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -866,9 +870,14 @@
                         <!-- Owners -->
                         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
                             <h4 class="text-sm font-bold text-slate-800 flex items-center gap-2 mb-4"><i class="ph ph-users text-pink-500 text-lg"></i> Membros da Equipe</h4>
-                            <div class="flex gap-2 mb-4">
-                                <input type="text" id="newOwnerInput" placeholder="Nome do novo membro..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddOwner();}">
-                                <button onclick="adminAddOwner()" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors">Add</button>
+                            <div class="flex flex-col gap-2 mb-4">
+                                <div class="flex gap-2">
+                                    <input type="text" id="newOwnerInput" placeholder="Nome do membro..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();document.getElementById('newOwnerEmailInput').focus();}">
+                                </div>
+                                <div class="flex gap-2">
+                                    <input type="email" id="newOwnerEmailInput" placeholder="E-mail para notificações (opcional)..." class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 outline-none transition-all" onkeypress="if(event.key==='Enter'){event.preventDefault();adminAddOwner();}">
+                                    <button onclick="adminAddOwner()" class="bg-pink-600 hover:bg-pink-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors whitespace-nowrap">Add</button>
+                                </div>
                             </div>
                             <div id="admin-owners-list" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
                         </div>
@@ -1628,6 +1637,7 @@
         let tasks = [];
         let appSettings = {
             owners: ['Ana Costa', 'Carlos Dev', 'Fernanda Silva', 'Lucas Tech', 'Maria CTO'],
+            ownerEmails: {},  // { 'Nome': 'email@dominio.com' }
             sectors: ['Marketing', 'TI', 'Financeiro', 'Design', 'RH'],
             tags: [ { name: 'Bug', color: 'rose' }, { name: 'Feature', color: 'indigo' }, { name: 'Melhoria', color: 'emerald' }, { name: 'Design', color: 'pink' } ]
         };
@@ -2203,11 +2213,17 @@
             };
 
             let finalData;
+            let shouldNotify = false;
             if(tId) {
                 const existing = tasks.find(x => x.id === tId);
+                const prevOwner = existing ? existing.owner : '';
+                // Notifica se owner foi atribuído ou mudou
+                if (data.owner && data.owner !== prevOwner) shouldNotify = true;
                 finalData = { ...existing, ...data, id: tId, updatedAt: new Date().toISOString() };
                 showToast("Salvando...", 'info');
             } else {
+                // Nova tarefa com owner já atribuído
+                if (data.owner) shouldNotify = true;
                 finalData = { ...data, id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), timerRunning: false, timeLogs: [], comments: [], isDaily: false };
             }
 
@@ -2219,6 +2235,7 @@
             closeModal(); closeViewModal();
             await saveTask_DB(finalData);
             showToast(tId ? "Tarefa atualizada!" : "Nova tarefa criada!", 'success');
+            if (shouldNotify) notifyOwnerByEmail(finalData);
         }
 
         // Alias to avoid naming conflict with the Firebase save function
@@ -2767,21 +2784,55 @@
         function renderAdminOwners() {
             const list = document.getElementById('admin-owners-list'); if (!list) return;
             if (!appSettings.owners.length) { list.innerHTML = '<p class="text-xs text-slate-400 italic">Nenhum membro cadastrado.</p>'; return; }
-            list.innerHTML = appSettings.owners.map((o, i) => `
-                <div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-lg group">
-                    <div class="flex items-center gap-3">
-                        <div class="w-7 h-7 rounded-full ${getAvatarColor(o)} text-white text-[9px] font-bold flex items-center justify-center">${ini(o)}</div>
-                        <span class="text-sm font-semibold text-slate-700">${esc(o)}</span>
+            list.innerHTML = appSettings.owners.map((o, i) => {
+                const email = (appSettings.ownerEmails || {})[o] || '';
+                return `
+                <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-lg group">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-7 h-7 rounded-full ${getAvatarColor(o)} text-white text-[9px] font-bold flex items-center justify-center shrink-0">${ini(o)}</div>
+                            <div>
+                                <span class="text-sm font-semibold text-slate-700">${esc(o)}</span>
+                                ${email ? `<div class="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5"><i class="ph ph-envelope"></i>${esc(email)}</div>` : `<div class="text-[10px] text-amber-500 flex items-center gap-1 mt-0.5"><i class="ph ph-warning"></i>sem e-mail cadastrado</div>`}
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="adminEditOwnerEmail('${esc(o)}')" class="text-slate-400 hover:text-pink-500 p-1" title="Editar e-mail"><i class="ph ph-pencil text-base"></i></button>
+                            <button onclick="adminRemoveOwner(${i})" class="text-slate-300 hover:text-rose-500 p-1"><i class="ph ph-trash text-base"></i></button>
+                        </div>
                     </div>
-                    <button onclick="adminRemoveOwner(${i})" class="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="ph ph-trash text-lg"></i></button>
-                </div>`).join('');
+                </div>`;
+            }).join('');
+        }
+
+        function adminEditOwnerEmail(name) {
+            const currentEmail = (appSettings.ownerEmails || {})[name] || '';
+            const newEmail = prompt(`E-mail de notificação para "${name}":`, currentEmail);
+            if (newEmail === null) return; // cancelled
+            if (!appSettings.ownerEmails) appSettings.ownerEmails = {};
+            if (newEmail.trim() === '') {
+                delete appSettings.ownerEmails[name];
+            } else {
+                appSettings.ownerEmails[name] = newEmail.trim();
+            }
+            saveSettings(); renderAdminOwners();
+            showToast(newEmail.trim() ? `E-mail de ${name} atualizado!` : `E-mail removido.`, 'success');
         }
 
         function adminAddOwner() {
-            const inp = document.getElementById('newOwnerInput'); if (!inp || !inp.value.trim()) return;
+            const inp = document.getElementById('newOwnerInput');
+            const emailInp = document.getElementById('newOwnerEmailInput');
+            if (!inp || !inp.value.trim()) { showToast('Informe o nome do membro.', 'error'); return; }
             const name = inp.value.trim();
+            const email = emailInp ? emailInp.value.trim() : '';
             if (appSettings.owners.includes(name)) { showToast('Membro já existe.', 'error'); return; }
-            appSettings.owners.push(name); saveSettings(); inp.value = ''; renderAdminOwners(); populateFilters(); showToast(`${name} adicionado!`, 'success');
+            appSettings.owners.push(name);
+            if (email) {
+                if (!appSettings.ownerEmails) appSettings.ownerEmails = {};
+                appSettings.ownerEmails[name] = email;
+            }
+            saveSettings(); inp.value = ''; if (emailInp) emailInp.value = '';
+            renderAdminOwners(); populateFilters(); showToast(`${name} adicionado!`, 'success');
         }
 
         function adminRemoveOwner(i) {
@@ -3024,6 +3075,38 @@
                 btn.classList.remove('active');
                 if (btn.dataset.view === viewId) btn.classList.add('active');
             });
+        }
+
+        
+        // ── EMAILJS NOTIFICAÇÕES ──────────────────────────────────────────────
+        const EMAILJS_SERVICE  = 'service_p6jlvoc';
+        const EMAILJS_TEMPLATE = 'template_2umlnbm';
+        const PLANNER_URL      = window.location.origin + window.location.pathname;
+
+        async function notifyOwnerByEmail(task) {
+            if (!task.owner) return;
+            const email = (appSettings.ownerEmails || {})[task.owner];
+            if (!email) return; // sem e-mail cadastrado, silencioso
+
+            const prioLabels = { low: 'Baixa', medium: 'Média', high: 'Alta', critical: 'Crítica 🔴' };
+            const params = {
+                owner_name:     task.owner,
+                task_title:     task.title || '(sem título)',
+                priority:       prioLabels[task.priority] || task.priority || 'Média',
+                due_date:       task.dueDate ? new Date(task.dueDate + 'T12:00:00').toLocaleDateString('pt-BR') : 'Sem prazo definido',
+                requester_name: task.requesterName || 'Não informado',
+                description:    task.description || 'Sem descrição.',
+                planner_url:    PLANNER_URL,
+                to_email:       email,
+            };
+
+            try {
+                await emailjs.send(EMAILJS_SERVICE, EMAILJS_TEMPLATE, params);
+                showToast(`📧 Notificação enviada para ${task.owner}!`, 'success');
+            } catch(err) {
+                console.error('EmailJS erro:', err);
+                showToast('Aviso: notificação por e-mail falhou.', 'error');
+            }
         }
 
         </script>
