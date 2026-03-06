@@ -803,6 +803,32 @@
                         </div>
                         <div id="an-tag-time-list" class="space-y-3"></div>
                     </div>
+
+                    <!-- Histórico Daily por Colaborador -->
+                    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                            <h4 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                                <i class="ph ph-sun text-amber-500 text-lg"></i> Histórico Daily por Colaborador
+                            </h4>
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs text-slate-500 font-medium whitespace-nowrap">Filtrar:</label>
+                                <select id="an-daily-owner-filter" onchange="renderDailyHistoryReport()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
+                                    <option value="all">Todos os colaboradores</option>
+                                </select>
+                                <input type="month" id="an-daily-month-filter" onchange="renderDailyHistoryReport()" class="px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-xs font-medium outline-none focus:border-pink-500 cursor-pointer">
+                                <button onclick="exportDailyHistoryCSV()" class="bg-amber-50 text-amber-600 hover:bg-amber-100 font-bold py-1.5 px-3 rounded-lg flex items-center gap-1.5 transition-colors text-xs border border-amber-200">
+                                    <i class="ph ph-file-csv text-sm"></i> CSV
+                                </button>
+                            </div>
+                        </div>
+                        <div id="an-daily-history" class="divide-y divide-slate-100 max-h-[500px] overflow-y-auto custom-scrollbar">
+                            <div class="p-8 text-center text-sm text-slate-400">Carregando...</div>
+                        </div>
+                        <div class="px-6 py-3 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
+                            <span id="an-daily-count" class="text-xs font-bold text-slate-500">0 entradas</span>
+                            <span class="text-[10px] text-slate-400">Cada linha = 1 entrada na Daily</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1889,6 +1915,7 @@
             if(activeView === 'analytics') renderAnalytics(); 
             if(activeView === 'time') renderTime();
             if(activeView === 'users' && currentProfile?.role === 'admin') { renderUsersPanel(); renderAdminHoursReport(); }
+            if(activeView === 'analytics') renderDailyHistoryReport();
         }
 
         function applyQuickFilter(type) { viewFilter.quick = type; switchView('board'); }
@@ -2030,6 +2057,7 @@
         function calToday() { calMonth = new Date().getMonth(); calYear = new Date().getFullYear(); renderCalendar(); }
 
         function renderAnalytics() {
+            renderDailyHistoryReport();
             const anTotal = document.getElementById('an-total'); if(!anTotal) return;
             anTotal.textContent = tasks.length;
             const doneCnt = tasks.filter(t=>t.status==='done').length;
@@ -2471,6 +2499,17 @@
             const t = tasks.find(x => x.id === taskId);
             if (t) {
                 t.isDaily = !t.isDaily;
+
+                // Registra histórico ao ENTRAR na daily
+                if (t.isDaily) {
+                    if (!t.dailyHistory) t.dailyHistory = [];
+                    t.dailyHistory.push({
+                        date: getIsoDate(new Date()),
+                        addedBy: currentProfile?.name || '',
+                        ts: new Date().toISOString()
+                    });
+                }
+
                 showToast(t.isDaily ? "Adicionado à Daily" : "Removido da Daily", "success");
                 if (currentViewTaskId === taskId) {
                     const btn = document.getElementById('btnToggleDaily');
@@ -3107,6 +3146,150 @@
                 console.error('EmailJS erro:', err);
                 showToast('Aviso: notificação por e-mail falhou.', 'error');
             }
+        }
+
+        
+        // ── RELATÓRIO DAILY HISTORY ───────────────────────────────────────────
+        function renderDailyHistoryReport() {
+            const container = document.getElementById('an-daily-history');
+            const countEl   = document.getElementById('an-daily-count');
+            if (!container) return;
+
+            // Populate owner filter
+            const ownerSel = document.getElementById('an-daily-owner-filter');
+            if (ownerSel) {
+                const currentVal = ownerSel.value;
+                ownerSel.innerHTML = '<option value="all">Todos os colaboradores</option>' +
+                    appSettings.owners.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+                ownerSel.value = currentVal || 'all';
+            }
+
+            // Default month filter to current month
+            const monthInput = document.getElementById('an-daily-month-filter');
+            if (monthInput && !monthInput.value) {
+                const now = new Date();
+                monthInput.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+            }
+            const filterOwner = ownerSel ? ownerSel.value : 'all';
+            const filterMonth = monthInput ? monthInput.value : '';
+
+            // Build flat list of daily history entries
+            const entries = [];
+            tasks.forEach(t => {
+                if (!t.dailyHistory?.length) return;
+                t.dailyHistory.forEach(h => {
+                    const owner = t.owner || '(sem owner)';
+                    if (filterOwner !== 'all' && owner !== filterOwner) return;
+                    if (filterMonth && !h.date.startsWith(filterMonth)) return;
+                    entries.push({
+                        date:    h.date,
+                        ts:      h.ts || h.date,
+                        owner:   owner,
+                        title:   t.title || '(sem título)',
+                        status:  t.status,
+                        priority: t.priority,
+                        sector:  t.requesterSector || '',
+                        tag:     t.tag || '',
+                        taskId:  t.id,
+                        addedBy: h.addedBy || '',
+                    });
+                });
+            });
+
+            // Sort by date desc
+            entries.sort((a, b) => b.ts.localeCompare(a.ts));
+
+            if (countEl) countEl.textContent = `${entries.length} ${entries.length === 1 ? 'entrada' : 'entradas'}`;
+
+            if (!entries.length) {
+                container.innerHTML = '<div class="p-10 text-center text-sm text-slate-400 font-medium">Nenhuma entrada na Daily encontrada para este filtro.</div>';
+                return;
+            }
+
+            const prioColors = { critical: 'text-purple-600 bg-purple-50 border-purple-200', high: 'text-rose-600 bg-rose-50 border-rose-200', medium: 'text-amber-600 bg-amber-50 border-amber-200', low: 'text-emerald-600 bg-emerald-50 border-emerald-200' };
+            const prioLabels = { critical: 'Crítica', high: 'Alta', medium: 'Média', low: 'Baixa' };
+            const statusLabels = { unassigned: 'Backlog', todo: 'A Fazer', inProgress: 'Em Andamento', review: 'Revisão', done: 'Finalizado', paused: 'Pausado' };
+
+            // Group by owner for display
+            const byOwner = {};
+            entries.forEach(e => {
+                if (!byOwner[e.owner]) byOwner[e.owner] = [];
+                byOwner[e.owner].push(e);
+            });
+
+            container.innerHTML = Object.entries(byOwner).map(([owner, ownerEntries]) => {
+                const rows = ownerEntries.map(e => {
+                    const dateFormatted = new Date(e.date + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: 'short', year: 'numeric' });
+                    const pCls = prioColors[e.priority] || prioColors.medium;
+                    const statusLabel = statusLabels[e.status] || e.status;
+                    return `
+                    <div class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer" onclick="openViewModal('${e.taskId}')">
+                        <div class="w-8 h-8 rounded-full bg-amber-100 border border-amber-200 flex items-center justify-center shrink-0">
+                            <i class="ph ph-sun text-sm text-amber-500"></i>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-bold text-slate-800 truncate">${esc(e.title)}</p>
+                            <div class="flex items-center gap-2 mt-0.5 flex-wrap">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded border ${pCls}">${prioLabels[e.priority] || e.priority}</span>
+                                <span class="text-[10px] text-slate-400 font-medium">${statusLabel}</span>
+                                ${e.sector ? `<span class="text-[10px] text-slate-400">· ${esc(e.sector)}</span>` : ''}
+                                ${e.tag ? `<span class="text-[10px] text-slate-400">· ${esc(e.tag)}</span>` : ''}
+                                ${e.addedBy && e.addedBy !== owner ? `<span class="text-[10px] text-slate-400">· adicionado por ${esc(e.addedBy)}</span>` : ''}
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <p class="text-xs font-bold text-slate-600">${dateFormatted}</p>
+                        </div>
+                    </div>`;
+                }).join('');
+
+                return `
+                <div>
+                    <div class="flex items-center gap-3 px-4 py-2.5 bg-gradient-to-r from-amber-50 to-transparent border-b border-amber-100 sticky top-0">
+                        <div class="w-7 h-7 rounded-full ${getAvatarColor(owner)} flex items-center justify-center text-[9px] font-bold text-white shrink-0">${ini(owner)}</div>
+                        <span class="text-sm font-bold text-slate-700">${esc(owner)}</span>
+                        <span class="text-[10px] font-bold text-amber-600 bg-amber-100 px-2 py-0.5 rounded-full">${ownerEntries.length} ${ownerEntries.length === 1 ? 'entrada' : 'entradas'}</span>
+                    </div>
+                    ${rows}
+                </div>`;
+            }).join('');
+        }
+
+        function exportDailyHistoryCSV() {
+            const filterOwner = document.getElementById('an-daily-owner-filter')?.value || 'all';
+            const filterMonth = document.getElementById('an-daily-month-filter')?.value || '';
+
+            const entries = [];
+            tasks.forEach(t => {
+                if (!t.dailyHistory?.length) return;
+                t.dailyHistory.forEach(h => {
+                    const owner = t.owner || '(sem owner)';
+                    if (filterOwner !== 'all' && owner !== filterOwner) return;
+                    if (filterMonth && !h.date.startsWith(filterMonth)) return;
+                    entries.push([
+                        h.date,
+                        esc(owner),
+                        esc(t.title || ''),
+                        t.priority || '',
+                        t.status || '',
+                        esc(t.requesterSector || ''),
+                        esc(t.tag || ''),
+                        esc(h.addedBy || ''),
+                    ]);
+                });
+            });
+
+            if (!entries.length) { showToast('Nenhum dado para exportar.', 'error'); return; }
+            entries.sort((a, b) => b[0].localeCompare(a[0]));
+
+            const header = ['Data', 'Colaborador', 'Demanda', 'Prioridade', 'Status', 'Setor', 'Tag', 'Adicionado por'];
+            const csv = [header, ...entries].map(r => r.join(';')).join('\n');
+            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = `daily-historico-${getIsoDate(new Date())}.csv`;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            showToast('Relatório exportado!', 'success');
         }
 
         </script>
