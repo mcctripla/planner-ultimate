@@ -376,88 +376,94 @@
         }
 
 
-        /* ── Multi-owner picker ──────────────────────────────────────────── */
-        #taskOwnerPicker {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            padding: 10px;
-            background: #fff;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 12px;
-            min-height: 48px;
-            cursor: default;
+        /* ── Multi-owner picker (dropdown list) ─────────────────────────── */
+        .owner-picker-wrap { position: relative; }
+        .owner-picker-trigger {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            min-height: 44px; padding: 6px 36px 6px 10px;
+            background: #fff; border: 1.5px solid #e2e8f0; border-radius: 12px;
+            cursor: pointer; transition: border-color .15s, box-shadow .15s;
+            position: relative;
         }
-        .owner-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 4px 12px 4px 5px;
-            border: 1.5px solid #e2e8f0;
-            border-radius: 999px;
-            background: #f8fafc;
-            color: #475569;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: border-color .15s, background .15s, color .15s;
-            user-select: none;
-            white-space: nowrap;
+        .owner-picker-trigger:hover { border-color: #db2777; }
+        .owner-picker-trigger.open { border-color: #db2777; box-shadow: 0 0 0 3px rgba(219,39,119,.1); border-radius: 12px 12px 0 0; }
+        .owner-picker-trigger .trigger-chevron {
+            position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+            color: #94a3b8; font-size: 14px; pointer-events: none; transition: transform .2s;
         }
-        .owner-chip:hover {
-            border-color: #db2777;
-            background: rgba(219,39,119,.05);
+        .owner-picker-trigger.open .trigger-chevron { transform: translateY(-50%) rotate(180deg); }
+        .owner-picker-trigger .trigger-placeholder { font-size: 13px; color: #94a3b8; }
+
+        .owner-selected-tag {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(219,39,119,.09); border: 1px solid rgba(219,39,119,.25);
+            color: #be185d; border-radius: 999px;
+            padding: 2px 8px 2px 3px; font-size: 11px; font-weight: 700;
         }
-        .owner-chip.selected {
-            border-color: #db2777;
-            background: rgba(219,39,119,.08);
-            color: #db2777;
+        .owner-selected-tag .tag-av {
+            width: 18px; height: 18px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 7px; font-weight: 800; color: #fff; flex-shrink: 0;
         }
-        .chip-avatar {
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 8px;
-            font-weight: 700;
-            color: #fff;
-            flex-shrink: 0;
+        .owner-selected-tag .tag-remove {
+            margin-left: 2px; cursor: pointer; color: #db2777;
+            width: 13px; height: 13px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(219,39,119,.15); font-size: 9px;
+            transition: background .15s;
         }
-        .chip-name { line-height: 1; }
-        .chip-check {
-            width: 14px;
-            height: 14px;
-            background: #db2777;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
+        .owner-selected-tag .tag-remove:hover { background: rgba(219,39,119,.35); }
+
+        .owner-dropdown {
+            display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 300;
+            background: #fff; border: 1.5px solid #db2777; border-top: none;
+            border-radius: 0 0 12px 12px; box-shadow: 0 8px 24px rgba(0,0,0,.1);
+            max-height: 220px; overflow-y: auto;
         }
-        .chip-check i { font-size: 8px; color: #fff; }
-        .owner-chip.selected .chip-check { display: flex; }
-        .owner-picker-empty {
-            font-size: 12px;
-            color: #94a3b8;
-            font-style: italic;
-            padding: 4px 2px;
+        .owner-dropdown.open { display: block; }
+        .owner-dropdown::-webkit-scrollbar { width: 4px; }
+        .owner-dropdown::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 4px; }
+
+        .owner-dropdown-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 14px; cursor: pointer;
+            transition: background .12s; font-size: 13px; font-weight: 600; color: #334155;
         }
-        .dark #taskOwnerPicker {
-            background: var(--bg-input);
-            border-color: var(--border-color);
+        .owner-dropdown-item:hover { background: #fdf2f8; }
+        .owner-dropdown-item.selected { background: rgba(219,39,119,.06); color: #db2777; }
+        .owner-dropdown-item .di-avatar {
+            width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 9px; font-weight: 800; color: #fff;
         }
-        .dark .owner-chip {
-            background: var(--bg-input-alt);
-            border-color: var(--border-color);
-            color: var(--text-secondary);
+        .owner-dropdown-item .di-check {
+            margin-left: auto; width: 18px; height: 18px; border-radius: 50%;
+            background: #db2777; display: flex; align-items: center; justify-content: center;
+            opacity: 0; transition: opacity .15s;
         }
-        .dark .owner-chip.selected {
-            background: rgba(219,39,119,.15);
-            border-color: #db2777;
-            color: #f9a8d4;
+        .owner-dropdown-item.selected .di-check { opacity: 1; }
+        .owner-dropdown-item .di-check i { font-size: 10px; color: #fff; }
+
+        .owner-picker-empty { font-size: 12px; color: #94a3b8; font-style: italic; padding: 4px 2px; }
+
+        /* Subtask owner badge */
+        .subtask-owner-badge {
+            display: inline-flex; align-items: center; gap: 4px;
+            background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 999px;
+            padding: 1px 7px 1px 3px; font-size: 10px; font-weight: 600; color: #475569;
+            cursor: pointer; transition: border-color .15s;
         }
+        .subtask-owner-badge:hover { border-color: #db2777; }
+        .subtask-owner-badge .sob-av {
+            width: 14px; height: 14px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 6px; font-weight: 800; color: #fff; flex-shrink: 0;
+        }
+
+        .dark .owner-picker-trigger { background: var(--bg-input); border-color: var(--border-color); }
+        .dark .owner-dropdown { background: var(--bg-input); border-color: #db2777; }
+        .dark .owner-dropdown-item { color: var(--text-secondary); }
+        .dark .owner-dropdown-item:hover { background: rgba(219,39,119,.12); }
     </style>
 </head>
 <body class="bg-board text-slate-800 h-[100dvh] flex overflow-hidden font-sans relative selection:bg-pink-100 selection:text-pink-900">
@@ -1153,10 +1159,14 @@
 
                         <div>
                             <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Responsáveis</label>
-                            <div id="taskOwnerPicker" class="owner-picker min-h-[38px] p-2 bg-white border border-slate-200 rounded-xl">
-                                <span class="owner-picker-empty">Carregando...</span>
+                            <div class="owner-picker-wrap" id="ownerPickerWrap">
+                                <div class="owner-picker-trigger" id="ownerPickerTrigger" onclick="toggleOwnerDropdown()">
+                                    <span class="trigger-placeholder" id="ownerPlaceholder">Selecionar responsáveis...</span>
+                                    <div id="ownerSelectedTags"></div>
+                                    <i class="ph ph-caret-down trigger-chevron"></i>
+                                </div>
+                                <div class="owner-dropdown" id="ownerDropdown"></div>
                             </div>
-                            <p class="text-[10px] text-slate-400 mt-1.5">Clique para selecionar um ou mais responsáveis</p>
                         </div>
 
                         <div>
@@ -1213,8 +1223,11 @@
                             </div>
                             <div id="subtasksContainer" class="space-y-2 mb-3 max-h-32 overflow-y-auto pr-1 custom-scrollbar"></div>
                             <div class="flex gap-2">
-                                <input type="text" id="newSubtaskInput" class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:border-pink-500 outline-none transition-colors" placeholder="Adicionar item..." onkeypress="if(event.key==='Enter'){event.preventDefault();addSubtask();}">
-                                <button type="button" onclick="addSubtask()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors">Add</button>
+                                <input type="text" id="newSubtaskInput" class="flex-1 px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-lg focus:border-pink-500 outline-none transition-colors" placeholder="Adicionar subtarefa..." onkeypress="if(event.key==='Enter'){event.preventDefault();addSubtask();}">
+                                <select id="newSubtaskOwner" class="px-2 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:border-pink-500 outline-none transition-colors cursor-pointer max-w-[130px]">
+                                    <option value="">Responsável...</option>
+                                </select>
+                                <button type="button" onclick="addSubtask()" class="bg-slate-800 hover:bg-slate-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-colors whitespace-nowrap">Add</button>
                             </div>
                         </div>
 
@@ -2456,7 +2469,7 @@
             const tagEl = document.querySelector('input[name="taskTag"]:checked');
             const iTitle = document.getElementById('taskTitle'); const iDue = document.getElementById('taskDueDate'); const iStatus = document.getElementById('taskStatus'); const iPrio = document.getElementById('taskPriority'); const iSec = document.getElementById('taskRequesterSector'); const iDesc = document.getElementById('taskDescription'); const iReq = document.getElementById('taskRequester'); const iMail = document.getElementById('taskEmail');
             // Collect selected owners from picker
-            const selectedOwners = [...document.querySelectorAll('#taskOwnerPicker .owner-chip.selected')].map(c => c.dataset.owner);
+            const selectedOwners = getSelectedOwners();
             const primaryOwner = selectedOwners[0] || '';
 
             const titleVal = iTitle ? iTitle.value.trim() : '';
@@ -2515,9 +2528,45 @@
 
         function renderFormSubtasks() {
             const c = document.getElementById('subtasksContainer'); if(!c) return;
-            c.innerHTML = formSubtasks.length === 0 ? '<p class="text-xs font-bold text-slate-400 py-2">Nenhuma subtarefa.</p>' : formSubtasks.map((s,i) => `<div class="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 rounded-lg group"><span class="text-sm font-semibold text-slate-700 truncate ${s.done?'line-through opacity-50':''}">${esc(s.title)}</span><button type="button" onclick="removeSubtask(${i})" class="text-slate-400 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"><i class="ph ph-trash text-lg"></i></button></div>`).join('');
+            if (formSubtasks.length === 0) { c.innerHTML = '<p class="text-xs font-bold text-slate-400 py-2">Nenhuma subtarefa.</p>'; return; }
+            c.innerHTML = formSubtasks.map((sub, i) => {
+                const ownerBadge = sub.owner
+                    ? `<div class="subtask-owner-badge" onclick="event.stopPropagation();cycleSubtaskOwner(${i})" title="Alterar responsável">
+                            <div class="sob-av ${getAvatarColor(sub.owner)}">${ini(sub.owner)}</div>
+                            <span>${esc(sub.owner)}</span>
+                       </div>`
+                    : `<button type="button" onclick="event.stopPropagation();cycleSubtaskOwner(${i})" class="text-[10px] text-slate-400 hover:text-pink-500 transition-colors flex items-center gap-1 opacity-0 group-hover:opacity-100" title="Atribuir responsável">
+                            <i class="ph ph-user-plus text-sm"></i>
+                       </button>`;
+                return `<div class="flex items-center gap-2 p-2.5 bg-slate-50 border border-slate-200 rounded-lg group">
+                    <input type="checkbox" ${sub.done?'checked':''} onchange="toggleFormSubtask(${i})" class="w-4 h-4 accent-pink-500 cursor-pointer flex-shrink-0">
+                    <span class="text-sm font-semibold text-slate-700 truncate flex-1 ${sub.done?'line-through opacity-50':''}">${esc(sub.title)}</span>
+                    ${ownerBadge}
+                    <button type="button" onclick="removeSubtask(${i})" class="text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"><i class="ph ph-trash text-base"></i></button>
+                </div>`;
+            }).join('');
         }
-        function addSubtask() { const inp = document.getElementById('newSubtaskInput'); if(!inp||!inp.value.trim()) return; formSubtasks.push({ title: inp.value.trim(), done: false }); inp.value=''; renderFormSubtasks(); inp.focus(); }
+        function toggleFormSubtask(i) { formSubtasks[i].done = !formSubtasks[i].done; renderFormSubtasks(); }
+        function cycleSubtaskOwner(i) {
+            const owners = appSettings.owners;
+            if (!owners.length) return;
+            const cur = formSubtasks[i].owner || '';
+            const idx = owners.indexOf(cur);
+            formSubtasks[i].owner = owners[(idx + 1) % (owners.length + 1)] || '';
+            // +1 slot = empty (unassign)
+            if (idx >= owners.length - 1) formSubtasks[i].owner = '';
+            renderFormSubtasks();
+        }
+        function addSubtask() {
+            const inp = document.getElementById('newSubtaskInput');
+            const ownerSel = document.getElementById('newSubtaskOwner');
+            if(!inp || !inp.value.trim()) return;
+            formSubtasks.push({ title: inp.value.trim(), done: false, owner: ownerSel ? ownerSel.value : '' });
+            inp.value = '';
+            if(ownerSel) ownerSel.value = '';
+            renderFormSubtasks();
+            inp.focus();
+        }
         function removeSubtask(i) { formSubtasks.splice(i, 1); renderFormSubtasks(); }
 
         function handleFileUpload(e) {
@@ -2659,9 +2708,19 @@
             const tot = task.subtasks.length; const d = task.subtasks.filter(s=>s.done).length; const pct = (d/tot)*100;
             pb.style.width = `${pct}%`; pb.className = `h-1.5 rounded-full transition-all duration-500 ${d===tot?'bg-emerald-500':'bg-pink-500'}`;
             pt.textContent = `${d}/${tot} concluídas`;
-            task.subtasks.forEach((s, i) => {
+            task.subtasks.forEach((sub, i) => {
                 const id = `cb_${task.id}_${i}`;
-                l.innerHTML += `<div class="flex items-start gap-3 p-2.5 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer" onclick="toggleSubtaskStatus('${task.id}', ${i})"><div class="pt-0.5"><input type="checkbox" id="${id}" ${s.done?'checked':''} class="custom-checkbox w-4 h-4 text-pink-500 bg-slate-100 border-slate-300 rounded focus:ring-pink-500 cursor-pointer pointer-events-none"></div><label for="${id}" class="text-sm font-semibold select-none cursor-pointer w-full ${s.done?'text-slate-400 line-through':'text-slate-700'}">${esc(s.title)}</label></div>`;
+                const ownerPill = sub.owner
+                    ? `<div class="flex items-center gap-1 bg-slate-100 rounded-full pl-1 pr-2 py-0.5 ml-auto shrink-0">
+                            <div class="w-4 h-4 rounded-full ${getAvatarColor(sub.owner)} flex items-center justify-center text-[6px] font-bold text-white">${ini(sub.owner)}</div>
+                            <span class="text-[10px] font-semibold text-slate-500">${esc(sub.owner)}</span>
+                       </div>`
+                    : '';
+                l.innerHTML += `<div class="flex items-center gap-3 p-2.5 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer" onclick="toggleSubtaskStatus('${task.id}', ${i})">
+                    <input type="checkbox" id="${id}" ${sub.done?'checked':''} class="custom-checkbox w-4 h-4 text-pink-500 bg-slate-100 border-slate-300 rounded focus:ring-pink-500 cursor-pointer pointer-events-none">
+                    <label for="${id}" class="text-sm font-semibold select-none cursor-pointer flex-1 ${sub.done?'text-slate-400 line-through':'text-slate-700'}">${esc(sub.title)}</label>
+                    ${ownerPill}
+                </div>`;
             });
         }
 
@@ -2739,8 +2798,97 @@
             }
         }
 
-        function toggleOwnerChip(chip) {
-            chip.classList.toggle('selected');
+
+
+
+        // ── Owner dropdown picker ─────────────────────────────────────────────
+        let _ownerDropdownOpen = false;
+
+        function renderOwnerDropdown(selected) {
+            selected = selected || [];
+            const trigger  = document.getElementById('ownerPickerTrigger');
+            const tags     = document.getElementById('ownerSelectedTags');
+            const dropdown = document.getElementById('ownerDropdown');
+            const ph       = document.getElementById('ownerPlaceholder');
+            if (!trigger || !tags || !dropdown) return;
+
+            // Tags (selected pills inside trigger)
+            tags.innerHTML = selected.map(o =>
+                `<div class="owner-selected-tag">
+                    <div class="tag-av ${getAvatarColor(o)}">${ini(o)}</div>
+                    <span>${esc(o)}</span>
+                    <div class="tag-remove" onclick="event.stopPropagation();removeOwnerSelection('${esc(o)}')" title="Remover">
+                        <i class="ph ph-x" style="font-size:8px"></i>
+                    </div>
+                </div>`
+            ).join('');
+            if (ph) ph.style.display = selected.length ? 'none' : '';
+
+            // Dropdown rows
+            dropdown.innerHTML = appSettings.owners.length
+                ? appSettings.owners.map(o => {
+                    const sel = selected.includes(o);
+                    return `<div class="owner-dropdown-item ${sel?'selected':''}" onclick="toggleOwnerSelection('${esc(o)}')">
+                        <div class="di-avatar ${getAvatarColor(o)}">${ini(o)}</div>
+                        <span>${esc(o)}</span>
+                        <div class="di-check"><i class="ph ph-check"></i></div>
+                    </div>`;
+                }).join('')
+                : '<div class="owner-picker-empty" style="padding:12px 14px">Nenhum membro cadastrado</div>';
+
+            // Store selection on wrapper for reading later
+            document.getElementById('ownerPickerWrap').dataset.selected = JSON.stringify(selected);
+        }
+
+        function getSelectedOwners() {
+            const wrap = document.getElementById('ownerPickerWrap');
+            if (!wrap) return [];
+            try { return JSON.parse(wrap.dataset.selected || '[]'); } catch(e) { return []; }
+        }
+
+        function toggleOwnerDropdown() {
+            const trigger  = document.getElementById('ownerPickerTrigger');
+            const dropdown = document.getElementById('ownerDropdown');
+            if (!trigger || !dropdown) return;
+            _ownerDropdownOpen = !_ownerDropdownOpen;
+            trigger.classList.toggle('open', _ownerDropdownOpen);
+            dropdown.classList.toggle('open', _ownerDropdownOpen);
+        }
+
+        function toggleOwnerSelection(name) {
+            const current = getSelectedOwners();
+            const idx = current.indexOf(name);
+            if (idx >= 0) current.splice(idx, 1); else current.push(name);
+            renderOwnerDropdown(current);
+            // keep dropdown open after selection
+            const trigger  = document.getElementById('ownerPickerTrigger');
+            const dropdown = document.getElementById('ownerDropdown');
+            if (trigger)  trigger.classList.add('open');
+            if (dropdown) dropdown.classList.add('open');
+            _ownerDropdownOpen = true;
+        }
+
+        function removeOwnerSelection(name) {
+            const current = getSelectedOwners().filter(o => o !== name);
+            renderOwnerDropdown(current);
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            const wrap = document.getElementById('ownerPickerWrap');
+            if (wrap && !wrap.contains(e.target) && _ownerDropdownOpen) {
+                document.getElementById('ownerPickerTrigger')?.classList.remove('open');
+                document.getElementById('ownerDropdown')?.classList.remove('open');
+                _ownerDropdownOpen = false;
+            }
+        });
+
+        // Populate subtask owner select whenever openEditModal is called
+        function populateSubtaskOwnerSelect() {
+            const sel = document.getElementById('newSubtaskOwner');
+            if (!sel) return;
+            sel.innerHTML = '<option value="">Responsável...</option>' +
+                appSettings.owners.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
         }
 
         async function toggleDailyStatus(taskId) {
