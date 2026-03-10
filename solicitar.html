@@ -521,6 +521,13 @@
             margin-top: 5px;
         }
 
+
+        .field select:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            background-color: var(--bg2);
+        }
+
         /* ── Responsive ────────────────────────────── */
         @media (max-width: 600px) {
             header { padding: 24px 20px 0; }
@@ -610,6 +617,29 @@
                         <input type="text" id="reqTitle" placeholder="Resuma em uma frase o que precisa ser feito">
                     </div>
 
+                    <!-- Serviço em cascata -->
+                    <div class="field">
+                        <label>Serviço <span class="req">*</span></label>
+                        <select id="reqServico" onchange="onServicoChange()">
+                            <option value="">Selecione o serviço...</option>
+                        </select>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field">
+                            <label>Categoria <span class="req">*</span></label>
+                            <select id="reqCategoria" onchange="onCategoriaChange()" disabled>
+                                <option value="">Selecione a categoria...</option>
+                            </select>
+                        </div>
+                        <div class="field">
+                            <label>Item de Serviço <span class="req">*</span></label>
+                            <select id="reqItemServico" onchange="onItemChange()" disabled>
+                                <option value="">Selecione o item...</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="field">
                         <label>Descrição detalhada <span class="req">*</span></label>
                         <textarea id="reqDescription" placeholder="Descreva com detalhes o que precisa ser feito, qual o objetivo, contexto, referências ou links úteis..."></textarea>
@@ -676,6 +706,54 @@
         MKT Flow &mdash; <span>Planner de Marketing</span> &copy; 2025
     </footer>
 
+
+    <script>
+    const SERVICOS_DATA = {"Materiais": {"Digitais": ["Criar artigos para blogs", "Criar e-books", "Criar podcast", "Criar vídeos", "Gerenciar SEO", "Criar banners", "Criar conteúdo digital (artigos, e-books, podcast, vídeos, banners, etc)", "Manutenção e atualização de conteúdo do site institucional", "Atualizar conteúdo do site institucional", "Inserir novo produto no site institucional", "Inserir novo case no site institucional", "Gestão de conteúdo e manutenção do blog do site", "Criação e atualização de usuários no blog do site"], "Brindes": ["Produção de itens promocionais para eventos e relacionamento.", "Preparar brindes para visitas do comercial a clientes"], "Folders": ["Desenvolvimento de materiais impressos e digitais."], "Uniformes": ["Criação e gestão de vestuário corporativo."]}, "Produção audiovisual": {"Podcast (audio e vídeo)": ["Pré-produção, definição de tema e escrita de roteiro", "Filmagem", "Pós-produção, edição, finalização - vídeo (youtube)", "Pós-produção, edição, finalização - áudio (plataformas digitais)", "Revisão"], "Vídeo para redes sociais": ["Definição de briefing", "Filmagem", "Edição", "Revisão"]}, "Comunicação Externa": {"Assessoria de imprensa": ["Definição de pautas para atuação da assessoria de imprensa", "Alinhamento / acionamento de porta-vozes da Tripla", "Aprovação de textos (artigos, press releases, cases)", "Gestão dos resultados com assessoria de imprensa"], "Inbound": ["Nutrição de leads, fluxos de relacionamento"], "ABM - Account-Based Marketing": ["Ações segmentadas por conta/setor"]}, "Aquisição de Clientes": {"Inbound/ Outbound": ["Solicitar campanha ou cadência", "Criação de texto", "Criação de arte", "Configuração de cadência ou campanha"], "Eventos": ["Solicitar participação em eventos"], "Inbound": ["Pesquisa de palavras-chave e planejamento de pauta", "Criação de conteúdo para blog e redes sociais", "Otimização de SEO (On-page e Off-page)", "Criação de iscas digitais (e-books, webinars, etc.)", "Criação das campanhas (Google, meta e Linkedin)"], "Mídia Paga": ["Planejamento e criação de campanhas (Google Ads, meta e linkedin)", "Otimização de lances e orçamentos", "Criação de criativos e textos para anúncios", "Análise de métricas e performance de campanhas"]}, "Comunicação Interna": {"Campanhas": ["Ações de engajamento, datas comemorativas, tempo de casa", "Criar campanha de engajamento", "Criar campanha para datas comemorativas e efemeridades", "Criar campanha de tempo de casa"], "Eventos Internos": ["Organização de eventos corporativos (Summit, Embarca Tripla)"], "Vídeo de Treinamento": ["Definir conteúdo, entrevista com instrutor", "Filmar treinamento", "Editar vídeo", "Revisar vídeo"], "Vídeo de comunicação interna": ["Criar briefing", "Editar vídeo", "Revisar vídeo"], "Vídeo datas comemorativas": ["Criar briefing", "Editar vídeo", "Revisar vídeo"], "TriplaNet e Subsites": ["Portal interno com atualizações e manutenção", "Criar arte de topo para comunicados e notícias", "Criar páginas da intranet", "Criar notícia", "Criar comunicados", "Criar subsites (SGI / área do Tripulante)", "Atualizar pastas e conteúdo de documentos", "Atualização de agenda de aniversários e aniversário de empresa", "Atualização de agenda de eventos", "Atualizar TriplaNet", "Atualizar TriplaNews"], "Sharepoint": ["Criar e configurar sites", "Configurar biblioteca de site", "Incluir usuário/permissão e conteúdo", "Alterar permissão de usuário", "Excluir usuário/permissão", "Gerenciamento de design e idv de site"], "Automação": ["Desenho da automação", "Criação do processo no Automate", "Testes e publicação"], "Arte Tempo de casa (Triplaversário)": ["Criar arte de aniversário dos colaboradores"], "Fotografia oficial de colaboradores": ["Registrar foto oficial", "Editar foto oficial"]}, "Eventos": {"Organização": ["Validação de datas, orçamentos, fornecedores, infraestrutura (mobília e técnica, decoração, SAP", "Definir brindes alinhados com a estratégia", "Definir uniformes alinhados com a estratégia", "Definir necessidade de materiais de vendas alinhados com a estratégia", "Definir necessidade de itens complementares (coletor de dados, ponto de internet, televisão extra, limpeza, segurança, etc)", "Definir necessidade de prestadores de serviços (recepcionista, fotógrafo, buffet, etc)", "Formalizar pedidos no SAP com todas as demandas", "Levantar e apresentar orçamentos de todos os itens", "Monitoramento das inscrições", "Disparo de comunicações pré-evento para os confirmados", "Apresentação de briefing para os participantes da Tripla (agenda, patrocinadores, participantes, uniformes, brindes, apresentação, orientações gerais, etc)", "Validar se data escolhida tem feriados locais ou concorre com outros eventos (eventos de TI/SI, futebol, etc.)", "Levantar orçamentos de local e formatos para o evento", "Buscar avaliações e referências no Google / Reclame Aqui dos locais selecionados", "Local: Realizar visita técnica", "Local: Verificar infraestrutura disponível (mobília e técnica)", "Local: Verificar necessidade de decoração", "Alinhar com Facilities Tripla qualquer necessidade (eventos dentro da estrutura)", "Organização de logística (envio de brindes/banner)", "Orçamento / produção da identidade visual física (banners, painéis, estande)", "Oçamento / produção das credenciais", "Orçamento / produção do uniforme"], "Produção": ["Montagem, credenciamento, testagem de eletrônicos, registro audiovisual", "Acompanhamento / validação da montagem do evento", "Orientação / briefing / acompanhamento dos fornecedores", "Organização / separação / montagem dos brindes", "Testagem dos eletrônicos (apresentação, video, TV, totem, etc)", "Projeção do wallpaper no telão com boas vindas + programação", "Distribuição dos uniformes para time com orientação de uso", "Recepcionar os convidados fazendo o credenciamento", "Controlar a lista de participantes (presentes x no show)", "Cuidar da reposição de itens gerais (A&B, brindes, folders, etc)", "Controlar tempo e cadência do evento", "Organizar e distribuir brindes / folders", "Registrar o evento (fotografia ou video)"], "Pós-evento": ["Mailing de participantes, pesquisa de satisfação, relatório de custos", "Disponibilizar mailing de participantes", "Disparar pesquisa de satisfação / e-mail de agradecimento", "Gerar relatório com custos do evento para controle do budget", "No caso de MDF, gerar provas de custo e execução para report fabricante", "Avaliação de resultados, follow-up e relatórios.", "Consolidar informações do grupo de whats app x mailing x CRM"], "Eventos internos": ["Transmissão audiovisual de eventos"], "Fotografia de eventos internos": ["Registro em fotografia de eventos internos", "Seleção de fotos de evento interno", "Edição de fotos de evento interno"], "Fotografia de eventos externos e feiras": ["Registro em vídeio ou fotografia de eventos externos,  feiras, etc", "Seleção de fotografia", "Edição de fotos de evento externo e feiras"]}, "Análise e Dados": {"Mídia Paga": ["Planejamento e execução de campanhas (Google Ads, Meta, LinkedIn)"], "Web Analytics": ["Instalação/configuração de tags, metas de conversão, monitoramento"], "Relatórios": ["Dashboards e relatórios periódicos (LinkedIn, Instagram, Blog)"], "Monitoramento de Métricas": ["Definição de KPIs e métricas de crescimento", "Criação e manutenção de dashboards", "Análise de dados para geração de insights", "Mapeamento e análise de todas as etapas do funil", "Identificação de gargalos e oportunidades de otimização"], "Web Analytics e Tagueamento": ["Planejamento de mensuração e definição de eventos", "Instalação e configuração de tags (Google Tag Manager, etc.)", "Criação e configuração de metas de conversão", "Validação e depuração de tags e eventos (debugging)", "Monitoramento da integridade da coleta de dados"]}, "Inteligência de Mercado": {"Concorrência": ["Análises de concorrência, segmentação, comportamento de compra"], "Produto": ["Pesquisa de nacionalização, posicionamento de produto"], "Eventos": ["Relatórios de presença comercial (Tratativa de malling em eventos)"], "Setor": ["Pesquisa de aderência e cenário setorial"]}, "Projetos Especiais": {"Cliente Oculto": ["Definir briefing", "Criar cronograma", "Criar simulação"], "Dashboards": ["Performance de métricas e resultados"], "Tratativa de listas": ["Triagem e enriquecimento de listas de evento"], "Listas Estratégicas": ["Geração de listas para prospecção"]}, "Gestão Estratégica": {"Planejamento de ação de marketing": ["Definição de objetivos, indicadores e metas"], "Validação de ação de marketing": ["Apresentação e validação de planos de marketing"]}, "Gestão": {"Gestão de indicadores, metas e resultados": ["Definição de objetivos para cada sub-sistema da área", "Definição de indicadores de sucesso e metas para cada objetivo", "Mensuração de indicadores e metas", "Apresentação de resultados para diretoria / time de gestão", "Definição de plano de ação para correção / potenciaização de resultados"], "Gestão de investimentos e co-marketing com parceiros": ["Criação de plano ou ação de marketing junto com os parceiros (com definição de objetivos, indicadores de sucesso e metas)", "Defesa do plano ou ação de marketing para validação de investimento", "Imput de processo via plataforma do parceiro para validação de investimento", "Execução do plano ou ação de marketing (organização, produção, criação, etc)", "Entrega de provas de execução para parceiro (fotos, mailing, etc)", "Emissão de invoice / nota fiscal / débito para reembolso da Tripla"], "Planejamento estratégico de Marketing": ["Alinhamento dos objetivos do ano para geração de demanda e fortalecimento da marca", "Workshop com time, pares e liderança para listagem de iniciativas em cada pilar de atuação do Marketing", "Realização das cotações das diversas ações de geração de demanda ou branding propostas no PE do Marketing", "Apresentação / validação do PE de Marketing com orçamento e cronograma de execução"], "Planejamento tático de Marketing": ["Desdobramento do PE de Marketing em ações táticas com definição de matriz RACI", "Acompanhamento e gestão da execução do plano de ação tático de Marketing"], "Gestão do orçamento de Marketing": ["Gestão do orçado x realizado do centro de custo do Marketing"], "Gestão / liderança de pessoas": ["Avaliação de desempenho", "Reunião 1:1 / feedback", "Reunião de follow-up / tarefas", "Distribuição de projetos e atividades", "Gestão dos registros de ponto", "Acompanhamento e mentoria da carreira / progressão salarial", "Gestão / moderação de conflitos e clima organizacional"]}, "Comunicação interna": {"Campanhas": ["Ações de engajamento e comunicação com colaboradores."], "TriplaNews": ["Boletim informativo interno."], "TriplaNet": ["Portal interno com atualizações e manutenção."], "Eventos internos": ["Organização de eventos corporativos como Embarca Tripla e Summit."], "Comunicados": ["Divulgação de informações institucionais.", "Solicitação de layout do sharepoint para comunicados quando pertinente"], "Tempo de casa (Triplasario)": ["Reconhecimento por tempo de empresa."], "Datas comemorativas": ["Elaboração de estratégias/ações temáticas em feriados e datas especiais.", "Formalizar pedidos no SAP com todas as demandas (brindes, materiais gráficos, etc.)", "Solicitação de layout para o time de criação e branding"]}, "Eventos internos": {"Organização": ["Enviar Save the Date para bloqueio de agenda dos Tripulantes", "Criar link da reunião no teams", "Formalizar pedido no SAP para contratação de local, sonorização, transmissão, buffet, brinde, dinâmica, material gráfico ou qualquer outra contratação pertinente", "Acompanhar, criticar e apresentar para o Comitê as opções enviadas por Compras", "Cobrar retorno das apresentações", "Solicitar passagem e hospedagem do time de mkt quando necessário", "Realizar visita técnica no local para conferência de mobiliário, infraestrutura, disponibilidade de rede para trnasmissão", "Alinhar com Facilities qualquer necessidade (caso evento seja dentro da estrutura Tripla)", "Enviar reforços de comunicação que sejam necessários antes do evento (ex.: lembrete para usar a camisa dos Tripulantes no grupo do whatsapp)"], "Produção": ["Acompanhamento/validação da montagem do evento", "Orientação/acompanhamento/recepção dos fornecedores", "Organização/separação/montagem dos brindes (se necessário)", "Acompanhamento da testagem dos eletrônicos (apresentação, vídeo, tv, transmissão, etc.)", "Check-list on site: infraestrutura, passador de slides, água para palestrantes, microfones, ar condicionado, etc.)", "Controlar a lista de participantes", "Controlar tempo e cadência do evento", "Garantir sincronia de coffee break BH x SP", "Organizar e distribuir brindes"], "Pós-evento": ["Analisar as respostas na avaliação de reação para melhoria contínua", "Produzir e enviar matéria de cobertura do evento para time Tripla"]}, "Ativação e Engajamento": {"Nutrição de Leads": ["Criação de fluxos de automação de e-mail", "Segmentação de base de leads", "Produção de conteúdo para nutrição", "Mapeamento de pontos de fricção na jornada do cliente", "Criação e execução de testes de hipóteses", "Análise de resultados e implementação de melhorias"]}, "Site institucional": {"Desenvolvimento de Landing Pages/Plataformas/Sites": ["Briefing e planejamento da estrutura da página", "Criação de layout e design (UI/UX)", "Desenvolvimento front-end (HTML, CSS, JavaScript)", "Integração com ferramentas de automação e análise", "Testes de responsividade e usabilidade", "Publicação e otimização para performance (velocidade)", "Levantamento de requisitos e escopo do projeto", "Arquitetura da informação e wireframing", "Design de interface e experiência do usuário (UI/UX)", "Desenvolvimento back-end e banco de dados", "Desenvolvimento front-end e implementação do layout", "Integração de sistemas e APIs", "Lançamento (deploy) e monitoramento inicial"], "Manutenção e Otimização": ["Análise de performance e velocidade do site/página", "Atualizações de segurança e plugins", "Correção de bugs e ajustes visuais", "Implementação de melhorias de CRO (Otimização de Conversão)"]}, "Design e Branding": {"Materiais Impressos e de apoio": ["Criar arte para flyers", "Criar arte para folders", "Criar arte para cartazes", "Criar brindes (canetas, canecas, ecobags, caderno, adesivos, etc.)", "Criar arte para backdrop", "Criar arte para camiseta", "Criar arte para credenciais", "Criar arte para cartão de visita", "Criar arte para papel timbrado", "criar arte para envelope", "Criar arte para pasta institucional", "Criar manuais de produto", "Criar fichas técnicas", "Criar guias de uso", "Criar infográficos técnicos"], "Materiais Digitais": ["Criar vídeo vertical (stories, reels, etc.)", "Templates redes sociais", "Capas e avatares", "Infográficos", "Cabeçalho de e-mail", "Cabeçalho para forms"], "Materiais de Vendas": ["Criar apresentações comerciais", "Criar aprsentações de propostas", "Criar apresentações de portfólio", "Criar apresentação de case de sucesso", "Apresentações comerciais", "Propostas comerciais", "One-pagers", "Portfólio corporativo", "Cases de sucesso", "Fichas técnicas", "Catálogo de produtos/serviços", "Cartilha para clientes"], "Campanhas": ["Conceito criativo", "Peças para redes sociais", "Stories e Reels", "Anúncios pagos"], "Eventos": ["Solicitar Camisetas", "Identidade visual do evento", "Backdrop", "Totens", "Credenciais", "Sinalização", "Materiais promocionais"], "Conteúdo": ["Templates de posts", "Carrosséis", "E-books (design)", "Materiais ricos (design)"], "Digital": ["Assinatura de e-mail", "Templates de proposta", "Interfaces (UI design)", "Ícones e elementos visuais", "Ilustrações"], "Gestão de Equipe": ["Distribuição de demandas", "Acompanhamento de entregas", "Priorização de projetos", "Revisão e aprovação de peças"], "Lançamento": ["Naming", "Identidade visual do produto", "Logo do produto", "Arquitetura de marca", "Conceito criativo", "Materiais de lançamento", "Apresentação comercial para produtos próprios"], "Embalagens": ["Design de embalagem", "Rótulos", "Tags"], "Posicionamento": ["Estudo de posicionamento", "Paleta de cores do produto", "Tipografia do produto"], "Estratégia de Marca": ["Diagnóstico", "Golden Circle", "Missão, Visão e Valores", "Posicionamento", "Personalidade de marca", "Palavras-chave"], "Pesquisa": ["Mapa mental", "Público-alvo", "Pontos de contato", "Benchmarking"], "Identidade Visual": ["Moodboard", "Paleta de cores", "Psicologia das cores", "Tipografia principal", "Tipografia complementar", "Símbolos", "Logotipo", "Sistema visual"], "Naming": ["Pesquisa de nomes", "Validação"], "Identidade Verbal": ["Taglines", "Manifesto", "Tom de voz"], "Arquitetura de Marca": ["Brand guidelines", "Manual de marca", "Auditoria de marca", "Sistema de submarcas", "Hierarquia visual", "Registro de Marca"]}, "Employer Branding": {"Materiais Institucionais": ["Apresentações institucionais", "Templates corporativos", "Manual do colaborador"], "Comunicados": ["Comunicados visuais", "Newsletters internas", "Murais digitais", "Infográficos informativos"], "Eventos Internos": ["Identidade visual de eventos internos", "Convites", "Certificados", "Materiais de integração"], "Uniformes": ["Camisetas", "Moletons", "Bonés/Chapéus", "Crachás"], "Ambientação": ["Sinalização interna", "Adesivação de espaços", "Placas institucionais"], "Gestão de Equipe": ["Distribuição de demandas", "Acompanhamento de entregas", "Priorização de projetos", "Revisão e aprovação de peças"]}, "Inbound": {"Nutrição base de leads": ["Avaliação da Origem e Qualidade da Base de Leads, Pesquisa e Definição dos Temas de Interesse do Segmento, Elaboração da Estrutura da Campanha de E-mail Marketing, Criação da Copy do(s) E-mail(s) e definição do CTA, Configuração da Segmentação na ferramenta de disparo, Agendamento e Disparo do E-mail Marketing, Acompanhamento do Desempenho (Taxa de Abertura, Cliques e Descads), Análise de Resultados e Elaboração de Insights para Próximas Ações."]}, "Account Based Marketing": {"Criação de estratégia de ação de ABM": ["Investigação sobre contas, pessoas e suas atividades,a nível de mercado e com vendedores, antes de começar a executar as ações. Pesquisa sobre produtos e seus fits com o púbico para o qual desejamos falar, organizar informações necessárias"], "Elaboração de textos para abordagens ABM": ["Implementação das ações específicas para cada conta."], "Entrevistas/conversas de alinhamento (Vendas, Heads)": ["Conversas necessárias com vendedores, heads, sobre produtos e sobre as contas abordadas"]}, "Digital": {"Produção de material audiovisual": ["Estratégia, texto, marcação e articulação  de filmagens, acompanhamento das filmagens, curadoria dos takes, organização do roteiro/direcionamentos para montagem do vídeo"], "SEO e Blog": ["Otimização de conteúdo para mecanismos de busca."], "Criação de conteúdos - textos institucionais e de produtos": ["Recolher informações, entrevistar e pesquisar com steakholders diversos da empresa sobre mudanças de posicionamento institucional ou atualização de produtos"], "Blog": ["Gestão de conteúdo e manutenção do blog."], "Mídias sociais": ["Planejamento editorial, produção de conteúdo e atendimento ao público."], "Geração de conteúdo - artigo de blog": ["Pesquisa e validação da palavra-chave foco, Estudo dos concorrentes e SERP (Search Engine Results Page), Criação do Esboço/Estrutura do Artigo (títulos, subtítulos), Redação do Conteúdo (Copy/Texto), Revisão gramatical e de fluência, Otimização de SEO On-Page (H1, H2, meta descrição, tags), Seleção e otimização das imagens (alt text), Solicitação de revisão/validação de conteúdo com Especialista, Entrega do conteúdo final para publicação."], "Geração de conteúdo - e-book": ["Alinhamento do tema e objetivo com a estratégia de Inbound, Definição da estrutura e tópicos do Ebook, Criação do Esboço (Outline) e Títulos de Capítulos, Redação do Conteúdo (Copy) do Ebook, Criação da Copy da Landing Page de conversão, Criação da Copy de e-mail para promoção (lançamento), Entrega do conteúdo final para revisão e design, Validação do material final antes de ir para o ar."], "Geração de conteúdo - posts para redes sociais": ["Alinhamento com o Calendário Editorial e temas da semana, Pesquisa e Curadoria de referências visuais e de conteúdo, Criação do Esboço e estrutura da mensagem (Carrossel, Post estático, Reel), Redação da Copy para o Feed e para o Storie/Reel, Definição das Hashtags e Marcações relevantes, Criação da Chamada para Ação (CTA) clara, Entrega da Copy e Briefing para o Design/Agendamento."], "Geração de conteúdo - mensagens personalizadas ABM": ["Estudo aprofundado da Conta (Contexto, Desafios, Solução), Análise detalhada da Persona (LinkedIn, Conteúdo postado, Triggers), Definição do objetivo e da abordagem de vendas, Criação da narrativa ultra-personalizada, Redação das mensagens individuais para cada etapa da cadência, Revisão da Personalização e do tom de voz, Entrega das mensagens validadas ao time de Vendas/SDR."], "Geração de conteúdo -roteiros de vídeos": ["Alinhamento do tema, formato e duração do vídeo (Reel, Tutorial, Entrevista), Pesquisa de palavras-chave/tendências e referências visuais, Definição da estrutura e da mensagem-chave (Hook e CTA), Criação do Roteiro Detalhado (Script) com falas e indicações de cena, Validação do Roteiro com o Especialista (se houver), Entrega do roteiro final para o time de produção/gravação."], "Geração de conteúdo - textos comerciais": ["E-mails e textos para vendedores em suas abordagens"], "Criação textual de cadências comerciais": ["Estudo do material de Inteligência de Mercado (Target e Contexto), Definição do número e tipo de touchpoints da cadência, Criação da narrativa de vendas e argumentos-chave (Pitch), Redação da Copy para todos os canais da cadência (E-mail e LinkedIn), envio de material para LDR"], "Gestão de conteúdo": ["Todas as etapas de pré construção do conteúdo, construção (texto, brifar designer e video), revisão, e postagem."], "Criação de relatório periódico - LINKEDIN": ["Coleta de dados de performance na plataforma nativa do LinkedIn, Coleta de dados de performance no Reportei, Análise e consolidação das métricas de alcance, engajamento (reações, comentários, shares) e cliques, Identificação de tendências e padrões de conteúdo, Geração de insights e recomendações, Montagem do  documento final de apresentação."], "Criação de relatório periódico - INSTAGRAM": ["Coleta de dados de performance no Meta Business Suite, Coleta de dados de performance no Reportei, Análise e consolidação das métricas de alcance, engajamento e conversão, Identificação de conteúdos de melhor/pior performance, Geração de insights e recomendações, Montagem do dashboard ou documento final de apresentação."], "Criação de relatório periódico - BLOG": ["Coleta de dados de tráfego orgânico e palavras-chave no Semrush, Coleta de dados de performance de páginas no  Semrush, Análise de posicionamento de palavras-chave e rankings, Identificação de oportunidades de otimização (SEO Audit) e conteúdo novo, Geração de insights de performance e recomendações para o próximo ciclo, Montagem de report final de apresentação."], "Elaboração de briefing para artigos de especialistas": ["Conversar com especialistas sobre temas sobre os quais querem escrever, pesquisar e estudar o tema e a ligação com produtos da Tripla, buscar por palavras chaves que fazem sentido, montar o briefing, enviar para o especialista escrever,"], "Planejamento de Estratégia de Conteúdo de Produto": ["Pesquisa de produto (público, dores, mensagens, concorrência), Definição de Personas e Jornada de Compra, Elaboração do Documento Estratégico (Posicionamento/Mensagem), Definição de Pilares e Temas de Conteúdo, Mapeamento e Priorização de Conteúdos (E-mail, Artigo, Ebook, etc.), Criação de Briefings de Produção, Articulação com Especialistas e Vendas, Definição de Métricas de Sucesso e Template de Report."]}};
+
+    function onServicoChange() {
+        const servico = document.getElementById('reqServico').value;
+        const catSel  = document.getElementById('reqCategoria');
+        const itemSel = document.getElementById('reqItemServico');
+
+        // Reset downstream
+        catSel.innerHTML  = '<option value="">Selecione a categoria...</option>';
+        itemSel.innerHTML = '<option value="">Selecione o item...</option>';
+        catSel.disabled   = true;
+        itemSel.disabled  = true;
+
+        if (!servico) return;
+        const cats = Object.keys(SERVICOS_DATA[servico] || {});
+        cats.forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c; opt.textContent = c;
+            catSel.appendChild(opt);
+        });
+        catSel.disabled = false;
+    }
+
+    function onCategoriaChange() {
+        const servico   = document.getElementById('reqServico').value;
+        const categoria = document.getElementById('reqCategoria').value;
+        const itemSel   = document.getElementById('reqItemServico');
+
+        itemSel.innerHTML = '<option value="">Selecione o item...</option>';
+        itemSel.disabled  = true;
+
+        if (!servico || !categoria) return;
+        const itens = (SERVICOS_DATA[servico] || {})[categoria] || [];
+        itens.forEach(i => {
+            const opt = document.createElement('option');
+            opt.value = i; opt.textContent = i;
+            itemSel.appendChild(opt);
+        });
+        itemSel.disabled = false;
+    }
+
+    function onItemChange() {
+        // Nothing extra needed — value read on submit
+    }
+    </script>
+
     <!-- Firebase SDK -->
     <script type="module">
         import { initializeApp }  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
@@ -720,6 +798,16 @@
                 await new Promise(r => window.addEventListener('firebaseReady', r, { once: true }));
             }
             try {
+                // Populate serviço select from embedded data
+                const svcSel = document.getElementById('reqServico');
+                if (svcSel) {
+                    Object.keys(SERVICOS_DATA).forEach(s => {
+                        const opt = document.createElement('option');
+                        opt.value = s; opt.textContent = s;
+                        svcSel.appendChild(opt);
+                    });
+                }
+
                 const snap = await window._fsGetDoc(window._fsDoc(window._db, 'config', 'settings'));
                 const sectors = snap.exists() ? (snap.data().sectors || []) : [];
                 const sel = document.getElementById('reqSector');
@@ -752,17 +840,31 @@
             const sector  = document.getElementById('reqSector')?.value.trim();
             const email   = document.getElementById('reqEmail')?.value.trim();
             const title   = document.getElementById('reqTitle')?.value.trim();
-            const desc    = document.getElementById('reqDescription')?.value.trim();
+            const servico = document.getElementById('reqServico')?.value.trim();
+            const categ   = document.getElementById('reqCategoria')?.value.trim();
+            const item    = document.getElementById('reqItemServico')?.value.trim();
+            const descRaw = document.getElementById('reqDescription')?.value.trim();
             const due     = document.getElementById('reqDueDate')?.value || '';
             const prio    = document.querySelector('input[name="reqPriority"]:checked')?.value || 'medium';
 
             // Validation
-            if (!name)   { showError('Por favor, informe seu nome completo.'); document.getElementById('reqName').focus(); return; }
-            if (!sector) { showError('Por favor, selecione seu setor.'); document.getElementById('reqSector').focus(); return; }
-            if (!email)  { showError('Por favor, informe seu e-mail.'); document.getElementById('reqEmail').focus(); return; }
+            if (!name)    { showError('Por favor, informe seu nome completo.'); document.getElementById('reqName').focus(); return; }
+            if (!sector)  { showError('Por favor, selecione seu setor.'); document.getElementById('reqSector').focus(); return; }
+            if (!email)   { showError('Por favor, informe seu e-mail.'); document.getElementById('reqEmail').focus(); return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showError('E-mail inválido. Verifique e tente novamente.'); document.getElementById('reqEmail').focus(); return; }
-            if (!title)  { showError('Por favor, dê um título para a demanda.'); document.getElementById('reqTitle').focus(); return; }
-            if (!desc)   { showError('Por favor, descreva a demanda com mais detalhes.'); document.getElementById('reqDescription').focus(); return; }
+            if (!title)   { showError('Por favor, dê um título para a demanda.'); document.getElementById('reqTitle').focus(); return; }
+            if (!servico) { showError('Por favor, selecione o Serviço.'); document.getElementById('reqServico').focus(); return; }
+            if (!categ)   { showError('Por favor, selecione a Categoria.'); document.getElementById('reqCategoria').focus(); return; }
+            if (!item)    { showError('Por favor, selecione o Item de Serviço.'); document.getElementById('reqItemServico').focus(); return; }
+            if (!descRaw) { showError('Por favor, descreva a demanda com mais detalhes.'); document.getElementById('reqDescription').focus(); return; }
+
+            // Build enriched description with service classification
+            const desc = `🗂️ Serviço: ${servico}
+📂 Categoria: ${categ}
+🔧 Item de Serviço: ${item}
+
+📝 Descrição:
+${descRaw}`;
 
             if (!window._firebaseReady) {
                 showError('Erro de conexão. Tente novamente em instantes.');
@@ -821,6 +923,11 @@
         // ── Reset ─────────────────────────────────────────────────────
         function resetForm() {
             document.getElementById('reqName').value = '';
+            document.getElementById('reqServico').value = '';
+            document.getElementById('reqCategoria').innerHTML = '<option value="">Selecione a categoria...</option>';
+            document.getElementById('reqCategoria').disabled = true;
+            document.getElementById('reqItemServico').innerHTML = '<option value="">Selecione o item...</option>';
+            document.getElementById('reqItemServico').disabled = true;
             document.getElementById('reqEmail').value = '';
             document.getElementById('reqDueDate').value = '';
             document.getElementById('reqDescription').value = '';
