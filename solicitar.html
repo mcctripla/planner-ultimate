@@ -528,6 +528,347 @@
             background-color: var(--bg2);
         }
 
+        /* ── Search box ────────────────────────────── */
+        .search-service-wrap {
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .search-service-input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-service-input-wrap .search-icon {
+            position: absolute;
+            left: 14px;
+            color: var(--accent);
+            font-size: 18px;
+            pointer-events: none;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .search-service-input-wrap .search-clear {
+            position: absolute;
+            right: 14px;
+            background: none;
+            border: none;
+            color: var(--ink3);
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+            padding: 4px;
+            line-height: 1;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        #serviceSearch {
+            width: 100%;
+            padding: 13px 40px 13px 42px;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-size: 14px;
+            background: var(--white);
+            color: var(--ink);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        #serviceSearch:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(219,39,119,0.08);
+        }
+
+        #serviceSearch::placeholder { color: var(--ink3); }
+
+        .search-results-dropdown {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0; right: 0;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+            scrollbar-width: thin;
+        }
+
+        .search-results-dropdown.open { display: block; }
+
+        .search-result-item {
+            padding: 11px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--bg2);
+            transition: background 0.15s;
+        }
+
+        .search-result-item:last-child { border-bottom: none; }
+
+        .search-result-item:hover,
+        .search-result-item.focused {
+            background: rgba(219,39,119,0.05);
+        }
+
+        .search-result-item .sri-item {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--ink);
+            margin-bottom: 3px;
+        }
+
+        .search-result-item .sri-item mark {
+            background: rgba(219,39,119,0.15);
+            color: var(--accent);
+            border-radius: 3px;
+            padding: 0 1px;
+            font-weight: 700;
+        }
+
+        .search-result-item .sri-path {
+            font-size: 11px;
+            color: var(--ink3);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+
+        .sri-path .sep {
+            color: var(--accent2);
+            opacity: 0.6;
+            font-size: 10px;
+        }
+
+        .search-no-results {
+            padding: 20px 16px;
+            text-align: center;
+            color: var(--ink3);
+            font-size: 13px;
+        }
+
+        .search-hint {
+            font-size: 11px;
+            color: var(--ink3);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .service-selected-badge {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: rgba(219,39,119,0.07);
+            border: 1.5px solid rgba(219,39,119,0.2);
+            border-radius: 12px;
+            padding: 10px 14px;
+            margin-top: 8px;
+            font-size: 12px;
+            color: var(--ink2);
+        }
+
+        .service-selected-badge.visible { display: flex; }
+
+        .service-selected-badge .badge-path {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            flex-wrap: wrap;
+            font-weight: 500;
+        }
+
+        .service-selected-badge .badge-path strong {
+            color: var(--ink);
+            font-weight: 700;
+        }
+
+        .service-selected-badge .badge-clear {
+            background: none;
+            border: none;
+            color: var(--ink3);
+            cursor: pointer;
+            font-size: 15px;
+            padding: 2px;
+            line-height: 1;
+            flex-shrink: 0;
+            transition: color 0.15s;
+        }
+
+        .service-selected-badge .badge-clear:hover { color: var(--danger); }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 14px 0 10px;
+            color: var(--ink3);
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .or-divider::before, .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+
+        /* ── Busca de serviço ──────────────────────────────── */
+        .service-search-wrap {
+            position: relative;
+        }
+        .service-search-input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            background: var(--white);
+            color: var(--ink);
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .service-search-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(219,39,119,.1);
+        }
+        .service-search-icon {
+            position: absolute;
+            left: 13px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--ink3);
+            font-size: 17px;
+            pointer-events: none;
+        }
+        .service-search-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--bg2);
+            border: none;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink3);
+            font-size: 13px;
+            transition: background .15s;
+        }
+        .service-search-clear:hover { background: var(--border); color: var(--ink); }
+        .service-search-clear.visible { display: flex; }
+
+        .search-results-box {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 0; right: 0;
+            background: var(--white);
+            border: 1.5px solid var(--border);
+            border-radius: 14px;
+            box-shadow: var(--shadow-lg);
+            z-index: 200;
+            max-height: 320px;
+            overflow-y: auto;
+            display: none;
+        }
+        .search-results-box.open { display: block; }
+        .search-results-box::-webkit-scrollbar { width: 4px; }
+        .search-results-box::-webkit-scrollbar-track { background: transparent; }
+        .search-results-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+        .search-result-item {
+            padding: 11px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid var(--bg2);
+            transition: background .12s;
+        }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:hover, .search-result-item.active {
+            background: rgba(219,39,119,.05);
+        }
+        .search-result-item .sri-item {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: var(--ink);
+            line-height: 1.3;
+        }
+        .search-result-item .sri-item em {
+            font-style: normal;
+            color: var(--accent);
+            background: rgba(219,39,119,.08);
+            border-radius: 3px;
+            padding: 0 1px;
+        }
+        .search-result-item .sri-breadcrumb {
+            font-size: 11px;
+            color: var(--ink3);
+            margin-top: 3px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .search-result-item .sri-breadcrumb span {
+            background: var(--bg2);
+            border-radius: 5px;
+            padding: 1px 6px;
+            font-weight: 500;
+        }
+        .search-result-item .sri-breadcrumb span.svc {
+            background: rgba(219,39,119,.1);
+            color: var(--accent);
+        }
+        .search-no-results {
+            padding: 20px 16px;
+            text-align: center;
+            color: var(--ink3);
+            font-size: 13px;
+        }
+        .search-hint {
+            font-size: 11.5px;
+            color: var(--ink3);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .search-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 6px 0 2px;
+        }
+        .search-divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .search-divider-text {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--ink3);
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            white-space: nowrap;
+        }
+
         /* ── Responsive ────────────────────────────── */
         @media (max-width: 600px) {
             header { padding: 24px 20px 0; }
@@ -617,7 +958,36 @@
                         <input type="text" id="reqTitle" placeholder="Resuma em uma frase o que precisa ser feito">
                     </div>
 
-                    <!-- Serviço em cascata -->
+                    <!-- Busca de serviço -->
+                    <div class="field">
+                        <label>Buscar serviço <span class="req">*</span></label>
+                        <div class="service-search-wrap" id="searchWrap">
+                            <i class="ph ph-magnifying-glass service-search-icon"></i>
+                            <input
+                                type="text"
+                                id="serviceSearch"
+                                class="service-search-input"
+                                placeholder="Ex: artigo, banner, evento, vídeo..."
+                                autocomplete="off"
+                                oninput="onServiceSearch(this.value)"
+                                onkeydown="onSearchKeydown(event)"
+                                onfocus="onSearchFocus()"
+                            >
+                            <button class="service-search-clear" id="searchClear" onclick="clearServiceSearch()" tabindex="-1" title="Limpar busca">
+                                <i class="ph ph-x"></i>
+                            </button>
+                            <div class="search-results-box" id="searchResults"></div>
+                        </div>
+                        <p class="field-hint">Digite palavras-chave e selecione o resultado. Ou use os campos abaixo para navegar manualmente.</p>
+                    </div>
+
+                    <!-- Serviço em cascata (seleção manual) -->
+                    <div class="search-divider">
+                        <div class="search-divider-line"></div>
+                        <span class="search-divider-text">ou selecione manualmente</span>
+                        <div class="search-divider-line"></div>
+                    </div>
+
                     <div class="field">
                         <label>Serviço <span class="req">*</span></label>
                         <select id="reqServico" onchange="onServicoChange()">
@@ -752,6 +1122,190 @@
     function onItemChange() {
         // Nothing extra needed — value read on submit
     }
+
+    // ── BUSCA DE SERVIÇO ──────────────────────────────────────────────────────
+    // Normaliza texto: remove acentos, lowercase
+    function normalize(str) {
+        return str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+    }
+
+    // Constrói índice flat de todos os itens para busca
+    let _searchIndex = null;
+    function getSearchIndex() {
+        if (_searchIndex) return _searchIndex;
+        _searchIndex = [];
+        for (const [svc, cats] of Object.entries(SERVICOS_DATA)) {
+            for (const [cat, itens] of Object.entries(cats)) {
+                for (const item of itens) {
+                    _searchIndex.push({
+                        svc, cat, item,
+                        norm: normalize(svc + ' ' + cat + ' ' + item)
+                    });
+                }
+            }
+        }
+        return _searchIndex;
+    }
+
+    let _searchActive = -1; // keyboard nav index
+
+    function onServiceSearch(query) {
+        const clear = document.getElementById('searchClear');
+        const box   = document.getElementById('searchResults');
+        _searchActive = -1;
+
+        if (clear) clear.classList.toggle('visible', query.length > 0);
+
+        if (!query.trim()) { box.classList.remove('open'); return; }
+
+        const words   = normalize(query).split(/\s+/).filter(Boolean);
+        const idx     = getSearchIndex();
+
+        // Score: each word that matches = +1; match in item name = +2 bonus
+        const scored = idx.map(entry => {
+            let score = 0;
+            for (const w of words) {
+                if (entry.norm.includes(w)) {
+                    score += 1;
+                    if (normalize(entry.item).includes(w)) score += 2;
+                    if (normalize(entry.cat).includes(w))  score += 1;
+                }
+            }
+            return { ...entry, score };
+        }).filter(e => e.score > 0).sort((a, b) => b.score - a.score).slice(0, 12);
+
+        if (!scored.length) {
+            box.innerHTML = '<div class="search-no-results"><i class="ph ph-smiley-sad" style="font-size:22px;display:block;margin:0 auto 6px"></i>Nenhum resultado. Tente outras palavras ou use a seleção manual abaixo.</div>';
+        } else {
+            box.innerHTML = scored.map((e, i) =>
+                `<div class="search-result-item" data-idx="${i}"
+                    onmousedown="selectSearchResult('${esc2(e.svc)}','${esc2(e.cat)}','${esc2(e.item)}')"
+                    onmouseover="setSearchActive(${i})">
+                    <div class="sri-item">${highlightMatch(e.item, words)}</div>
+                    <div class="sri-breadcrumb">
+                        <span class="svc">${esc2(e.svc)}</span>
+                        <i class="ph ph-caret-right" style="font-size:9px;color:#bbb"></i>
+                        <span>${esc2(e.cat)}</span>
+                    </div>
+                </div>`
+            ).join('');
+        }
+
+        box.classList.add('open');
+    }
+
+    function highlightMatch(text, words) {
+        let result = escHtml(text);
+        for (const w of words) {
+            // case-insensitive, accent-insensitive highlight
+            const regex = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            // Work on normalized version to find positions, apply to original
+            const normText = normalize(text);
+            let out = '', i = 0;
+            let m;
+            const re2 = new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            while ((m = re2.exec(normText)) !== null) {
+                out += escHtml(text.slice(i, m.index));
+                out += `<em>${escHtml(text.slice(m.index, m.index + m[0].length))}</em>`;
+                i = m.index + m[0].length;
+            }
+            out += escHtml(text.slice(i));
+            result = out;
+            break; // highlight first word only to avoid nesting
+        }
+        return result;
+    }
+
+    function escHtml(t) {
+        return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function esc2(t) {
+        return t.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+    }
+
+    function setSearchActive(idx) {
+        _searchActive = idx;
+        document.querySelectorAll('.search-result-item').forEach((el, i) => {
+            el.classList.toggle('active', i === idx);
+        });
+    }
+
+    function onSearchKeydown(e) {
+        const box   = document.getElementById('searchResults');
+        const items = box.querySelectorAll('.search-result-item');
+        if (!box.classList.contains('open') || !items.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            _searchActive = Math.min(_searchActive + 1, items.length - 1);
+            setSearchActive(_searchActive);
+            items[_searchActive]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            _searchActive = Math.max(_searchActive - 1, 0);
+            setSearchActive(_searchActive);
+            items[_searchActive]?.scrollIntoView({ block: 'nearest' });
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (_searchActive >= 0 && items[_searchActive]) {
+                items[_searchActive].dispatchEvent(new MouseEvent('mousedown'));
+            }
+        } else if (e.key === 'Escape') {
+            box.classList.remove('open');
+        }
+    }
+
+    function onSearchFocus() {
+        const q = document.getElementById('serviceSearch').value;
+        if (q.trim()) document.getElementById('searchResults').classList.add('open');
+    }
+
+    function selectSearchResult(svc, cat, item) {
+        // Fill the cascade selects
+        const svcSel  = document.getElementById('reqServico');
+        const catSel  = document.getElementById('reqCategoria');
+        const itemSel = document.getElementById('reqItemServico');
+
+        // Set serviço
+        svcSel.value = svc;
+        onServicoChange(); // populates categorias
+
+        // Set categoria
+        catSel.value = cat;
+        onCategoriaChange(); // populates itens
+
+        // Set item
+        itemSel.value = item;
+
+        // Update search input to show selection
+        const input = document.getElementById('serviceSearch');
+        input.value = item;
+        document.getElementById('searchClear').classList.add('visible');
+        document.getElementById('searchResults').classList.remove('open');
+
+        // Visual feedback: briefly highlight the selects
+        [svcSel, catSel, itemSel].forEach(el => {
+            el.style.transition = 'box-shadow .3s';
+            el.style.boxShadow  = '0 0 0 3px rgba(219,39,119,.25)';
+            setTimeout(() => { el.style.boxShadow = ''; }, 800);
+        });
+    }
+
+    function clearServiceSearch() {
+        const input = document.getElementById('serviceSearch');
+        input.value = '';
+        document.getElementById('searchClear').classList.remove('visible');
+        document.getElementById('searchResults').classList.remove('open');
+        input.focus();
+    }
+
+    // Close results when clicking outside
+    document.addEventListener('click', e => {
+        if (!document.getElementById('searchWrap')?.contains(e.target)) {
+            document.getElementById('searchResults')?.classList.remove('open');
+        }
+    });
+
     </script>
 
     <!-- Firebase SDK -->
@@ -924,6 +1478,9 @@ ${descRaw}`;
         function resetForm() {
             document.getElementById('reqName').value = '';
             document.getElementById('reqServico').value = '';
+            document.getElementById('serviceSearch').value = '';
+            const sc = document.getElementById('searchClear'); if(sc) sc.classList.remove('visible');
+            const sb = document.getElementById('searchResults'); if(sb) sb.classList.remove('open');
             document.getElementById('reqCategoria').innerHTML = '<option value="">Selecione a categoria...</option>';
             document.getElementById('reqCategoria').disabled = true;
             document.getElementById('reqItemServico').innerHTML = '<option value="">Selecione o item...</option>';
