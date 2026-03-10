@@ -2404,20 +2404,9 @@
             const titleEl = document.getElementById('modalTitle'); if(titleEl) titleEl.textContent = 'Nova Demanda';
             formSubtasks = []; formAttachments = [];
             
-            // Build owner picker chips
-            const picker = document.getElementById('taskOwnerPicker');
-            if(picker) {
-                if(!appSettings.owners.length) {
-                    picker.innerHTML = '<span class="owner-picker-empty">Nenhum membro cadastrado</span>';
-                } else {
-                    picker.innerHTML = appSettings.owners.map(o => `
-                        <div class="owner-chip" data-owner="${esc(o)}" onclick="toggleOwnerChip(this)">
-                            <div class="chip-avatar ${getAvatarColor(o)}">${ini(o)}</div>
-                            <span>${esc(o)}</span>
-                            <div class="chip-check"><i class="ph ph-check"></i></div>
-                        </div>`).join('');
-                }
-            }
+            // Build owner dropdown (nova tarefa: sem seleção)
+            renderOwnerDropdown([]);
+            populateSubtaskOwnerSelect();
             
             const secSel = document.getElementById('taskRequesterSector');
             if(secSel) secSel.innerHTML = `<option value="">Sem Setor</option>` + appSettings.sectors.map(s => `<option value="${esc(s)}">${esc(s)}</option>`).join('');
@@ -2434,11 +2423,9 @@
                     if(titleEl) titleEl.textContent = 'Editar Demanda';
                     if(tidEl) tidEl.value = t.id;
                     const iTitle = document.getElementById('taskTitle'); if(iTitle) iTitle.value = t.title || '';
-                    // Pre-select owners
+                    // Pre-select owners no dropdown
                     const existingOwners = t.owners && t.owners.length ? t.owners : (t.owner ? [t.owner] : []);
-                    document.querySelectorAll('#taskOwnerPicker .owner-chip').forEach(chip => {
-                        chip.classList.toggle('selected', existingOwners.includes(chip.dataset.owner));
-                    });
+                    renderOwnerDropdown(existingOwners);
                     const iDue = document.getElementById('taskDueDate'); if(iDue) iDue.value = t.dueDate || '';
                     const iStatus = document.getElementById('taskStatus'); if(iStatus) iStatus.value = t.status || 'todo';
                     const iPrio = document.getElementById('taskPriority'); if(iPrio) iPrio.value = t.priority || 'medium';
