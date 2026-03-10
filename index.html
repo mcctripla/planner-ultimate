@@ -1400,13 +1400,16 @@
                 <button id="btnDeleteTask" class="px-4 py-2 text-rose-500 hover:bg-rose-50 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm shrink-0">
                     <i class="ph ph-trash text-lg"></i> Excluir
                 </button>
-                <div class="flex flex-1 justify-end items-center gap-3">
+                <div class="flex flex-1 justify-end items-center gap-3 flex-wrap">
                     <button id="btnToggleDaily" class="px-4 py-2 text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg font-bold transition-colors flex items-center gap-2 text-sm">
                         <i class="ph ph-sun text-lg"></i> Daily
                     </button>
                     <button onclick="closeViewModal()" class="px-5 py-2 text-slate-500 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg font-bold transition-colors text-sm">Fechar</button>
                     <button id="btnEditTask" class="px-6 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg font-bold transition-colors shadow-md flex items-center gap-2 text-sm">
                         <i class="ph ph-pencil-simple text-lg"></i> Editar
+                    </button>
+                    <button id="btnCompleteTask" class="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-lg font-bold transition-all shadow-md shadow-emerald-500/20 flex items-center gap-2 text-sm">
+                        <i class="ph ph-check-circle text-lg"></i> Concluir
                     </button>
                 </div>
             </div>
@@ -2491,7 +2494,6 @@
             closeModal(); closeViewModal();
             await saveTask_DB(finalData);
             showToast(tId ? "Tarefa atualizada!" : "Nova tarefa criada!", 'success');
-            if (finalData.status === 'done') playDoneSound();
             if (shouldNotify) notifyOwnerByEmail(finalData);
         }
 
@@ -2653,6 +2655,26 @@
             renderViewAttachments(t); renderViewSubtasks(t); updateModalTimerUI(t); renderViewComments(t); renderTimeLogsHistory(t);
 
             const btnEdit = document.getElementById('btnEditTask'); if(btnEdit) btnEdit.onclick = () => { closeViewModal(); openModal(t.id); };
+
+            // Botão Concluir tarefa
+            const btnComplete = document.getElementById('btnCompleteTask');
+            if (btnComplete) {
+                // Esconde se já estiver concluída
+                if (t.status === 'done') {
+                    btnComplete.classList.add('hidden');
+                } else {
+                    btnComplete.classList.remove('hidden');
+                    btnComplete.onclick = async () => {
+                        if (t.timerRunning) stopTimerInternal(t);
+                        t.status = 'done';
+                        await saveTaskToFirebase(t);
+                        playDoneSound();
+                        showToast('🎉 Tarefa concluída!', 'success');
+                        closeViewModal();
+                        renderAll();
+                    };
+                }
+            }
             const btnDel = document.getElementById('btnDeleteTask'); 
             if(btnDel) {
                 btnDel.onclick = () => {
