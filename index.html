@@ -2081,7 +2081,7 @@
                 col.addEventListener('drop', async e => {
                     e.preventDefault(); col.classList.remove('bg-pink-50/50', 'border-pink-200', 'border-dashed');
                     const id = e.dataTransfer.getData('text/plain'); const ns = col.dataset.status; const t = tasks.find(x => x.id === id);
-                    if(t && t.status !== ns) { if((ns === 'done' || ns === 'paused') && t.timerRunning) stopTimerInternal(t); t.status = ns; await saveTaskToFirebase(t); showToast(`Movido para ${statusMap[ns]}`, 'success'); }
+                    if(t && t.status !== ns) { if((ns === 'done' || ns === 'paused') && t.timerRunning) stopTimerInternal(t); t.status = ns; await saveTaskToFirebase(t); showToast(`Movido para ${statusMap[ns]}`, 'success'); if(ns === 'done') playDoneSound(); }
                 });
             });
         }
@@ -2491,6 +2491,7 @@
             closeModal(); closeViewModal();
             await saveTask_DB(finalData);
             showToast(tId ? "Tarefa atualizada!" : "Nova tarefa criada!", 'success');
+            if (finalData.status === 'done') playDoneSound();
             if (shouldNotify) notifyOwnerByEmail(finalData);
         }
 
@@ -3532,6 +3533,46 @@
         }
 
         
+
+        // ── SOM DE TAREFA CONCLUÍDA ───────────────────────────────────────────
+        function playDoneSound() {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+                // Sequência de notas: acorde ascendente tipo "blip de sucesso"
+                const notes = [
+                    { freq: 523.25, start: 0.00, dur: 0.12 },   // C5
+                    { freq: 659.25, start: 0.10, dur: 0.12 },   // E5
+                    { freq: 783.99, start: 0.20, dur: 0.18 },   // G5
+                    { freq: 1046.5, start: 0.32, dur: 0.28 },   // C6
+                ];
+
+                notes.forEach(({ freq, start, dur }) => {
+                    const osc  = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+
+                    // Envelope: ataque rápido, decay suave
+                    gain.gain.setValueAtTime(0, ctx.currentTime + start);
+                    gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + start + 0.02);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+
+                    osc.start(ctx.currentTime + start);
+                    osc.stop(ctx.currentTime + start + dur + 0.05);
+                });
+
+                // Fecha contexto após o som terminar
+                setTimeout(() => ctx.close(), 800);
+            } catch(e) {
+                // Silencioso se Web Audio não suportado
+            }
+        }
+
         // ── RELATÓRIO DAILY HISTORY ───────────────────────────────────────────
         function renderDailyHistoryReport() {
             const container = document.getElementById('an-daily-history');
