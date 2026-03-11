@@ -174,7 +174,7 @@ header{background:#fff;border-bottom:1.5px solid var(--pink-dim);height:56px;pad
                     <input id="searchInp" type="text" placeholder="Buscar..." oninput="renderPool()">
                 </div>
             </div>
-            <div class="pool" id="pool" ondragover="event.preventDefault()" ondrop="dropToPool(event)">
+            <div class="pool" id="pool">
                 <div class="empty-pool"><div class="spinner" style="width:20px;height:20px;border-width:2px"></div></div>
             </div>
         </div>
@@ -192,19 +192,19 @@ header{background:#fff;border-bottom:1.5px solid var(--pink-dim);height:56px;pad
                 <div class="ay-label" style="color:var(--q4-acc)"><i class="ph ph-minus-circle"></i> Não importante</div>
             </div>
             <div class="grid2x2">
-                <div class="quadrant q1" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'do')">
+                <div class="quadrant q1" data-quadrant="do">
                     <div class="q-head"><div class="q-ico"><i class="ph ph-fire"></i></div><div class="q-info"><div class="q-title">Fazer agora</div><div class="q-sub">Urgente + Importante</div></div><div class="q-cnt" id="cnt-do">0</div></div>
                     <div class="q-body" id="qb-do"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
                 </div>
-                <div class="quadrant q2" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'schedule')">
+                <div class="quadrant q2" data-quadrant="schedule">
                     <div class="q-head"><div class="q-ico"><i class="ph ph-calendar-check"></i></div><div class="q-info"><div class="q-title">Agendar</div><div class="q-sub">Não urgente + Importante</div></div><div class="q-cnt" id="cnt-schedule">0</div></div>
                     <div class="q-body" id="qb-schedule"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
                 </div>
-                <div class="quadrant q3" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'delegate')">
+                <div class="quadrant q3" data-quadrant="delegate">
                     <div class="q-head"><div class="q-ico"><i class="ph ph-users-three"></i></div><div class="q-info"><div class="q-title">Delegar</div><div class="q-sub">Urgente + Não importante</div></div><div class="q-cnt" id="cnt-delegate">0</div></div>
                     <div class="q-body" id="qb-delegate"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
                 </div>
-                <div class="quadrant q4" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'eliminate')">
+                <div class="quadrant q4" data-quadrant="eliminate">
                     <div class="q-head"><div class="q-ico"><i class="ph ph-trash"></i></div><div class="q-info"><div class="q-title">Eliminar</div><div class="q-sub">Não urgente + Não importante</div></div><div class="q-cnt" id="cnt-eliminate">0</div></div>
                     <div class="q-body" id="qb-eliminate"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
                 </div>
@@ -289,6 +289,7 @@ function renderPool(){
 
     let items = [
         ...allTasks.filter(t => {
+            if (t.status === 'done') return false; // excluir tarefas concluídas
             const owners = t.owners?.length ? t.owners : (t.owner ? [t.owner] : []);
             return isAdmin || owners.includes(USERNAME);
         }).map(t => ({ id:t.id, title:t.title||'(sem título)', owner:t.owners?.[0]||t.owner||'', tag:t.tag||'', src:'planner' })),
@@ -389,33 +390,44 @@ async function addLocal(){
 
 // ── DROP HANDLERS ─────────────────────────────────────────────────────
 function setupDropZones(){
-    // Quadrants
     document.querySelectorAll('.quadrant').forEach(el => {
         const toQ = el.dataset.quadrant;
-        el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
-        el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+        el.addEventListener('dragover', e => {
+            e.preventDefault();
+            e.stopPropagation();
+            el.classList.add('drag-over');
+        });
+        el.addEventListener('dragleave', e => {
+            // Only remove highlight when leaving the quadrant itself, not its children
+            if (!el.contains(e.relatedTarget)) {
+                el.classList.remove('drag-over');
+            }
+        });
         el.addEventListener('drop', async e => {
             e.preventDefault();
-            document.querySelectorAll('.quadrant').forEach(q=>q.classList.remove('drag-over'));
+            e.stopPropagation();
+            document.querySelectorAll('.quadrant').forEach(q => q.classList.remove('drag-over'));
             const id = e.dataTransfer.getData('text/plain') || dragId;
-            if(!id) return;
-            QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
-            if(!matrix[toQ]) matrix[toQ]=[];
+            if(!id || !toQ) return;
+            // Remove from all quadrants first
+            QS.forEach(q => { matrix[q] = (matrix[q]||[]).filter(x => x !== id); });
+            // Add to target
+            if(!matrix[toQ]) matrix[toQ] = [];
             matrix[toQ].push(id);
-            dragId=null; dragFrom=null;
+            dragId = null; dragFrom = null;
             await saveMatrix(); renderPool(); renderMatrix(); showToast('Movido!','success');
         });
     });
 
-    // Pool (return)
+    // Pool — drop to return card to list
     const pool = document.getElementById('pool');
     pool.addEventListener('dragover', e => e.preventDefault());
     pool.addEventListener('drop', async e => {
         e.preventDefault();
         const id = e.dataTransfer.getData('text/plain') || dragId;
-        if(!id || dragFrom==='pool') return;
-        QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
-        dragId=null; dragFrom=null;
+        if(!id || dragFrom === 'pool') return;
+        QS.forEach(q => { matrix[q] = (matrix[q]||[]).filter(x => x !== id); });
+        dragId = null; dragFrom = null;
         await saveMatrix(); renderPool(); renderMatrix(); showToast('Devolvido à lista','info');
     });
 }
