@@ -237,14 +237,6 @@ const USERNAME = decodeURIComponent(params.get('name') || '');
 const ROLE     = decodeURIComponent(params.get('role') || '');
 const QS       = ['do','schedule','delegate','eliminate'];
 
-function showError(msg) {
-    document.getElementById('loadingOverlay').classList.add('hidden');
-    document.getElementById('errorMsg').textContent = msg;
-    document.getElementById('errorBanner').classList.add('show');
-}
-
-if (!UID || !USERNAME) { showError('Acesso inválido. Abra esta página pelo MKT Flow.'); throw new Error('no uid'); }
-
 // ── STATE ─────────────────────────────────────────────────────────────
 let allTasks   = [];
 let localItems = [];
@@ -258,51 +250,43 @@ const AVC=['av-0','av-1','av-2','av-3','av-4','av-5','av-6','av-7','av-8','av-9'
 function avc(n){ if(!n) return 'av-0'; let s=0; for(const c of n) s+=c.charCodeAt(0); return AVC[s%AVC.length]; }
 function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 function uid2(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
-function toast(msg,type='info'){
+function showToast(msg,type='info'){
     const t=document.getElementById('toast');
     t.textContent=msg; t.style.background=type==='success'?'#16a34a':type==='error'?'#e11d48':'#1e293b';
     t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200);
 }
 function placedSet(){ return new Set(QS.flatMap(q=>matrix[q]||[])); }
+function showError(msg){
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorBanner').classList.add('show');
+}
 
 // ── FIREBASE ──────────────────────────────────────────────────────────
 async function saveMatrix(){
-    await setDoc(doc(db,'matrix',UID),{ uid:UID, name:USERNAME, matrix, localItems, updatedAt:new Date().toISOString() });
+    try {
+        await setDoc(doc(db,'matrix',UID),{ uid:UID, name:USERNAME, matrix, localItems, updatedAt:new Date().toISOString() });
+    } catch(e) { console.error('saveMatrix error', e); }
 }
 async function loadMatrix(){
-    const snap = await getDoc(doc(db,'matrix',UID));
-    if(snap.exists()){
-        const d=snap.data();
-        matrix     = d.matrix     || { do:[], schedule:[], delegate:[], eliminate:[] };
-        localItems = d.localItems || [];
-    }
+    try {
+        const snap = await getDoc(doc(db,'matrix',UID));
+        if(snap.exists()){
+            const d=snap.data();
+            matrix     = d.matrix     || { do:[], schedule:[], delegate:[], eliminate:[] };
+            localItems = d.localItems || [];
+        }
+    } catch(e) { console.error('loadMatrix error', e); }
 }
 
-// ── SETUP HEADER ──────────────────────────────────────────────────────
-const av = document.getElementById('headerAv');
-av.textContent = ini(USERNAME); av.className = `u-av ${avc(USERNAME)}`;
-document.getElementById('headerName').textContent = USERNAME;
-
-// ── LOAD ──────────────────────────────────────────────────────────────
-await loadMatrix();
-
-onSnapshot(collection(db,'tasks'), snap => {
-    allTasks = snap.docs.map(d=>({id:d.id,...d.data()}));
-    renderPool();
-    renderMatrix();
-});
-
-document.getElementById('loadingOverlay').classList.add('hidden');
-renderPool();
-renderMatrix();
-
 // ── POOL RENDER ───────────────────────────────────────────────────────
-window.renderPool = function(){
+function renderPool(){
     const pool = document.getElementById('pool');
-    const q    = (document.getElementById('searchInp')?.value||'').toLowerCase();
-    const p    = placedSet();
-
+    if(!pool) return;
+    const q = (document.getElementById('searchInp')?.value||'').toLowerCase();
+    const p = placedSet();
     const isAdmin = ROLE === 'admin';
+
     let items = [
         ...allTasks.filter(t => {
             const owners = t.owners?.length ? t.owners : (t.owner ? [t.owner] : []);
@@ -314,7 +298,7 @@ window.renderPool = function(){
     if(q) items = items.filter(i => i.title.toLowerCase().includes(q));
 
     if(!items.length){
-        pool.innerHTML = `<div class="empty-pool"><i class="ph ph-inbox"></i><p>Nenhuma demanda</p></div>`;
+        pool.innerHTML = `<div class="empty-pool"><i class="ph ph-inbox"></i><p>Nenhuma demanda encontrada</p></div>`;
         return;
     }
 
@@ -323,16 +307,27 @@ window.renderPool = function(){
         const tagHtml = item.tag
             ? `<span class="pi-tag" style="border-color:var(--pink);color:var(--pink);background:var(--pink-dim)">${esc(item.tag)}</span>`
             : `<span class="pi-tag" style="border-color:#e2e8f0;color:#94a3b8;background:#f8fafc">${item.src==='local'?'Local':'Planner'}</span>`;
-        return `<div class="pool-item ${isPlaced?'placed':''}" draggable="${!isPlaced}" data-id="${item.id}"
-                     ondragstart="pdStart(event,'${item.id}')" ondragend="pdEnd(event)">
+        return `<div class="pool-item ${isPlaced?'placed':''}"
+                     data-id="${item.id}" data-draggable="${!isPlaced}">
             <div class="pi-title">${esc(item.title)}</div>
             <div class="pi-meta">${tagHtml}${item.owner?`<span class="pi-owner"><i class="ph ph-user"></i>${esc(item.owner)}</span>`:''}</div>
         </div>`;
     }).join('');
-};
+
+    // Attach drag events via JS (works in modules)
+    pool.querySelectorAll('.pool-item:not(.placed)').forEach(el => {
+        el.setAttribute('draggable', 'true');
+        el.addEventListener('dragstart', e => {
+            dragId = el.dataset.id; dragFrom = 'pool';
+            e.dataTransfer.setData('text/plain', dragId);
+            setTimeout(() => el.classList.add('dragging'), 0);
+        });
+        el.addEventListener('dragend', () => el.classList.remove('dragging'));
+    });
+}
 
 // ── MATRIX RENDER ─────────────────────────────────────────────────────
-window.renderMatrix = function(){
+function renderMatrix(){
     const lk={};
     allTasks.forEach(t=>{ lk[t.id]={ title:t.title||'(sem título)', owner:t.owners?.[0]||t.owner||'' }; });
     localItems.forEach(li=>{ lk[li.id]={ title:li.title, owner:USERNAME }; });
@@ -340,60 +335,123 @@ window.renderMatrix = function(){
     QS.forEach(q=>{
         const body  = document.getElementById(`qb-${q}`);
         const cntEl = document.getElementById(`cnt-${q}`);
-        const ids   = matrix[q]||[];
+        if(!body || !cntEl) return;
+        const ids = matrix[q]||[];
         cntEl.textContent = ids.length;
-        if(!ids.length){ body.innerHTML=`<div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div>`; return; }
+
+        if(!ids.length){
+            body.innerHTML=`<div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div>`;
+            return;
+        }
+
         body.innerHTML = ids.map(id=>{
-            const info = lk[id]||{title:id,owner:''};
-            return `<div class="m-card" draggable="true" data-id="${id}"
-                         ondragstart="mdStart(event,'${id}','${q}')" ondragend="mdEnd(event)">
+            const info = lk[id]||{title:'(tarefa removida)',owner:''};
+            return `<div class="m-card" data-id="${id}" data-quadrant="${q}" draggable="true">
                 <div class="mc-title">${esc(info.title)}</div>
                 <div class="mc-foot">
                     ${info.owner?`<div class="mc-owner"><div class="mc-av ${avc(info.owner)}">${ini(info.owner)}</div>${esc(info.owner)}</div>`:'<div></div>'}
-                    <button class="mc-rm" onclick="rmCard('${id}','${q}')" title="Remover"><i class="ph ph-x"></i></button>
+                    <button class="mc-rm rm-btn" data-id="${id}" data-q="${q}" title="Remover"><i class="ph ph-x"></i></button>
                 </div>
             </div>`;
         }).join('');
+
+        // Attach drag + remove events via JS
+        body.querySelectorAll('.m-card').forEach(card => {
+            const cid = card.dataset.id;
+            const fromQ = card.dataset.quadrant;
+            card.addEventListener('dragstart', e => {
+                dragId = cid; dragFrom = fromQ;
+                e.dataTransfer.setData('text/plain', cid);
+                setTimeout(() => card.classList.add('dragging'), 0);
+            });
+            card.addEventListener('dragend', () => card.classList.remove('dragging'));
+        });
+
+        body.querySelectorAll('.rm-btn').forEach(btn => {
+            btn.addEventListener('click', async e => {
+                e.stopPropagation();
+                const rid = btn.dataset.id;
+                const rq  = btn.dataset.q;
+                matrix[rq] = (matrix[rq]||[]).filter(x=>x!==rid);
+                await saveMatrix(); renderPool(); renderMatrix();
+            });
+        });
     });
-};
+}
 
 // ── ADD LOCAL ─────────────────────────────────────────────────────────
-window.addLocal = async function(){
+async function addLocal(){
     const inp = document.getElementById('newTitle');
-    const v = inp.value.trim(); if(!v) return;
+    const v = inp?.value.trim(); if(!v) return;
     localItems.push({ id:uid2(), title:v }); inp.value='';
-    await saveMatrix(); renderPool(); toast('Demanda adicionada!','success');
-};
+    await saveMatrix(); renderPool(); showToast('Demanda adicionada!','success');
+}
 
-// ── DRAG ──────────────────────────────────────────────────────────────
-window.pdStart = (e,id)=>{ dragId=id; dragFrom='pool'; e.dataTransfer.setData('text/plain',id); setTimeout(()=>e.target.classList.add('dragging'),0); };
-window.pdEnd   = (e)=>{ e.target.classList.remove('dragging'); dragId=null; dragFrom=null; };
-window.mdStart = (e,id,fromQ)=>{ dragId=id; dragFrom=fromQ; e.dataTransfer.setData('text/plain',id); setTimeout(()=>e.target.classList.add('dragging'),0); };
-window.mdEnd   = (e)=>{ e.target.classList.remove('dragging'); dragId=null; dragFrom=null; };
+// ── DROP HANDLERS ─────────────────────────────────────────────────────
+function setupDropZones(){
+    // Quadrants
+    document.querySelectorAll('.quadrant').forEach(el => {
+        const toQ = el.dataset.quadrant;
+        el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drag-over'); });
+        el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+        el.addEventListener('drop', async e => {
+            e.preventDefault();
+            document.querySelectorAll('.quadrant').forEach(q=>q.classList.remove('drag-over'));
+            const id = e.dataTransfer.getData('text/plain') || dragId;
+            if(!id) return;
+            QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
+            if(!matrix[toQ]) matrix[toQ]=[];
+            matrix[toQ].push(id);
+            dragId=null; dragFrom=null;
+            await saveMatrix(); renderPool(); renderMatrix(); showToast('Movido!','success');
+        });
+    });
 
-// ── DROP ──────────────────────────────────────────────────────────────
-window.dOver  = (e,el)=>{ e.preventDefault(); el.classList.add('drag-over'); };
-window.dLeave = (el)=>{ el.classList.remove('drag-over'); };
-window.dDrop  = async(e,toQ)=>{
-    e.preventDefault();
-    document.querySelectorAll('.quadrant').forEach(q=>q.classList.remove('drag-over'));
-    const id = e.dataTransfer.getData('text/plain')||dragId;
-    if(!id) return;
-    QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
-    matrix[toQ].push(id);
-    await saveMatrix(); renderPool(); renderMatrix(); toast('Movido!','success');
-};
-window.dropToPool = async(e)=>{
-    e.preventDefault();
-    const id = e.dataTransfer.getData('text/plain')||dragId;
-    if(!id || dragFrom==='pool') return;
-    QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
-    await saveMatrix(); renderPool(); renderMatrix(); toast('Devolvido à lista','info');
-};
-window.rmCard = async(id,q)=>{
-    matrix[q]=(matrix[q]||[]).filter(x=>x!==id);
-    await saveMatrix(); renderPool(); renderMatrix();
-};
+    // Pool (return)
+    const pool = document.getElementById('pool');
+    pool.addEventListener('dragover', e => e.preventDefault());
+    pool.addEventListener('drop', async e => {
+        e.preventDefault();
+        const id = e.dataTransfer.getData('text/plain') || dragId;
+        if(!id || dragFrom==='pool') return;
+        QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
+        dragId=null; dragFrom=null;
+        await saveMatrix(); renderPool(); renderMatrix(); showToast('Devolvido à lista','info');
+    });
+}
+
+// ── EXPOSE TO HTML onXXX attrs ────────────────────────────────────────
+window.addLocal = addLocal;
+window.renderPool = renderPool;
+
+// ── INIT ─────────────────────────────────────────────────────────────
+if(!UID || !USERNAME){
+    showError('Acesso inválido. Abra esta página pelo MKT Flow.');
+} else {
+    // Header
+    const av = document.getElementById('headerAv');
+    av.textContent = ini(USERNAME);
+    av.className = `u-av ${avc(USERNAME)}`;
+    document.getElementById('headerName').textContent = USERNAME;
+
+    // Setup drop zones once
+    setupDropZones();
+
+    // Load saved matrix
+    await loadMatrix();
+
+    // Live tasks
+    onSnapshot(collection(db,'tasks'), snap => {
+        allTasks = snap.docs.map(d=>({id:d.id,...d.data()}));
+        renderPool();
+        renderMatrix();
+    });
+
+    // Hide loader and render
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    renderPool();
+    renderMatrix();
+}
 </script>
 </body>
 </html>
