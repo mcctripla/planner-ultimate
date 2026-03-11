@@ -808,7 +808,7 @@
                 </div>
 
                 <div class="flex-1 overflow-x-auto overflow-y-hidden p-3 md:p-6 custom-scrollbar">
-                    <div class="flex gap-3 md:gap-5 h-full min-w-max items-start pb-20 md:pb-4" id="board-container"></div>
+                    <div class="flex gap-3 md:gap-5 h-full min-w-max items-stretch pb-20 md:pb-4" id="board-container"></div>
                 </div>
             </div>
 
@@ -2068,9 +2068,9 @@
                 const countEl = document.getElementById(col.cId); if(countEl) countEl.textContent = tasks.filter(t=>t.status===col.id).length;
                 
                 finalHtml += `
-                <div class="w-64 md:w-80 flex flex-col max-h-full shrink-0">
+                <div class="w-64 md:w-80 flex flex-col h-full shrink-0">
                     <div class="flex items-center justify-between mb-3 px-1"><h3 class="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full ${col.color}"></span> ${col.name}</h3><span class="text-[10px] font-bold bg-slate-200 text-slate-600 px-2 py-0.5 rounded-full">${colTasks.length}</span></div>
-                    <div class="kanban-column flex-1 overflow-y-auto pb-4 custom-scrollbar flex flex-col gap-3 rounded-xl border-2 border-transparent p-1" data-status="${col.id}">
+                    <div class="kanban-column flex-1 overflow-y-auto pb-4 custom-scrollbar flex flex-col gap-3 rounded-xl border-2 border-transparent p-1" style="min-height:0" data-status="${col.id}">
                         ${colTasks.length === 0 ? `<div onclick="openModal('${col.id}')" class="h-24 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-400 hover:text-pink-500 hover:border-pink-200 hover:bg-pink-50/50 cursor-pointer transition-all"><span class="text-xs font-bold">+ Adicionar Demanda</span></div>` : colTasks.map(t => generateCardHtml(t)).join('')}
                     </div>
                 </div>`;
@@ -2097,26 +2097,96 @@
             if(t.priority==='low'){ pColor='border-emerald-500 text-emerald-600 bg-emerald-50'; pText='Baixa'; }
             if(t.priority==='medium'){ pColor='border-amber-500 text-amber-600 bg-amber-50'; pText='Média'; }
             if(t.priority==='high'){ pColor='border-rose-500 text-rose-600 bg-rose-50'; pText='Alta'; }
-            if(t.priority==='critical'){ pColor='border-pink-500 text-pink-500 bg-pink-50 ring-2 ring-pink-200 timer-active-ring'; pText='Crítica'; }
+            if(t.priority==='critical'){ pColor='border-pink-500 text-pink-500 bg-pink-50 ring-2 ring-pink-200'; pText='Crítica'; }
 
-            const late = isOverdue(t.dueDate) && t.status !== 'done' ? `<span class="text-[9px] font-bold text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-200 ml-1">⚠ Atrasada</span>` : '';
-            const tag = t.tag ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ml-1 ${getTagClass(t.tag)}">${esc(t.tag)}</span>` : '';
-            const dailyBadge = t.isDaily ? `<span class="text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 ml-1 flex items-center gap-0.5" title="Na Daily"><i class="ph ph-sun"></i></span>` : '';
+            const late = isOverdue(t.dueDate) && t.status !== 'done'
+                ? `<span class="text-[9px] font-bold text-rose-600 bg-rose-100 px-1.5 py-0.5 rounded border border-rose-200">⚠ Atrasada</span>` : '';
+            const tag = t.tag
+                ? `<span class="text-[9px] font-bold px-1.5 py-0.5 rounded border ${getTagClass(t.tag)}">${esc(t.tag)}</span>` : '';
+            const dailyBadge = t.isDaily
+                ? `<span class="text-[9px] font-bold text-amber-600 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 flex items-center gap-0.5"><i class="ph ph-sun"></i></span>` : '';
+
             const totalSecs = getTaskTotalSecs(t);
-            const timerClass = t.timerRunning ? 'bg-rose-500 text-white shadow-md shadow-rose-500/30' : 'bg-slate-100 text-slate-500 hover:bg-slate-200 border border-slate-200';
+            const timerClass = t.timerRunning
+                ? 'bg-rose-500 text-white shadow-md shadow-rose-500/30'
+                : 'bg-slate-100 text-slate-500 hover:bg-slate-200 border border-slate-200';
             const timerIcon = t.timerRunning ? 'ph-pause-circle animate-pulse' : 'ph-play-circle';
 
+            // Subtasks progress
             let subs = '';
-            if(t.subtasks && t.subtasks.length > 0) {
-                const tot = t.subtasks.length; const d = t.subtasks.filter(s=>s.done).length; const pct = (d/tot)*100;
-                subs = `<div class="mt-3 pt-2 border-t border-slate-100/50"><div class="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-1"><span>Checklist</span><span>${d}/${tot}</span></div><div class="w-full bg-slate-200 h-1 rounded-full"><div class="bg-pink-500 h-1 rounded-full" style="width:${pct}%"></div></div></div>`;
+            if (t.subtasks && t.subtasks.length > 0) {
+                const tot = t.subtasks.length;
+                const d = t.subtasks.filter(s => s.done).length;
+                const pct = Math.round((d / tot) * 100);
+                subs = `<div class="mt-2.5 pt-2 border-t border-slate-100">
+                    <div class="flex items-center justify-between text-[9px] font-bold text-slate-400 mb-1">
+                        <span>Checklist</span><span>${d}/${tot}</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-1 rounded-full">
+                        <div class="bg-pink-500 h-1 rounded-full transition-all" style="width:${pct}%"></div>
+                    </div>
+                </div>`;
             }
 
+            // Attachments / comments
             let attHtml = '';
-            if(t.attachments && t.attachments.length > 0) attHtml += `<div class="text-[10px] font-bold text-slate-400 flex items-center gap-1"><i class="ph ph-paperclip"></i>${t.attachments.length}</div>`;
-            if(t.comments && t.comments.length > 0) attHtml += `<div class="text-[10px] font-bold text-slate-400 flex items-center gap-1 ml-2"><i class="ph ph-chat-circle-text"></i>${t.comments.length}</div>`;
+            if (t.attachments && t.attachments.length > 0)
+                attHtml += `<span class="text-[10px] font-bold text-slate-400 flex items-center gap-0.5"><i class="ph ph-paperclip"></i>${t.attachments.length}</span>`;
+            if (t.comments && t.comments.length > 0)
+                attHtml += `<span class="text-[10px] font-bold text-slate-400 flex items-center gap-0.5 ml-1.5"><i class="ph ph-chat-circle-text"></i>${t.comments.length}</span>`;
 
-            return `<div class="task-card bg-white p-3.5 rounded-[16px] shadow-sm border border-slate-200 cursor-pointer ${t.status === 'paused' ? 'opacity-60' : ''}" draggable="true" data-id="${t.id}" onclick="openViewModal('${t.id}')"><div class="flex items-center flex-wrap gap-y-1 mb-2"><span class="text-[9px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded border ${pColor}">${pText}</span>${tag}${dailyBadge}${late}</div><h4 class="font-bold text-sm text-slate-800 leading-tight mb-3 pr-2">${esc(t.title)}</h4><div class="flex items-center justify-between mt-auto"><div class="flex items-center gap-2">${(()=>{ const ol=t.owners&&t.owners.length?t.owners:(t.owner?[t.owner]:[]); return ol.length?ol.slice(0,3).map((o,i)=>`<div class="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm ring-1 ring-white ${getAvatarColor(o)}" style="margin-left:${i>0?'-6px':'0'}" title="${esc(o)}">${ini(o)}</div>`).join('')+(ol.length>3?`<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[8px] font-bold text-slate-600 ring-1 ring-white" style="margin-left:-6px">+${ol.length-3}</div>`:''): `<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[9px] text-slate-400 shadow-sm">?</div>`; })()}${t.dueDate ? `<div class="text-[10px] font-bold ${isOverdue(t.dueDate)&&t.status!=='done'?'text-rose-500':'text-slate-400'}"><i class="ph ph-calendar-blank"></i> ${formatDate(t.dueDate).substring(0,5)}</div>` : ''}</div><div class="flex items-center gap-2"><div class="flex items-center mr-1">${attHtml}</div><button onclick="toggleTimer('${t.id}', event)" class="flex items-center gap-1 px-2 py-1 rounded-lg transition-all ${timerClass}"><i class="ph ${timerIcon} text-sm"></i><span id="timer-display-${t.id}" class="text-[9px] font-mono font-bold">${formatTimeSecs(totalSecs)}</span></button></div></div>${subs}</div>`;
+            // Owners avatars
+            const ol = t.owners && t.owners.length ? t.owners : (t.owner ? [t.owner] : []);
+            const avatarsHtml = ol.length
+                ? ol.slice(0, 3).map((o, i) =>
+                    `<div class="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-bold text-white shadow-sm ring-1 ring-white ${getAvatarColor(o)}"
+                         style="margin-left:${i > 0 ? '-6px' : '0'}" title="${esc(o)}">${ini(o)}</div>`
+                  ).join('') + (ol.length > 3
+                    ? `<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[8px] font-bold text-slate-600 ring-1 ring-white" style="margin-left:-6px">+${ol.length - 3}</div>`
+                    : '')
+                : `<div class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-[9px] text-slate-400">?</div>`;
+
+            const dueHtml = t.dueDate
+                ? `<span class="text-[10px] font-bold ${isOverdue(t.dueDate) && t.status !== 'done' ? 'text-rose-500' : 'text-slate-400'} flex items-center gap-0.5">
+                       <i class="ph ph-calendar-blank"></i>${formatDate(t.dueDate).substring(0, 5)}
+                   </span>` : '';
+
+            // Safe id for inline handler — uid() is always alphanumeric
+            const tid = t.id;
+
+            return `
+            <div class="task-card bg-white rounded-2xl shadow-sm border border-slate-200 cursor-pointer flex flex-col gap-0 ${t.status === 'paused' ? 'opacity-60' : ''}"
+                 draggable="true" data-id="${tid}" onclick="openViewModal('${tid}')">
+
+                <!-- Top: badges -->
+                <div class="flex items-center flex-wrap gap-1.5 px-3.5 pt-3.5 pb-0">
+                    <span class="text-[9px] font-extrabold uppercase tracking-widest px-1.5 py-0.5 rounded border ${pColor}">${pText}</span>
+                    ${tag}${dailyBadge}${late}
+                </div>
+
+                <!-- Title — always visible -->
+                <div class="px-3.5 pt-2 pb-3">
+                    <p class="font-bold text-sm text-slate-800 leading-snug">${esc(t.title)}</p>
+                </div>
+
+                <!-- Bottom: avatars + date + timer -->
+                <div class="flex items-center justify-between px-3.5 pb-3 gap-2">
+                    <div class="flex items-center gap-1.5">
+                        <div class="flex items-center">${avatarsHtml}</div>
+                        ${dueHtml}
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        ${attHtml}
+                        <button onclick="toggleTimer('${tid}', event)"
+                            class="flex items-center gap-1 px-2 py-1 rounded-lg transition-all text-[9px] font-mono font-bold ${timerClass}">
+                            <i class="ph ${timerIcon} text-sm"></i>
+                            <span id="timer-display-${tid}">${formatTimeSecs(totalSecs)}</span>
+                        </button>
+                    </div>
+                </div>
+
+                ${subs ? `<div class="px-3.5 pb-3">${subs}</div>` : ''}
+            </div>`;
         }
 
         function renderList() {
