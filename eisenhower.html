@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Matriz de Eisenhower — MKT Flow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+:root{
+    --pink:#db2777;--pink-dim:#fce7f3;
+    --q1-bg:#fff1f2;--q1-br:#fda4af;--q1-acc:#e11d48;--q1-tx:#9f1239;
+    --q2-bg:#f0fdf4;--q2-br:#86efac;--q2-acc:#16a34a;--q2-tx:#14532d;
+    --q3-bg:#fffbeb;--q3-br:#fcd34d;--q3-acc:#d97706;--q3-tx:#78350f;
+    --q4-bg:#f8fafc;--q4-br:#cbd5e1;--q4-acc:#64748b;--q4-tx:#334155;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#fdf4f8;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+
+/* HEADER */
+header{background:#fff;border-bottom:1.5px solid var(--pink-dim);height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 12px rgba(219,39,119,.06);z-index:50}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.logo-text{font-size:15px;font-weight:800;color:#1e293b;letter-spacing:-.3px}
+.logo-sub{font-size:10px;font-weight:700;color:var(--pink);display:block;margin-top:-1px}
+.user-pill{display:flex;align-items:center;gap:7px;background:var(--pink-dim);border:1.5px solid #fbcfe8;border-radius:999px;padding:4px 12px 4px 5px;font-size:12px;font-weight:700;color:#1e293b}
+.u-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:800;color:#fff;flex-shrink:0}
+.btn-back{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:9px;background:#fff;border:1.5px solid #e2e8f0;color:#64748b;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;text-decoration:none;font-family:inherit}
+.btn-back:hover{border-color:var(--pink);color:var(--pink)}
+
+/* ERROR */
+#errorBanner{display:none;position:fixed;inset:0;background:#fff1f2;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:14px;text-align:center;padding:20px}
+#errorBanner.show{display:flex}
+#errorBanner p{font-size:14px;font-weight:700;color:#9f1239;max-width:320px}
+
+/* LAYOUT */
+.body{flex:1;display:flex;gap:14px;padding:16px;overflow:hidden;min-height:0}
+
+/* SIDEBAR */
+.sidebar{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+.s-card{background:#fff;border:1.5px solid var(--pink-dim);border-radius:16px;box-shadow:0 2px 12px rgba(219,39,119,.06);overflow:hidden;display:flex;flex-direction:column;flex:1;min-height:0}
+.s-head{padding:12px 14px 10px;border-bottom:1px solid var(--pink-dim);flex-shrink:0}
+.s-head h3{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.search-wrap{display:flex;align-items:center;gap:7px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:9px;padding:6px 9px}
+.search-wrap i{color:#94a3b8;font-size:13px;flex-shrink:0}
+.search-wrap input{flex:1;border:none;background:none;font-size:12px;font-family:inherit;outline:none;color:#1e293b}
+.pool{flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:5px;min-height:0}
+.pool::-webkit-scrollbar{width:3px}
+.pool::-webkit-scrollbar-thumb{background:var(--pink-dim);border-radius:3px}
+.pool-item{background:#fff;border:1.5px solid #e2e8f0;border-radius:10px;padding:9px 11px;cursor:grab;transition:all .18s;user-select:none;display:flex;flex-direction:column;gap:4px}
+.pool-item:hover{border-color:var(--pink);box-shadow:0 3px 12px rgba(219,39,119,.1);transform:translateY(-1px)}
+.pool-item.dragging{opacity:.35;transform:scale(.96)}
+.pool-item.placed{opacity:.3;pointer-events:none;border-style:dashed}
+.pi-title{font-size:11px;font-weight:700;color:#1e293b;line-height:1.4}
+.pi-meta{display:flex;align-items:center;gap:5px}
+.pi-tag{font-size:9px;font-weight:800;text-transform:uppercase;padding:1px 6px;border-radius:999px;border:1px solid}
+.pi-owner{font-size:9px;color:#94a3b8;font-weight:600;display:flex;align-items:center;gap:2px}
+.s-add{background:#fff;border:1.5px solid var(--pink-dim);border-radius:16px;box-shadow:0 2px 12px rgba(219,39,119,.06);padding:12px;flex-shrink:0}
+.s-add h3{font-size:10px;font-weight:800;color:#94a3b8;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.add-row{display:flex;gap:6px}
+.add-inp{flex:1;padding:8px 10px;border-radius:9px;border:1.5px solid #e2e8f0;font-size:12px;font-family:inherit;outline:none;transition:border-color .15s;background:#f8fafc}
+.add-inp:focus{border-color:var(--pink);background:#fff}
+.btn-add{padding:8px 12px;border-radius:9px;background:var(--pink);color:#fff;font-size:11px;font-weight:800;border:none;cursor:pointer;transition:all .15s;font-family:inherit;white-space:nowrap}
+.btn-add:hover{background:#be185d}
+.empty-pool{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:24px 12px;text-align:center;color:#94a3b8}
+.empty-pool i{font-size:28px;opacity:.4}
+.empty-pool p{font-size:11px;font-weight:600}
+
+/* MATRIX */
+.matrix-area{flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}
+.axis-x{display:grid;grid-template-columns:28px 1fr 1fr;gap:10px;flex-shrink:0}
+.ax-spacer{}
+.ax-label{text-align:center;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;display:flex;align-items:center;justify-content:center;gap:4px;padding:3px 0}
+.matrix-row{display:flex;gap:8px;flex:1;min-height:0}
+.axis-y{display:flex;flex-direction:column;justify-content:space-around;width:28px;flex-shrink:0}
+.ay-label{font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);display:flex;align-items:center;gap:3px;white-space:nowrap}
+.grid2x2{flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;min-height:0}
+.quadrant{border-radius:18px;border:2px solid;display:flex;flex-direction:column;overflow:hidden;transition:border-color .15s,box-shadow .15s,transform .15s}
+.quadrant.drag-over{box-shadow:0 0 0 3px rgba(219,39,119,.25);transform:scale(1.006)}
+.q-head{padding:10px 14px 8px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-bottom:1px solid}
+.q-ico{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.q-info{flex:1;min-width:0}
+.q-title{font-size:12px;font-weight:800;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-sub{font-size:9px;font-weight:600;opacity:.65;margin-top:1px}
+.q-cnt{font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;background:rgba(0,0,0,.06);flex-shrink:0}
+.q-body{flex:1;overflow-y:auto;padding:8px;display:flex;flex-wrap:wrap;gap:6px;align-content:flex-start;min-height:40px}
+.q-body::-webkit-scrollbar{width:3px}
+.q-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.08);border-radius:3px}
+.q-hint{width:100%;text-align:center;font-size:10px;font-weight:700;opacity:.35;padding:14px 0;display:flex;align-items:center;justify-content:center;gap:5px}
+.q1{background:var(--q1-bg);border-color:var(--q1-br)}.q1 .q-head{border-color:var(--q1-br)}.q1 .q-ico{background:rgba(225,29,72,.1);color:var(--q1-acc)}.q1 .q-title{color:var(--q1-tx)}.q1 .q-sub{color:var(--q1-tx)}.q1 .q-hint{color:var(--q1-tx)}.q1.drag-over{border-color:var(--q1-acc)}
+.q2{background:var(--q2-bg);border-color:var(--q2-br)}.q2 .q-head{border-color:var(--q2-br)}.q2 .q-ico{background:rgba(22,163,74,.1);color:var(--q2-acc)}.q2 .q-title{color:var(--q2-tx)}.q2 .q-sub{color:var(--q2-tx)}.q2 .q-hint{color:var(--q2-tx)}.q2.drag-over{border-color:var(--q2-acc)}
+.q3{background:var(--q3-bg);border-color:var(--q3-br)}.q3 .q-head{border-color:var(--q3-br)}.q3 .q-ico{background:rgba(217,119,6,.1);color:var(--q3-acc)}.q3 .q-title{color:var(--q3-tx)}.q3 .q-sub{color:var(--q3-tx)}.q3 .q-hint{color:var(--q3-tx)}.q3.drag-over{border-color:var(--q3-acc)}
+.q4{background:var(--q4-bg);border-color:var(--q4-br)}.q4 .q-head{border-color:var(--q4-br)}.q4 .q-ico{background:rgba(100,116,139,.1);color:var(--q4-acc)}.q4 .q-title{color:var(--q4-tx)}.q4 .q-sub{color:var(--q4-tx)}.q4 .q-hint{color:var(--q4-tx)}.q4.drag-over{border-color:var(--q4-acc)}
+
+/* MATRIX CARD */
+.m-card{background:rgba(255,255,255,.9);backdrop-filter:blur(4px);border:1.5px solid rgba(255,255,255,.95);border-radius:10px;padding:7px 9px;cursor:grab;transition:all .16s;user-select:none;box-shadow:0 2px 8px rgba(0,0,0,.06);min-width:90px;max-width:160px;display:flex;flex-direction:column;gap:4px}
+.m-card:hover{transform:translateY(-2px);box-shadow:0 5px 16px rgba(0,0,0,.1)}
+.m-card.dragging{opacity:.3}
+.mc-title{font-size:10px;font-weight:700;color:#1e293b;line-height:1.35}
+.mc-foot{display:flex;align-items:center;justify-content:space-between;gap:4px}
+.mc-owner{display:flex;align-items:center;gap:3px;font-size:9px;color:#94a3b8;font-weight:600}
+.mc-av{width:13px;height:13px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:5px;font-weight:800;color:#fff}
+.mc-rm{width:16px;height:16px;border-radius:50%;background:rgba(0,0,0,.06);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:8px;transition:all .15s;flex-shrink:0}
+.mc-rm:hover{background:#fee2e2;color:#ef4444}
+
+/* AVATAR COLORS */
+.av-0{background:#db2777}.av-1{background:#7c3aed}.av-2{background:#2563eb}
+.av-3{background:#059669}.av-4{background:#d97706}.av-5{background:#dc2626}
+.av-6{background:#0891b2}.av-7{background:#4f46e5}.av-8{background:#be185d}
+.av-9{background:#15803d}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.show{opacity:1}
+
+/* SPINNER */
+.spinner{width:32px;height:32px;border-radius:50%;border:3px solid var(--pink-dim);border-top-color:var(--pink);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loadingOverlay{position:fixed;inset:0;background:#fdf4f8;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:500}
+#loadingOverlay p{font-size:12px;font-weight:700;color:#94a3b8}
+#loadingOverlay.hidden{display:none}
+
+@media(max-width:768px){
+    .body{flex-direction:column;overflow-y:auto;padding:10px;gap:10px}
+    .sidebar{width:100%}
+    .pool{max-height:180px}
+    .matrix-area{min-height:500px}
+    .axis-y,.ay-label,.ax-spacer{display:none}
+    .axis-x{grid-template-columns:1fr 1fr}
+    .q-sub{display:none}
+}
+</style>
+</head>
+<body>
+
+<div id="loadingOverlay"><div class="spinner"></div><p>Carregando matriz...</p></div>
+
+<div id="errorBanner">
+    <i class="ph ph-warning" style="font-size:40px;color:#e11d48"></i>
+    <p id="errorMsg">Acesso inválido. Abra esta página pelo MKT Flow.</p>
+    <a href="index.html" style="padding:8px 18px;background:var(--pink);color:#fff;border-radius:9px;font-size:13px;font-weight:700;text-decoration:none">Voltar ao Planner</a>
+</div>
+
+<header>
+    <a href="index.html" class="logo">
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="20" fill="url(#lg)"/>
+            <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#db2777"/><stop offset="100%" stop-color="#ec4899"/></linearGradient></defs>
+            <path d="M20 28V12M13 19l7-7 7 7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <div><div class="logo-text">MKT Flow</div><span class="logo-sub">Matriz de Eisenhower</span></div>
+    </a>
+    <div style="display:flex;align-items:center;gap:10px">
+        <div class="user-pill"><div class="u-av" id="headerAv"></div><span id="headerName">—</span></div>
+        <a href="index.html" class="btn-back"><i class="ph ph-arrow-left"></i> Voltar ao Planner</a>
+    </div>
+</header>
+
+<div class="body">
+    <aside class="sidebar">
+        <div class="s-add">
+            <h3><i class="ph ph-plus-circle"></i> Nova demanda local</h3>
+            <div class="add-row">
+                <input id="newTitle" type="text" class="add-inp" placeholder="Título..." onkeypress="if(event.key==='Enter')addLocal()">
+                <button class="btn-add" onclick="addLocal()"><i class="ph ph-plus"></i> Add</button>
+            </div>
+        </div>
+        <div class="s-card">
+            <div class="s-head">
+                <h3><i class="ph ph-list-bullets"></i> Demandas disponíveis</h3>
+                <div class="search-wrap">
+                    <i class="ph ph-magnifying-glass"></i>
+                    <input id="searchInp" type="text" placeholder="Buscar..." oninput="renderPool()">
+                </div>
+            </div>
+            <div class="pool" id="pool" ondragover="event.preventDefault()" ondrop="dropToPool(event)">
+                <div class="empty-pool"><div class="spinner" style="width:20px;height:20px;border-width:2px"></div></div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="matrix-area">
+        <div class="axis-x">
+            <div class="ax-spacer"></div>
+            <div class="ax-label" style="color:var(--q1-acc)"><i class="ph ph-lightning"></i> Urgente</div>
+            <div class="ax-label" style="color:var(--q2-acc)"><i class="ph ph-hourglass"></i> Não urgente</div>
+        </div>
+        <div class="matrix-row">
+            <div class="axis-y">
+                <div class="ay-label" style="color:var(--q1-acc)"><i class="ph ph-star"></i> Importante</div>
+                <div class="ay-label" style="color:var(--q4-acc)"><i class="ph ph-minus-circle"></i> Não importante</div>
+            </div>
+            <div class="grid2x2">
+                <div class="quadrant q1" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'do')">
+                    <div class="q-head"><div class="q-ico"><i class="ph ph-fire"></i></div><div class="q-info"><div class="q-title">Fazer agora</div><div class="q-sub">Urgente + Importante</div></div><div class="q-cnt" id="cnt-do">0</div></div>
+                    <div class="q-body" id="qb-do"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
+                </div>
+                <div class="quadrant q2" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'schedule')">
+                    <div class="q-head"><div class="q-ico"><i class="ph ph-calendar-check"></i></div><div class="q-info"><div class="q-title">Agendar</div><div class="q-sub">Não urgente + Importante</div></div><div class="q-cnt" id="cnt-schedule">0</div></div>
+                    <div class="q-body" id="qb-schedule"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
+                </div>
+                <div class="quadrant q3" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'delegate')">
+                    <div class="q-head"><div class="q-ico"><i class="ph ph-users-three"></i></div><div class="q-info"><div class="q-title">Delegar</div><div class="q-sub">Urgente + Não importante</div></div><div class="q-cnt" id="cnt-delegate">0</div></div>
+                    <div class="q-body" id="qb-delegate"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
+                </div>
+                <div class="quadrant q4" ondragover="dOver(event,this)" ondragleave="dLeave(this)" ondrop="dDrop(event,'eliminate')">
+                    <div class="q-head"><div class="q-ico"><i class="ph ph-trash"></i></div><div class="q-info"><div class="q-title">Eliminar</div><div class="q-sub">Não urgente + Não importante</div></div><div class="q-cnt" id="cnt-eliminate">0</div></div>
+                    <div class="q-body" id="qb-eliminate"><div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, onSnapshot, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const FB = {
+    apiKey:"AIzaSyD0pCg9VCmog4Xi5nJGm65pLTBlTWwd2v4",
+    authDomain:"planner-ultimate.firebaseapp.com",
+    projectId:"planner-ultimate",
+    storageBucket:"planner-ultimate.firebasestorage.app",
+    messagingSenderId:"173951734205",
+    appId:"1:173951734205:web:placeholder"
+};
+const fbApp = initializeApp(FB);
+const db    = getFirestore(fbApp);
+
+// ── URL PARAMS ────────────────────────────────────────────────────────
+const params   = new URLSearchParams(location.search);
+const UID      = params.get('uid');
+const USERNAME = decodeURIComponent(params.get('name') || '');
+const ROLE     = decodeURIComponent(params.get('role') || '');
+const QS       = ['do','schedule','delegate','eliminate'];
+
+function showError(msg) {
+    document.getElementById('loadingOverlay').classList.add('hidden');
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorBanner').classList.add('show');
+}
+
+if (!UID || !USERNAME) { showError('Acesso inválido. Abra esta página pelo MKT Flow.'); throw new Error('no uid'); }
+
+// ── STATE ─────────────────────────────────────────────────────────────
+let allTasks   = [];
+let localItems = [];
+let matrix     = { do:[], schedule:[], delegate:[], eliminate:[] };
+let dragId     = null;
+let dragFrom   = null;
+
+// ── HELPERS ───────────────────────────────────────────────────────────
+function ini(n){ if(!n) return '?'; const p=n.trim().split(' '); return p.length>=2?(p[0][0]+p[p.length-1][0]).toUpperCase():n.substring(0,2).toUpperCase(); }
+const AVC=['av-0','av-1','av-2','av-3','av-4','av-5','av-6','av-7','av-8','av-9'];
+function avc(n){ if(!n) return 'av-0'; let s=0; for(const c of n) s+=c.charCodeAt(0); return AVC[s%AVC.length]; }
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function uid2(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function toast(msg,type='info'){
+    const t=document.getElementById('toast');
+    t.textContent=msg; t.style.background=type==='success'?'#16a34a':type==='error'?'#e11d48':'#1e293b';
+    t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2200);
+}
+function placedSet(){ return new Set(QS.flatMap(q=>matrix[q]||[])); }
+
+// ── FIREBASE ──────────────────────────────────────────────────────────
+async function saveMatrix(){
+    await setDoc(doc(db,'matrix',UID),{ uid:UID, name:USERNAME, matrix, localItems, updatedAt:new Date().toISOString() });
+}
+async function loadMatrix(){
+    const snap = await getDoc(doc(db,'matrix',UID));
+    if(snap.exists()){
+        const d=snap.data();
+        matrix     = d.matrix     || { do:[], schedule:[], delegate:[], eliminate:[] };
+        localItems = d.localItems || [];
+    }
+}
+
+// ── SETUP HEADER ──────────────────────────────────────────────────────
+const av = document.getElementById('headerAv');
+av.textContent = ini(USERNAME); av.className = `u-av ${avc(USERNAME)}`;
+document.getElementById('headerName').textContent = USERNAME;
+
+// ── LOAD ──────────────────────────────────────────────────────────────
+await loadMatrix();
+
+onSnapshot(collection(db,'tasks'), snap => {
+    allTasks = snap.docs.map(d=>({id:d.id,...d.data()}));
+    renderPool();
+    renderMatrix();
+});
+
+document.getElementById('loadingOverlay').classList.add('hidden');
+renderPool();
+renderMatrix();
+
+// ── POOL RENDER ───────────────────────────────────────────────────────
+window.renderPool = function(){
+    const pool = document.getElementById('pool');
+    const q    = (document.getElementById('searchInp')?.value||'').toLowerCase();
+    const p    = placedSet();
+
+    const isAdmin = ROLE === 'admin';
+    let items = [
+        ...allTasks.filter(t => {
+            const owners = t.owners?.length ? t.owners : (t.owner ? [t.owner] : []);
+            return isAdmin || owners.includes(USERNAME);
+        }).map(t => ({ id:t.id, title:t.title||'(sem título)', owner:t.owners?.[0]||t.owner||'', tag:t.tag||'', src:'planner' })),
+        ...localItems.map(li => ({ id:li.id, title:li.title, owner:USERNAME, tag:'', src:'local' }))
+    ];
+
+    if(q) items = items.filter(i => i.title.toLowerCase().includes(q));
+
+    if(!items.length){
+        pool.innerHTML = `<div class="empty-pool"><i class="ph ph-inbox"></i><p>Nenhuma demanda</p></div>`;
+        return;
+    }
+
+    pool.innerHTML = items.map(item => {
+        const isPlaced = p.has(item.id);
+        const tagHtml = item.tag
+            ? `<span class="pi-tag" style="border-color:var(--pink);color:var(--pink);background:var(--pink-dim)">${esc(item.tag)}</span>`
+            : `<span class="pi-tag" style="border-color:#e2e8f0;color:#94a3b8;background:#f8fafc">${item.src==='local'?'Local':'Planner'}</span>`;
+        return `<div class="pool-item ${isPlaced?'placed':''}" draggable="${!isPlaced}" data-id="${item.id}"
+                     ondragstart="pdStart(event,'${item.id}')" ondragend="pdEnd(event)">
+            <div class="pi-title">${esc(item.title)}</div>
+            <div class="pi-meta">${tagHtml}${item.owner?`<span class="pi-owner"><i class="ph ph-user"></i>${esc(item.owner)}</span>`:''}</div>
+        </div>`;
+    }).join('');
+};
+
+// ── MATRIX RENDER ─────────────────────────────────────────────────────
+window.renderMatrix = function(){
+    const lk={};
+    allTasks.forEach(t=>{ lk[t.id]={ title:t.title||'(sem título)', owner:t.owners?.[0]||t.owner||'' }; });
+    localItems.forEach(li=>{ lk[li.id]={ title:li.title, owner:USERNAME }; });
+
+    QS.forEach(q=>{
+        const body  = document.getElementById(`qb-${q}`);
+        const cntEl = document.getElementById(`cnt-${q}`);
+        const ids   = matrix[q]||[];
+        cntEl.textContent = ids.length;
+        if(!ids.length){ body.innerHTML=`<div class="q-hint"><i class="ph ph-arrow-down"></i> Solte aqui</div>`; return; }
+        body.innerHTML = ids.map(id=>{
+            const info = lk[id]||{title:id,owner:''};
+            return `<div class="m-card" draggable="true" data-id="${id}"
+                         ondragstart="mdStart(event,'${id}','${q}')" ondragend="mdEnd(event)">
+                <div class="mc-title">${esc(info.title)}</div>
+                <div class="mc-foot">
+                    ${info.owner?`<div class="mc-owner"><div class="mc-av ${avc(info.owner)}">${ini(info.owner)}</div>${esc(info.owner)}</div>`:'<div></div>'}
+                    <button class="mc-rm" onclick="rmCard('${id}','${q}')" title="Remover"><i class="ph ph-x"></i></button>
+                </div>
+            </div>`;
+        }).join('');
+    });
+};
+
+// ── ADD LOCAL ─────────────────────────────────────────────────────────
+window.addLocal = async function(){
+    const inp = document.getElementById('newTitle');
+    const v = inp.value.trim(); if(!v) return;
+    localItems.push({ id:uid2(), title:v }); inp.value='';
+    await saveMatrix(); renderPool(); toast('Demanda adicionada!','success');
+};
+
+// ── DRAG ──────────────────────────────────────────────────────────────
+window.pdStart = (e,id)=>{ dragId=id; dragFrom='pool'; e.dataTransfer.setData('text/plain',id); setTimeout(()=>e.target.classList.add('dragging'),0); };
+window.pdEnd   = (e)=>{ e.target.classList.remove('dragging'); dragId=null; dragFrom=null; };
+window.mdStart = (e,id,fromQ)=>{ dragId=id; dragFrom=fromQ; e.dataTransfer.setData('text/plain',id); setTimeout(()=>e.target.classList.add('dragging'),0); };
+window.mdEnd   = (e)=>{ e.target.classList.remove('dragging'); dragId=null; dragFrom=null; };
+
+// ── DROP ──────────────────────────────────────────────────────────────
+window.dOver  = (e,el)=>{ e.preventDefault(); el.classList.add('drag-over'); };
+window.dLeave = (el)=>{ el.classList.remove('drag-over'); };
+window.dDrop  = async(e,toQ)=>{
+    e.preventDefault();
+    document.querySelectorAll('.quadrant').forEach(q=>q.classList.remove('drag-over'));
+    const id = e.dataTransfer.getData('text/plain')||dragId;
+    if(!id) return;
+    QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
+    matrix[toQ].push(id);
+    await saveMatrix(); renderPool(); renderMatrix(); toast('Movido!','success');
+};
+window.dropToPool = async(e)=>{
+    e.preventDefault();
+    const id = e.dataTransfer.getData('text/plain')||dragId;
+    if(!id || dragFrom==='pool') return;
+    QS.forEach(q=>{ matrix[q]=(matrix[q]||[]).filter(x=>x!==id); });
+    await saveMatrix(); renderPool(); renderMatrix(); toast('Devolvido à lista','info');
+};
+window.rmCard = async(id,q)=>{
+    matrix[q]=(matrix[q]||[]).filter(x=>x!==id);
+    await saveMatrix(); renderPool(); renderMatrix();
+};
+</script>
+</body>
+</html>

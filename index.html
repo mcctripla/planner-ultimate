@@ -651,6 +651,13 @@
                 <span id="pending-badge-nav" class="hidden text-[9px] font-bold bg-rose-500 text-white px-1.5 py-0.5 rounded-full animate-pulse">!</span>
             </button>
 
+            <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Ferramentas</div>
+
+            <button onclick="openEisenhower()" class="nav-item flex items-center gap-3 w-full px-3 py-2.5 rounded-xl transition-all hover:bg-slate-800 hover:text-white font-medium text-sm group border border-slate-800/60">
+                <i class="ph ph-matrix text-lg text-slate-400 group-hover:text-amber-400 transition-colors"></i>
+                <span>Matriz Eisenhower</span>
+            </button>
+
             <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 mt-6 mb-2">Filtros Rápidos</div>
             
             <button onclick="applyQuickFilter('critical')" class="flex items-center justify-between w-full px-3 py-2 rounded-lg transition-all hover:bg-slate-800 hover:text-white group">
@@ -2924,6 +2931,15 @@
             const wrap = document.getElementById('ownerPickerWrap');
             if (!wrap) return [];
             try { return JSON.parse(wrap.dataset.selected || '[]'); } catch(e) { return []; }
+        }
+
+
+        function openEisenhower() {
+            if (!currentUser || !currentProfile) { showToast('Faça login primeiro.', 'error'); return; }
+            const uid  = currentUser.uid;
+            const name = encodeURIComponent(currentProfile.name);
+            const role = encodeURIComponent(currentProfile.role);
+            window.open(`eisenhower.html?uid=${uid}&name=${name}&role=${role}`, '_blank');
         }
 
         function toggleOwnerDropdown() {
