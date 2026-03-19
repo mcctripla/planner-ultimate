@@ -3742,42 +3742,73 @@
         }
 
         // ── SOM DE TAREFA CONCLUÍDA ───────────────────────────────────────────
+        // Contexto criado uma vez e reutilizado — elimina latência de inicialização
+        let _audioCtx = null;
+        function getAudioCtx() {
+            if (!_audioCtx || _audioCtx.state === 'closed') {
+                _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (_audioCtx.state === 'suspended') _audioCtx.resume();
+            return _audioCtx;
+        }
+
+        // Pré-aquece o contexto no primeiro clique do usuário em qualquer lugar
+        document.addEventListener('click', () => { try { getAudioCtx(); } catch(e){} }, { once: true });
+
         function playDoneSound() {
             try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const ctx = getAudioCtx();
+                const now = ctx.currentTime;
 
-                // Sequência de notas: acorde ascendente tipo "blip de sucesso"
-                const notes = [
-                    { freq: 523.25, start: 0.00, dur: 0.12 },   // C5
-                    { freq: 659.25, start: 0.10, dur: 0.12 },   // E5
-                    { freq: 783.99, start: 0.20, dur: 0.18 },   // G5
-                    { freq: 1046.5, start: 0.32, dur: 0.28 },   // C6
+                // Fanfarra alegre: arpejo rápido + shimmer + acorde final
+                // Camada 1 — arpejo ascendente rápido (xilofone / glockenspiel)
+                const arp = [
+                    { f: 523.25, t: 0.00, d: 0.18 },  // C5
+                    { f: 659.25, t: 0.07, d: 0.18 },  // E5
+                    { f: 783.99, t: 0.14, d: 0.18 },  // G5
+                    { f: 1046.5, t: 0.21, d: 0.28 },  // C6
+                    { f: 1318.5, t: 0.28, d: 0.35 },  // E6  ← nota extra feliz
                 ];
 
-                notes.forEach(({ freq, start, dur }) => {
+                arp.forEach(({ f, t, d }) => {
                     const osc  = ctx.createOscillator();
                     const gain = ctx.createGain();
-
-                    osc.connect(gain);
-                    gain.connect(ctx.destination);
-
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
-
-                    // Envelope: ataque rápido, decay suave
-                    gain.gain.setValueAtTime(0, ctx.currentTime + start);
-                    gain.gain.linearRampToValueAtTime(0.18, ctx.currentTime + start + 0.02);
-                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
-
-                    osc.start(ctx.currentTime + start);
-                    osc.stop(ctx.currentTime + start + dur + 0.05);
+                    osc.connect(gain); gain.connect(ctx.destination);
+                    osc.type = 'triangle'; // mais brilhante e leve que sine
+                    osc.frequency.setValueAtTime(f, now + t);
+                    gain.gain.setValueAtTime(0, now + t);
+                    gain.gain.linearRampToValueAtTime(0.22, now + t + 0.012);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + t + d);
+                    osc.start(now + t);
+                    osc.stop(now + t + d + 0.05);
                 });
 
-                // Fecha contexto após o som terminar
-                setTimeout(() => ctx.close(), 800);
-            } catch(e) {
-                // Silencioso se Web Audio não suportado
-            }
+                // Camada 2 — shimmer (harmônico agudo suave, começa junto)
+                const shimmer = ctx.createOscillator();
+                const shimGain = ctx.createGain();
+                shimmer.connect(shimGain); shimGain.connect(ctx.destination);
+                shimmer.type = 'sine';
+                shimmer.frequency.setValueAtTime(2093, now);       // C7
+                shimmer.frequency.linearRampToValueAtTime(2637, now + 0.35); // E7 glide
+                shimGain.gain.setValueAtTime(0, now);
+                shimGain.gain.linearRampToValueAtTime(0.07, now + 0.05);
+                shimGain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+                shimmer.start(now);
+                shimmer.stop(now + 0.6);
+
+                // Camada 3 — "punch" percussivo inicial (ruído filtrado)
+                const noise = ctx.createOscillator();
+                const noiseGain = ctx.createGain();
+                noise.connect(noiseGain); noiseGain.connect(ctx.destination);
+                noise.type = 'square';
+                noise.frequency.setValueAtTime(180, now);
+                noise.frequency.exponentialRampToValueAtTime(60, now + 0.08);
+                noiseGain.gain.setValueAtTime(0.15, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                noise.start(now);
+                noise.stop(now + 0.1);
+
+            } catch(e) { /* silencioso se não suportado */ }
         }
 
         // ── RELATÓRIO DAILY HISTORY ───────────────────────────────────────────
